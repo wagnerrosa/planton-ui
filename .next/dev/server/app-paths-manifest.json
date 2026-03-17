@@ -1,9 +1,0 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/design-system/colors/page": "app/design-system/colors/page.js",
-  "/design-system/components/page": "app/design-system/components/page.js",
-  "/design-system/page": "app/design-system/page.js",
-  "/design-system/patterns/page": "app/design-system/patterns/page.js",
-  "/design-system/typography/page": "app/design-system/typography/page.js",
-  "/page": "app/page.js"
-}
