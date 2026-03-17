@@ -106,3 +106,7 @@ It can also happen if the client has a browser extension installed which messes 
                   ...
 
 [02:50:00.678] Server  LOG     ✓ Compiled in 101ms
+[03:03:41.564] Server  LOG     ✓ Compiled in 90ms
+[03:16:38.094] Server  LOG     ✓ Compiled in 90ms
+[03:16:52.866] Server  LOG     ✓ Compiled in 56ms
+[03:17:01.336] Server  LOG     ✓ Compiled in 55ms

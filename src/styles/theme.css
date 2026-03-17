@@ -16,6 +16,11 @@
   --border-light:    rgba(0, 0, 0, 0.2);
   --border-dark:     rgba(255, 255, 255, 0.1);
 
+  /* Surface layering tokens */
+  --surface:          oklch(0.97 0 0);
+  --surface-elevated: oklch(1 0 0);
+  --surface-hover:    oklch(0.94 0 0);
+
   --ease-sweep:      cubic-bezier(0.16, 1, 0.3, 1);
   --ease-lift:       cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast:   200ms;
@@ -23,6 +28,23 @@
   --duration-sweep:  500ms;
   --duration-shine:  700ms;
   --duration-reveal: 400ms;
+}
+
+/* ── Planton Brand Tokens — Dark mode overrides ─────────── */
+/* Brand colors stay constant — only surface/border tokens adapt */
+.dark {
+  --surface-default: oklch(0.145 0 0);
+  --surface-card:    oklch(0.205 0 0);
+  --surface-dark:    #0A2D30;
+  --surface-forest:  #145559;
+
+  /* Surface layering tokens — dark */
+  --surface:          oklch(0.18 0 0);
+  --surface-elevated: oklch(0.22 0 0);
+  --surface-hover:    oklch(0.25 0 0);
+
+  --border-light:    oklch(1 0 0 / 0.08);
+  --border-dark:     oklch(1 0 0 / 0.12);
 }
 
 /* ── shadcn/ui semantic tokens ─────────────────────────── */
@@ -159,6 +181,9 @@
   --color-surface-card:    var(--surface-card);
   --color-surface-dark:    var(--surface-dark);
   --color-surface-forest:  var(--surface-forest);
+  --color-surface:          var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-surface-hover:    var(--surface-hover);
   --color-border-light:    var(--border-light);
   --color-border-dark:     var(--border-dark);
 }
