@@ -31,8 +31,12 @@
 }
 
 /* ── Planton Brand Tokens — Dark mode overrides ─────────── */
-/* Brand colors stay constant — only surface/border tokens adapt */
 .dark {
+  /* Text colors — adapt for legibility on dark backgrounds */
+  --planton-forest:  oklch(0.96 0 0);      /* títulos: branco */
+  --planton-muted:   oklch(0.75 0 0);      /* corpo secundário: branco ~75% */
+
+  /* Surface tokens */
   --surface-default: oklch(0.145 0 0);
   --surface-card:    oklch(0.205 0 0);
   --surface-dark:    #0A2D30;
@@ -49,7 +53,7 @@
 
 /* ── shadcn/ui semantic tokens ─────────────────────────── */
 :root {
-  --background: oklch(0.993 0.012 96.417);
+  --background: oklch(1 0 0);
   --foreground: oklch(0.412 0.063 201.133);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.412 0.063 201.133);

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 type CardProps = {
@@ -6,6 +7,7 @@ type CardProps = {
   description?: string
   ctaLabel?: string
   href?: string
+  cardHref?: string
   surface?: 'white' | 'forest'
   className?: string
 }
@@ -16,25 +18,26 @@ export function Card({
   description,
   ctaLabel,
   href,
+  cardHref,
   surface = 'white',
   className,
 }: CardProps) {
   const isDark = surface === 'forest'
 
-  return (
-    <div
-      className={cn(
-        'group relative overflow-hidden border-b border-r min-h-[260px]',
-        isDark ? 'bg-surface-forest text-planton-cream border-[var(--border-dark)]' : 'bg-white text-planton-forest border-border',
-        className,
-      )}
-    >
-      {/* Indicator bar */}
+  const containerClass = cn(
+    'group relative overflow-hidden border-r border-b min-h-[260px]',
+    isDark
+      ? 'bg-surface-forest text-planton-cream border-[var(--border-dark)]'
+      : 'bg-card text-planton-forest border-border',
+    className,
+  )
+
+  const content = (
+    <>
       <span
         aria-hidden
         className="absolute left-0 top-0 w-[3px] h-0 bg-planton-accent transition-[height] ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:h-full"
       />
-
       <div className="relative z-10 p-8 md:p-12 flex flex-col justify-between h-full min-h-[260px]">
         <div className="flex flex-col gap-3">
           {index && (
@@ -49,7 +52,7 @@ export function Card({
             </p>
           )}
         </div>
-        {ctaLabel && (
+        {ctaLabel && !cardHref && (
           <a
             href={href ?? '#'}
             className="mt-6 font-mono text-xs uppercase tracking-[0.05em] text-planton-accent"
@@ -57,7 +60,18 @@ export function Card({
             {ctaLabel} →
           </a>
         )}
+        {ctaLabel && cardHref && (
+          <span className="mt-6 font-mono text-xs uppercase tracking-[0.05em] text-planton-accent">
+            {ctaLabel} →
+          </span>
+        )}
       </div>
-    </div>
+    </>
   )
+
+  if (cardHref) {
+    return <Link href={cardHref} className={containerClass}>{content}</Link>
+  }
+
+  return <div className={containerClass}>{content}</div>
 }

@@ -1,4 +1,4 @@
-import { LessonCard } from './LessonCard'
+import { Card } from '@/components/ui/Card'
 
 type Lesson = {
   id: string
@@ -14,13 +14,14 @@ type CourseGridProps = {
 
 export function CourseGrid({ lessons }: CourseGridProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-[1400px] mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-[1400px] mx-auto overflow-hidden border-t border-l border-border">
       {lessons.map((lesson) => (
-        <LessonCard
+        <Card
           key={lesson.id}
           index={lesson.index}
-          title={lesson.title}
+          headline={lesson.title}
           description={lesson.description}
+          ctaLabel="Ver aula"
           href={lesson.href}
         />
       ))}

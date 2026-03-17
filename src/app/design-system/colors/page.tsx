@@ -56,6 +56,87 @@ export default function ColorsPage() {
           </div>
         </div>
       </div>
+
+      {/* Dark Mode */}
+      <div className="mt-16 flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Dark Mode</h2>
+          <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
+            No dark mode, as cores de brand permanecem inalteradas. Apenas os tokens de superfície e foreground são substituídos por valores neutros em OKLCH — sem croma, apenas luminosidade.
+          </p>
+        </div>
+
+        {/* Surfaces */}
+        <div className="flex flex-col gap-3">
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Superfícies — neutras</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 border-t border-l border-border">
+            {[
+              { token: '--background',       oklch: 'oklch(0.145 0 0)', label: 'App background',    hex: '#1c1c1c' },
+              { token: '--card',             oklch: 'oklch(0.205 0 0)', label: 'Card / panel',       hex: '#2a2a2a' },
+              { token: '--surface',          oklch: 'oklch(0.18 0 0)',  label: 'Surface base',       hex: '#252525' },
+              { token: '--surface-elevated', oklch: 'oklch(0.22 0 0)',  label: 'Surface elevada',    hex: '#2f2f2f' },
+              { token: '--surface-hover',    oklch: 'oklch(0.25 0 0)',  label: 'Surface hover',      hex: '#343434' },
+            ].map((s) => (
+              <div key={s.token} className="border-b border-r border-border flex flex-col">
+                <div className="h-16 w-full" style={{ background: s.oklch }} />
+                <div className="p-4 flex flex-col gap-1">
+                  <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">{s.token}</span>
+                  <span className="font-mono text-xs text-foreground/60">{s.oklch}</span>
+                  <span className="font-sans text-xs text-planton-muted leading-[1.65]">{s.label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Foreground */}
+        <div className="flex flex-col gap-3">
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Foreground — texto</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-t border-l border-border">
+            {[
+              { token: '--foreground',      oklch: 'oklch(0.985 0 0)', label: 'Texto principal',   bg: '#141414' },
+              { token: '--muted-foreground',oklch: 'oklch(0.708 0 0)', label: 'Texto secundário',  bg: '#141414' },
+              { token: '--card-foreground', oklch: 'oklch(0.985 0 0)', label: 'Texto em card',     bg: '#2a2a2a' },
+            ].map((s) => (
+              <div key={s.token} className="border-b border-r border-border flex flex-col">
+                <div className="h-16 w-full flex items-center px-5" style={{ background: s.bg }}>
+                  <span className="font-sans text-sm" style={{ color: s.oklch }}>Aa — Planton</span>
+                </div>
+                <div className="p-4 flex flex-col gap-1">
+                  <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">{s.token}</span>
+                  <span className="font-mono text-xs text-foreground/60">{s.oklch}</span>
+                  <span className="font-sans text-xs text-planton-muted leading-[1.65]">{s.label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Brand constante */}
+        <div className="flex flex-col gap-3">
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Brand — inalterado</span>
+          <p className="font-sans text-xs text-planton-muted leading-[1.65]">
+            Estas cores não mudam entre temas. O sidebar sempre usa a paleta brand; o accent sempre sinaliza ação.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-border">
+            {[
+              { token: '--sidebar',         value: '#0A2D30', label: 'Sidebar background' },
+              { token: '--sidebar-accent',  value: '#145559', label: 'Sidebar hover / active' },
+              { token: '--planton-accent',  value: '#ADCF78', label: 'Accent — CTA, labels' },
+              { token: '--sidebar-primary', value: '#ADCF78', label: 'Sidebar primary action' },
+            ].map((s) => (
+              <div key={s.token} className="border-b border-r border-border flex flex-col">
+                <div className="h-16 w-full" style={{ background: s.value }} />
+                <div className="p-4 flex flex-col gap-1">
+                  <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">{s.token}</span>
+                  <span className="font-mono text-xs text-foreground/60">{s.value}</span>
+                  <span className="font-sans text-xs text-planton-muted leading-[1.65]">{s.label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </main>
   )
 }

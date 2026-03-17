@@ -17,7 +17,7 @@ type ButtonProps = {
 
 const variantClasses: Record<ButtonVariant, string> = {
   'primary':      'border-planton-accent text-planton-accent hover:text-planton-white',
-  'primary-dark': 'border-planton-cream text-planton-cream hover:text-planton-ink',
+  'primary-dark': 'border-planton-accent text-planton-accent hover:text-planton-white',
   'icon':         'border-planton-accent w-10 h-10 p-0 justify-center text-planton-accent hover:text-planton-white',
 }
 
@@ -45,7 +45,7 @@ export function Button({
     className,
   )
 
-  const sweepBg = variant === 'primary-dark' ? 'bg-planton-cream' : 'bg-planton-accent'
+  const sweepBg = 'bg-planton-accent'
 
   const content = (
     <>

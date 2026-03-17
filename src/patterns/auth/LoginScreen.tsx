@@ -8,7 +8,7 @@ import { Button } from '@/components/primitives/Button'
 export function LoginScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-default p-6">
-      <div className="w-full max-w-sm border border-[var(--border-light)] p-10 flex flex-col gap-6">
+      <div className="w-full max-w-sm border border-border p-10 flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <Eyebrow>Planton</Eyebrow>
           <Heading as="h1" size="heading-lg">Entrar na plataforma</Heading>
@@ -21,7 +21,7 @@ export function LoginScreen() {
             </label>
             <input
               type="email"
-              className="border-b border-[var(--border-light)] bg-transparent py-2 font-sans text-sm text-planton-forest outline-none focus:border-planton-accent"
+              className="border-b border-border bg-transparent py-2 font-sans text-sm text-planton-forest outline-none focus:border-planton-accent transition-colors"
               placeholder="seu@email.com"
             />
           </div>
@@ -32,7 +32,7 @@ export function LoginScreen() {
             </label>
             <input
               type="password"
-              className="border-b border-[var(--border-light)] bg-transparent py-2 font-sans text-sm text-planton-forest outline-none focus:border-planton-accent"
+              className="border-b border-border bg-transparent py-2 font-sans text-sm text-planton-forest outline-none focus:border-planton-accent transition-colors"
               placeholder="••••••••"
             />
           </div>

@@ -2,7 +2,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Eyebrow } from '@/components/primitives/Eyebrow'
 import { Label } from '@/components/primitives/Label'
 import { LoginScreen } from '@/patterns/auth/LoginScreen'
-import { CourseGrid } from '@/patterns/education/CourseGrid'
+import { CourseGrid } from '@/components/ui/CourseGrid'
 import { Separator } from '@/components/shadcn/separator'
 
 const demoLessons = [

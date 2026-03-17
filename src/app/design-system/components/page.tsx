@@ -39,7 +39,7 @@ export default function ComponentsPage() {
       <section className="flex flex-col gap-6">
         <Label>Card</Label>
         <Separator />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 overflow-hidden border-t border-l border-border">
           <Card index="01" headline="Gestão de Insumos" description="Controle de estoque e pedidos integrados à sua operação." ctaLabel="Saiba mais" />
           <Card index="02" headline="Monitoramento de Lavoura" description="Dados em tempo real para decisões mais rápidas." ctaLabel="Ver demo" />
           <Card index="03" headline="Análise de Solo" description="Laudos digitais e recomendações de correção." ctaLabel="Explorar" />

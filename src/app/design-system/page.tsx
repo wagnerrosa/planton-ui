@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { Card } from '@/components/ui/Card'
 
 const sections = [
   { href: '/design-system/colors',     label: 'Cores',       description: 'Paleta de brand, tokens de cor e uso' },
@@ -20,17 +20,15 @@ export default function DesignSystemPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 overflow-hidden border-t border-l border-border">
         {sections.map((s) => (
-          <Link
+          <Card
             key={s.href}
-            href={s.href}
-            className="group relative overflow-hidden border-b border-r border-border p-8 flex flex-col gap-3 hover:bg-surface-card transition-colors duration-200"
-          >
-            <span className="font-heading text-xl text-planton-forest">{s.label}</span>
-            <span className="font-sans text-sm text-planton-muted leading-[1.65]">{s.description}</span>
-            <span className="mt-4 font-mono text-xs text-planton-accent">Ver →</span>
-          </Link>
+            cardHref={s.href}
+            headline={s.label}
+            description={s.description}
+            ctaLabel="Ver"
+          />
         ))}
       </div>
     </main>
