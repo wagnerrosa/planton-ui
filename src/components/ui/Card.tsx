@@ -24,8 +24,8 @@ export function Card({
   return (
     <div
       className={cn(
-        'group relative overflow-hidden border-b border-r border-[var(--border-light)] min-h-[260px]',
-        isDark ? 'bg-surface-forest text-planton-cream [--border-light:var(--border-dark)]' : 'bg-white text-planton-forest',
+        'group relative overflow-hidden border-b border-r min-h-[260px]',
+        isDark ? 'bg-surface-forest text-planton-cream border-[var(--border-dark)]' : 'bg-white text-planton-forest border-border',
         className,
       )}
     >

@@ -27,7 +27,7 @@ export default function ColorsPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {swatches.map((s) => (
-          <div key={s.name} className="border-b border-r border-[rgba(0,0,0,0.2)]">
+          <div key={s.name} className="border-b border-r border-border">
             <div
               className="h-24 w-full"
               style={{ background: s.value }}
@@ -46,7 +46,7 @@ export default function ColorsPage() {
       <div className="mt-16 flex flex-col gap-4">
         <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Bordas</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-6 border border-[rgba(0,0,0,0.2)] flex flex-col gap-1">
+          <div className="p-6 border border-border flex flex-col gap-1">
             <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">border-light</span>
             <span className="font-sans text-sm text-planton-muted">rgba(0, 0, 0, 0.2) — superfícies claras</span>
           </div>

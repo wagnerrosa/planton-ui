@@ -30,7 +30,7 @@ export default function Home() {
           aria-hidden
           className="absolute inset-0 -translate-x-full bg-planton-accent transition-transform ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:translate-x-0"
         />
-        <span className="relative z-10 group-hover:text-planton-ink transition-colors duration-300">
+        <span className="relative z-10 group-hover:text-planton-white transition-colors duration-300">
           Ver Design System →
         </span>
       </Link>

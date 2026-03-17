@@ -51,8 +51,8 @@ export default function ComponentsPage() {
         <Label>Input / Textarea</Label>
         <Separator />
         <div className="flex flex-col gap-4 max-w-sm">
-          <Input placeholder="Digite seu nome" className="rounded-none border-[rgba(0,0,0,0.2)] focus-visible:ring-0 focus-visible:outline focus-visible:outline-1 focus-visible:outline-planton-accent" />
-          <Textarea placeholder="Mensagem..." className="rounded-none border-[rgba(0,0,0,0.2)] focus-visible:ring-0 focus-visible:outline focus-visible:outline-1 focus-visible:outline-planton-accent" />
+          <Input placeholder="Digite seu nome" className="rounded-none border-border focus-visible:ring-0 focus-visible:outline focus-visible:outline-1 focus-visible:outline-planton-accent" />
+          <Textarea placeholder="Mensagem..." className="rounded-none border-border focus-visible:ring-0 focus-visible:outline focus-visible:outline-1 focus-visible:outline-planton-accent" />
         </div>
       </section>
 
@@ -62,7 +62,7 @@ export default function ComponentsPage() {
         <Separator />
         <div className="flex flex-wrap gap-3">
           <Badge className="rounded-none bg-planton-accent text-planton-ink font-mono text-xs">Ativo</Badge>
-          <Badge variant="outline" className="rounded-none border-[rgba(0,0,0,0.2)] font-mono text-xs text-planton-muted">Pendente</Badge>
+          <Badge variant="outline" className="rounded-none border-border font-mono text-xs text-planton-muted">Pendente</Badge>
           <Badge variant="destructive" className="rounded-none font-mono text-xs">Erro</Badge>
         </div>
       </section>

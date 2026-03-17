@@ -25,7 +25,7 @@ export default function DesignSystemPage() {
           <Link
             key={s.href}
             href={s.href}
-            className="group relative overflow-hidden border-b border-r border-[rgba(0,0,0,0.2)] p-8 flex flex-col gap-3 hover:bg-surface-card transition-colors duration-200"
+            className="group relative overflow-hidden border-b border-r border-border p-8 flex flex-col gap-3 hover:bg-surface-card transition-colors duration-200"
           >
             <span className="font-heading text-xl text-planton-forest">{s.label}</span>
             <span className="font-sans text-sm text-planton-muted leading-[1.65]">{s.description}</span>

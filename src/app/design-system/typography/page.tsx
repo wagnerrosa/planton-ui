@@ -14,7 +14,7 @@ export default function TypographyPage() {
       {/* Headings */}
       <section className="flex flex-col gap-8">
         <Label>Heading — Space Grotesk</Label>
-        <div className="flex flex-col gap-6 border-t border-[rgba(0,0,0,0.2)] pt-8">
+        <div className="flex flex-col gap-6 border-t border-border pt-8">
           {(
             [
               ['display-xl', 'Display XL — 64–80px'],
@@ -23,7 +23,7 @@ export default function TypographyPage() {
               ['heading-lg', 'Heading LG — 28–36px'],
             ] as const
           ).map(([size, label]) => (
-            <div key={size} className="flex flex-col gap-1 border-b border-[rgba(0,0,0,0.1)] pb-6">
+            <div key={size} className="flex flex-col gap-1 border-b border-border/50 pb-6">
               <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">{label}</span>
               <Heading as="h2" size={size}>Planton Design</Heading>
             </div>
@@ -34,9 +34,9 @@ export default function TypographyPage() {
       {/* Body */}
       <section className="flex flex-col gap-8">
         <Label>Body — Instrument Sans</Label>
-        <div className="flex flex-col gap-6 border-t border-[rgba(0,0,0,0.2)] pt-8">
+        <div className="flex flex-col gap-6 border-t border-border pt-8">
           {(['lg', 'base', 'sm'] as const).map((size) => (
-            <div key={size} className="flex flex-col gap-1 border-b border-[rgba(0,0,0,0.1)] pb-6">
+            <div key={size} className="flex flex-col gap-1 border-b border-border/50 pb-6">
               <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">body {size}</span>
               <Body size={size}>
                 Planton conecta produtores rurais com os melhores serviços do agronegócio. Nossa plataforma foi construída para ser clara, eficiente e confiável.
@@ -49,7 +49,7 @@ export default function TypographyPage() {
       {/* Utility */}
       <section className="flex flex-col gap-8">
         <Label>Utility — Geist Mono</Label>
-        <div className="flex flex-col gap-6 border-t border-[rgba(0,0,0,0.2)] pt-8">
+        <div className="flex flex-col gap-6 border-t border-border pt-8">
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Eyebrow — 11px · 0.12em · uppercase</span>
             <Eyebrow>Categoria do conteúdo</Eyebrow>

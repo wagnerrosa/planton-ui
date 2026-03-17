@@ -24,7 +24,7 @@ export default function PatternsPage() {
       <section className="flex flex-col gap-6">
         <Label>Auth — LoginScreen</Label>
         <Separator />
-        <div className="border border-[rgba(0,0,0,0.2)]">
+        <div className="border border-border">
           <LoginScreen />
         </div>
       </section>

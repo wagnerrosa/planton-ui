@@ -32,7 +32,7 @@ export function DesignSystemSidebar() {
 
   return (
     <Sidebar
-      className="w-[260px] shrink-0 border-r border-[rgba(0,0,0,0.2)] rounded-none"
+      className="w-[260px] shrink-0 border-r border-sidebar-border rounded-none"
       collapsible="none"
     >
       <SidebarHeader className="px-5 py-5 border-b border-sidebar-border">
