@@ -1,0 +1,164 @@
+/* ── Planton Brand Tokens ──────────────────────────────── */
+:root {
+  --planton-forest:  #145559;
+  --planton-dark:    #0A2D30;
+  --planton-accent:  #ADCF78;
+  --planton-cream:   #F7F3DB;
+  --planton-ink:     #191919;
+  --planton-muted:   #6B7280;
+  --planton-white:   #FFFFFF;
+
+  --surface-default: #FFFFFF;
+  --surface-card:    #F0F4F0;
+  --surface-dark:    #0A2D30;
+  --surface-forest:  #145559;
+
+  --border-light:    rgba(0, 0, 0, 0.2);
+  --border-dark:     rgba(255, 255, 255, 0.1);
+
+  --ease-sweep:      cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-lift:       cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast:   200ms;
+  --duration-base:   300ms;
+  --duration-sweep:  500ms;
+  --duration-shine:  700ms;
+  --duration-reveal: 400ms;
+}
+
+/* ── shadcn/ui semantic tokens ─────────────────────────── */
+:root {
+  --background: oklch(0.993 0.012 96.417);
+  --foreground: oklch(0.412 0.063 201.133);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.412 0.063 201.133);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.412 0.063 201.133);
+  --primary: oklch(0.809 0.121 126.664);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(1 0.001 0);
+  --secondary-foreground: oklch(0.412 0.063 201.133);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.412 0.063 201.133);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.809 0.121 126.664);
+  --chart-2: oklch(0.951 0.129 126.57);
+  --chart-3: oklch(0.747 0.086 204.104);
+  --chart-4: oklch(0.885 0.093 200.711);
+  --chart-5: oklch(0.972 0.021 85.943);
+  --sidebar:                    #0A2D30;
+  --sidebar-foreground:         #F7F3DB;
+  --sidebar-primary:            #ADCF78;
+  --sidebar-primary-foreground: #0A2D30;
+  --sidebar-accent:             #145559;
+  --sidebar-accent-foreground:  #F7F3DB;
+  --sidebar-border:             rgba(255, 255, 255, 0.1);
+  --sidebar-ring:               #ADCF78;
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --radius: 0rem;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.269 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.951 0.129 126.57);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.809 0.121 126.664);
+  --accent-foreground: oklch(0.269 0.001 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.809 0.121 126.664);
+  --chart-2: oklch(0.951 0.129 126.57);
+  --chart-3: oklch(0.747 0.086 204.104);
+  --chart-4: oklch(0.895 0.094 204.002);
+  --chart-5: oklch(0.972 0.021 85.943);
+  --sidebar:                    #0A2D30;
+  --sidebar-foreground:         #F7F3DB;
+  --sidebar-primary:            #ADCF78;
+  --sidebar-primary-foreground: #0A2D30;
+  --sidebar-accent:             #145559;
+  --sidebar-accent-foreground:  #F7F3DB;
+  --sidebar-border:             rgba(255, 255, 255, 0.1);
+  --sidebar-ring:               #ADCF78;
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Roca', serif, ui-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --radius: 0rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Planton brand colors as Tailwind utilities */
+  --color-planton-forest:  var(--planton-forest);
+  --color-planton-dark:    var(--planton-dark);
+  --color-planton-accent:  var(--planton-accent);
+  --color-planton-cream:   var(--planton-cream);
+  --color-planton-ink:     var(--planton-ink);
+  --color-planton-muted:   var(--planton-muted);
+  --color-planton-white:   var(--planton-white);
+  --color-surface-default: var(--surface-default);
+  --color-surface-card:    var(--surface-card);
+  --color-surface-dark:    var(--surface-dark);
+  --color-surface-forest:  var(--surface-forest);
+  --color-border-light:    var(--border-light);
+  --color-border-dark:     var(--border-dark);
+}

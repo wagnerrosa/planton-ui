@@ -1,0 +1,17 @@
+@import "./theme.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Lucide icons — stroke weight alinhado ao design language (bordas ~1px) */
+svg[class*="lucide"] {
+  stroke-width: 1;
+}

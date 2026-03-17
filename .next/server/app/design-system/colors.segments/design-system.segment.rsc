@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:I[18672,["/_next/static/chunks/d014a8e348f0528d.js","/_next/static/chunks/6e034f68a99ac008.js","/_next/static/chunks/ba399aefe09cfc14.js","/_next/static/chunks/94f61b348a75e8c4.js"],"SidebarProvider"]
+3:I[97364,["/_next/static/chunks/d014a8e348f0528d.js","/_next/static/chunks/6e034f68a99ac008.js","/_next/static/chunks/ba399aefe09cfc14.js","/_next/static/chunks/94f61b348a75e8c4.js"],"DesignSystemSidebar"]
+4:I[39756,["/_next/static/chunks/ff1a16fafef87110.js","/_next/static/chunks/d2be314c3ece3fbe.js"],"default"]
+5:I[37457,["/_next/static/chunks/ff1a16fafef87110.js","/_next/static/chunks/d2be314c3ece3fbe.js"],"default"]
+0:{"buildId":"YtEDEeFzH0WKEKlfZ11Cd","rsc":["$","$1","c",{"children":[[["$","script","script-0",{"src":"/_next/static/chunks/6e034f68a99ac008.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/ba399aefe09cfc14.js","async":true}],["$","script","script-2",{"src":"/_next/static/chunks/94f61b348a75e8c4.js","async":true}]],["$","$L2",null,{"children":["$","div",null,{"className":"flex min-h-screen w-full","children":[["$","$L3",null,{}],["$","main",null,{"className":"flex-1 overflow-auto","children":["$","$L4",null,{"parallelRouterKey":"children","template":["$","$L5",null,{}]}]}]]}]}]]}],"loading":null,"isPartial":false}
