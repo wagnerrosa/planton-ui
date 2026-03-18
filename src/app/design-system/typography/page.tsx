@@ -1,3 +1,4 @@
+import { ExternalLink } from 'lucide-react'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Eyebrow } from '@/components/primitives/Eyebrow'
@@ -13,7 +14,17 @@ export default function TypographyPage() {
 
       {/* Headings */}
       <section className="flex flex-col gap-8">
-        <Label>Heading - Space Grotesk</Label>
+        <div className="flex items-center gap-3">
+          <Label>Heading - Space Grotesk</Label>
+          <a
+            href="https://fonts.google.com/specimen/Space+Grotesk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 font-mono text-[0.6875rem] text-planton-muted/60 hover:text-planton-accent transition-colors uppercase tracking-[0.08em]"
+          >
+            Google Fonts <ExternalLink size={10} />
+          </a>
+        </div>
         <div className="flex flex-col gap-6 border-t border-border pt-8">
           {(
             [
@@ -33,7 +44,17 @@ export default function TypographyPage() {
 
       {/* Body */}
       <section className="flex flex-col gap-8">
-        <Label>Body - Instrument Sans</Label>
+        <div className="flex items-center gap-3">
+          <Label>Body - Instrument Sans</Label>
+          <a
+            href="https://fonts.google.com/specimen/Instrument+Sans"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 font-mono text-[0.6875rem] text-planton-muted/60 hover:text-planton-accent transition-colors uppercase tracking-[0.08em]"
+          >
+            Google Fonts <ExternalLink size={10} />
+          </a>
+        </div>
         <div className="flex flex-col gap-6 border-t border-border pt-8">
           {(['lg', 'base', 'sm'] as const).map((size) => (
             <div key={size} className="flex flex-col gap-1 border-b border-border/50 pb-6">
@@ -48,7 +69,17 @@ export default function TypographyPage() {
 
       {/* Utility */}
       <section className="flex flex-col gap-8">
-        <Label>Utility - Geist Mono</Label>
+        <div className="flex items-center gap-3">
+          <Label>Utility - Geist Mono</Label>
+          <a
+            href="https://fonts.google.com/specimen/Geist+Mono"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 font-mono text-[0.6875rem] text-planton-muted/60 hover:text-planton-accent transition-colors uppercase tracking-[0.08em]"
+          >
+            Google Fonts <ExternalLink size={10} />
+          </a>
+        </div>
         <div className="flex flex-col gap-6 border-t border-border pt-8">
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Eyebrow - 11px · 0.12em · uppercase</span>
