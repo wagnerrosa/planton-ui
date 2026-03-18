@@ -2,7 +2,7 @@
 
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
-import { Eyebrow } from '@/components/primitives/Eyebrow'
+import { AcademyLogo } from '../AcademyLogo'
 import { Button } from '@/components/primitives/Button'
 import { Play } from 'lucide-react'
 import type { AuthStep } from '../LoginFlow'
@@ -13,9 +13,9 @@ type OnboardingStepProps = {
 
 export function OnboardingStep({ onNavigate }: OnboardingStepProps) {
   return (
-    <div className="w-full max-w-sm border border-border p-10 flex flex-col gap-6">
+    <div className="w-full max-w-md border border-border p-10 flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <Eyebrow>Planton</Eyebrow>
+        <AcademyLogo />
         <Heading as="h1" size="heading-lg">Bem-vindo ao Planton Academy</Heading>
       </div>
 

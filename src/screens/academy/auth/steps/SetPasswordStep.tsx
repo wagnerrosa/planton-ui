@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Heading } from '@/components/primitives/Heading'
-import { Eyebrow } from '@/components/primitives/Eyebrow'
+import { AcademyLogo } from '../AcademyLogo'
 import { Button } from '@/components/primitives/Button'
 import {
   Form,
@@ -46,9 +46,9 @@ export function SetPasswordStep({ onNavigate }: SetPasswordStepProps) {
   }
 
   return (
-    <div className="w-full max-w-sm border border-border p-10 flex flex-col gap-6">
+    <div className="w-full max-w-md border border-border p-10 flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <Eyebrow>Planton</Eyebrow>
+        <AcademyLogo />
         <Heading as="h1" size="heading-lg">Defina sua senha</Heading>
       </div>
 

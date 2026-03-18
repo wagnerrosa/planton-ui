@@ -16,9 +16,9 @@ type ButtonProps = {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  'primary':      'border-planton-accent text-planton-accent hover:text-planton-white',
-  'primary-dark': 'border-planton-accent text-planton-accent hover:text-planton-white',
-  'icon':         'border-planton-accent w-10 h-10 p-0 justify-center text-planton-accent hover:text-planton-white',
+  'primary':      'border-planton-accent text-planton-accent hover:text-button-on-accent',
+  'primary-dark': 'border-planton-accent text-planton-accent hover:text-button-on-accent',
+  'icon':         'border-planton-accent w-10 h-10 p-0 justify-center text-planton-accent hover:text-button-on-accent',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {

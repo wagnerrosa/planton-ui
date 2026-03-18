@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Alert, AlertDescription } from '@/components/shadcn/alert'
@@ -81,10 +80,10 @@ export function EmailEntryStep({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-sm">
+      <DialogContent className="sm:max-w-md border-none shadow-xl">
         <DialogHeader>
-          <DialogTitle asChild>
-            <Heading as="h2" size="heading-lg">Criar cadastro</Heading>
+          <DialogTitle className="font-heading text-[clamp(1.75rem,2.25vw,2.25rem)] tracking-[-0.02em] leading-[1.1] text-planton-forest">
+            Criar cadastro
           </DialogTitle>
         </DialogHeader>
 
@@ -105,7 +104,7 @@ export function EmailEntryStep({
               E-mail corporativo
             </label>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value)

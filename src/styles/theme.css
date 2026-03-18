@@ -7,6 +7,7 @@
   --planton-ink:     #191919;
   --planton-muted:   #6B7280;
   --planton-white:   #FFFFFF;
+  --button-on-accent: #FFFFFF;   /* texto sobre bg-accent: branco no light */
 
   --surface-default: #FFFFFF;
   --surface-card:    #F0F4F0;
@@ -35,6 +36,7 @@
   /* Text colors - adapt for legibility on dark backgrounds */
   --planton-forest:  oklch(0.96 0 0);      /* títulos: branco */
   --planton-muted:   oklch(0.75 0 0);      /* corpo secundário: branco ~75% */
+  --button-on-accent: #191919;             /* texto sobre bg-accent: preto no dark */
 
   /* Surface tokens */
   --surface-default: oklch(0.145 0 0);
@@ -245,6 +247,7 @@
   --color-planton-ink:     var(--planton-ink);
   --color-planton-muted:   var(--planton-muted);
   --color-planton-white:   var(--planton-white);
+  --color-button-on-accent: var(--button-on-accent);
   --color-surface-default: var(--surface-default);
   --color-surface-card:    var(--surface-card);
   --color-surface-dark:    var(--surface-dark);
