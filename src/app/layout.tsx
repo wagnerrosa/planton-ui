@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Instrument_Sans, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { Toaster } from "@/components/shadcn/sonner";
 import "./globals.css";
@@ -39,6 +40,13 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ThemeProvider>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-YJ5N58SXSY" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-YJ5N58SXSY');
+        `}</Script>
       </body>
     </html>
   );
