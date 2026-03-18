@@ -17,9 +17,12 @@ export default function BadgePage() {
       <section className="flex flex-col gap-6">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Variantes</h2>
         <div className="flex flex-wrap gap-3">
-          <Badge className="rounded-none bg-planton-accent text-planton-ink font-mono text-xs">Ativo</Badge>
-          <Badge variant="outline" className="rounded-none border-border font-mono text-xs text-planton-muted">Pendente</Badge>
-          <Badge variant="destructive" className="rounded-none font-mono text-xs">Erro</Badge>
+          <Badge>Ativo</Badge>
+          <Badge variant="outline">Pendente</Badge>
+          <Badge variant="destructive">Erro</Badge>
+          <Badge variant="success">Concluído</Badge>
+          <Badge variant="warning">Em andamento</Badge>
+          <Badge variant="info">Informação</Badge>
         </div>
       </section>
     </ComponentPage>

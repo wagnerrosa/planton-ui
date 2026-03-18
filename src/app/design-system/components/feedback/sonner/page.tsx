@@ -24,6 +24,9 @@ export default function SonnerPage() {
           <Button variant="primary" onClick={() => toast.info('Conteúdo salvo e agendado para publicação')}>
             Toast: informação
           </Button>
+          <Button variant="primary" onClick={() => toast.warning('Seu plano vence em 28 dias')}>
+            Toast: aviso
+          </Button>
           <Button variant="primary" onClick={() => toast.error('Erro ao validar domínio')}>
             Toast: erro
           </Button>

@@ -69,6 +69,92 @@ export default function ColorsPage() {
         </div>
       </div>
 
+      {/* Cores semânticas */}
+      <div className="mt-16 flex flex-col gap-8">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Cores Semânticas</h2>
+          <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
+            Tokens de sistema para feedback ao usuário. Cada categoria expõe quatro variantes: base, foreground, surface (fundo suave) e border.
+          </p>
+        </div>
+
+        {[
+          {
+            label: 'Destructive / Error',
+            tokens: [
+              { token: '--destructive',            light: 'oklch(0.50 0.16 22)',  dark: 'oklch(0.65 0.18 22)' },
+              { token: '--destructive-foreground',  light: 'oklch(0.98 0 0)',      dark: 'oklch(0.15 0 0)' },
+              { token: '--destructive-surface',     light: 'oklch(0.97 0.02 22)', dark: 'oklch(0.22 0.04 22)' },
+              { token: '--destructive-border',      light: 'oklch(0.80 0.08 22)', dark: 'oklch(0.38 0.10 22)' },
+            ],
+            previewLight: 'oklch(0.50 0.16 22)',
+            previewDark: 'oklch(0.65 0.18 22)',
+          },
+          {
+            label: 'Success',
+            tokens: [
+              { token: '--success',            light: 'oklch(0.57 0.12 155)', dark: 'oklch(0.65 0.13 155)' },
+              { token: '--success-foreground',  light: 'oklch(0.98 0 0)',      dark: 'oklch(0.15 0 0)' },
+              { token: '--success-surface',     light: 'oklch(0.96 0.02 155)', dark: 'oklch(0.22 0.03 155)' },
+              { token: '--success-border',      light: 'oklch(0.80 0.07 155)', dark: 'oklch(0.38 0.08 155)' },
+            ],
+            previewLight: 'oklch(0.57 0.12 155)',
+            previewDark: 'oklch(0.65 0.13 155)',
+          },
+          {
+            label: 'Warning',
+            tokens: [
+              { token: '--warning',            light: 'oklch(0.63 0.14 75)',  dark: 'oklch(0.73 0.14 75)' },
+              { token: '--warning-foreground',  light: 'oklch(0.15 0 0)',      dark: 'oklch(0.15 0 0)' },
+              { token: '--warning-surface',     light: 'oklch(0.97 0.03 75)',  dark: 'oklch(0.22 0.04 75)' },
+              { token: '--warning-border',      light: 'oklch(0.82 0.08 75)',  dark: 'oklch(0.40 0.09 75)' },
+            ],
+            previewLight: 'oklch(0.63 0.14 75)',
+            previewDark: 'oklch(0.73 0.14 75)',
+          },
+          {
+            label: 'Info — ciano Planton',
+            tokens: [
+              { token: '--info',            light: 'oklch(0.64 0.10 213)', dark: 'oklch(0.72 0.10 213)' },
+              { token: '--info-foreground',  light: 'oklch(0.15 0 0)',      dark: 'oklch(0.15 0 0)' },
+              { token: '--info-surface',     light: 'oklch(0.96 0.02 213)', dark: 'oklch(0.22 0.03 213)' },
+              { token: '--info-border',      light: 'oklch(0.80 0.06 213)', dark: 'oklch(0.38 0.06 213)' },
+            ],
+            previewLight: 'oklch(0.64 0.10 213)',
+            previewDark: 'oklch(0.72 0.10 213)',
+          },
+        ].map((group) => (
+          <div key={group.label} className="flex flex-col gap-3">
+            <div className="flex items-center gap-3">
+              <div className="h-4 w-4 rounded-full border border-border" style={{ background: group.previewLight }} />
+              <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">{group.label}</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-border">
+              {group.tokens.map((t) => (
+                <div key={t.token} className="border-b border-r border-border flex flex-col">
+                  <div className="h-10 w-full grid grid-cols-2">
+                    <div style={{ background: t.light }} />
+                    <div style={{ background: t.dark }} />
+                  </div>
+                  <div className="p-4 flex flex-col gap-1">
+                    <div className="flex items-center gap-1">
+                      <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em] flex-1">{t.token}</span>
+                      <CopyButton value={`var(${t.token})`} title="Copiar token" />
+                    </div>
+                    <span className="font-mono text-[10px] text-foreground/50 leading-relaxed">
+                      ☀ {t.light}
+                    </span>
+                    <span className="font-mono text-[10px] text-foreground/50 leading-relaxed">
+                      ☾ {t.dark}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Dark Mode */}
       <div className="mt-16 flex flex-col gap-8">
         <div className="flex flex-col gap-2">

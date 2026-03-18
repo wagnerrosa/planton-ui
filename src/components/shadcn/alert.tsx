@@ -4,13 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const alertVariants = cva(
-  "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+  "relative w-full rounded-none border px-4 py-3 text-sm flex flex-row items-start gap-x-3 [&>svg]:mt-0.5 [&>svg]:shrink-0 [&>svg]:text-current [&>svg~div]:flex-1",
   {
     variants: {
       variant: {
-        default: "bg-background text-foreground",
+        default: "bg-card text-foreground",
         destructive:
-          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+          "bg-destructive-surface border-destructive-border text-destructive [&>svg]:text-destructive",
+        success:
+          "bg-success-surface border-success-border text-success [&>svg]:text-success",
+        warning:
+          "bg-warning-surface border-warning-border text-warning [&>svg]:text-warning",
+        info:
+          "bg-info-surface border-info-border text-info [&>svg]:text-info",
       },
     },
     defaultVariants: {
@@ -56,4 +62,12 @@ const AlertDescription = React.forwardRef<
 ))
 AlertDescription.displayName = "AlertDescription"
 
-export { Alert, AlertTitle, AlertDescription }
+const AlertBody = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("flex flex-col gap-y-0.5", className)} {...props} />
+))
+AlertBody.displayName = "AlertBody"
+
+export { Alert, AlertBody, AlertTitle, AlertDescription }
