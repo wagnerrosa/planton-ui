@@ -1,5 +1,5 @@
 # Planton Design System
-## Implementation Guide — shadcn/ui + Storybook
+## Implementation Guide - shadcn/ui + Storybook
 
 > This document converts the Planton Design Language foundations into a concrete
 > implementation specification. It is the source of truth for engineers and designers
@@ -47,7 +47,7 @@ and strong vertical alignment.
 
 **Accent as signal**  
 The accent color (`#ADCF78`) is used sparingly to signal actions, labels,
-and important highlights — never as large background areas.
+and important highlights - never as large background areas.
 
 **Low‑motion interaction**  
 Motion is subtle, purposeful, and never playful. Interactions communicate
@@ -66,7 +66,7 @@ headlines, body text, and utility labels.
 1. [Design System Scope](#design-system-scope)
 2. [Design Principles](#design-principles)
 3. [Repository Structure](#1-repository-structure)
-4. [Design Tokens — CSS Variables](#2-design-tokens--css-variables)
+4. [Design Tokens - CSS Variables](#2-design-tokens--css-variables)
 5. [Tailwind Configuration](#3-tailwind-configuration)
 6. [shadcn/ui Overrides](#4-shadcnui-overrides)
 7. [Typography Components](#5-typography-components)
@@ -119,7 +119,7 @@ src/
 
 ---
 
-## 2. Design Tokens — CSS Variables
+## 2. Design Tokens - CSS Variables
 
 These variables must be declared in `:root` and are the single source of truth.
 shadcn/ui components are overridden to consume these instead of their defaults.
@@ -263,14 +263,14 @@ All others should use defaults unless a specific variant is needed.
 ### Button
 
 The shadcn `Button` default must be **replaced entirely** by the Planton sweep button.
-Do not use shadcn `Button` as-is — it has rounded corners and shadow vocabulary.
+Do not use shadcn `Button` as-is - it has rounded corners and shadow vocabulary.
 
 Variants to implement:
 
 | Variant | Surface | Use case |
 |---|---|---|
-| `primary` | Light surface — transparent bg, accent border | Main CTA |
-| `primary-dark` | Dark surface — transparent bg, cream border | CTA on dark band |
+| `primary` | Light surface - transparent bg, accent border | Main CTA |
+| `primary-dark` | Dark surface - transparent bg, cream border | CTA on dark band |
 | `icon` | 40×40px square, accent border | Carousel, nav arrows |
 
 All variants share:
@@ -290,7 +290,7 @@ Override shadcn `Card` to remove:
 
 - `rounded-none`
 - `border-light` (full border) or bottom-only border
-- No focus ring shadow — use `outline: 1px solid var(--planton-accent)` instead
+- No focus ring shadow - use `outline: 1px solid var(--planton-accent)` instead
 
 ### Separator
 
@@ -344,7 +344,7 @@ type EyebrowProps = {
 
 - Font: `Geist Mono`, 11–12px, uppercase, `letter-spacing: 0.12em`
 - Color: always `planton-accent` (`#ADCF78`) regardless of surface
-- No variation in size — the eyebrow is always the same scale
+- No variation in size - the eyebrow is always the same scale
 
 **Storybook stories:** Default, OnDarkSurface
 
@@ -403,7 +403,7 @@ type QuoteProps = {
 
 - Font: `Roca Bold`, `clamp(1.4rem, 2vw, 1.9rem)`, line-height `1.3`
 - Color: `planton-forest`
-- Restricted to testimonial context — never use as a heading or UI label
+- Restricted to testimonial context - never use as a heading or UI label
 
 **Storybook stories:** Default
 
@@ -492,10 +492,10 @@ type ButtonProps = {
 ```
 
 **Storybook stories:**
-- `Primary` — default state
-- `PrimaryHover` — use `play()` to trigger hover via userEvent
-- `PrimaryDark` — on dark background decorator
-- `Icon` — 40×40 with ChevronLeft / ChevronRight
+- `Primary` - default state
+- `PrimaryHover` - use `play()` to trigger hover via userEvent
+- `PrimaryDark` - on dark background decorator
+- `Icon` - 40×40 with ChevronLeft / ChevronRight
 - `Disabled`
 
 ---
@@ -504,7 +504,7 @@ type ButtonProps = {
 
 ```tsx
 type CardProps = {
-  index?: string           // "01", "02" etc — optional Geist Mono label
+  index?: string           // "01", "02" etc - optional Geist Mono label
   headline: string
   description?: string
   ctaLabel?: string
@@ -525,10 +525,10 @@ type CardProps = {
 ```
 
 **Storybook stories:**
-- `Default` — with all props
-- `WithoutIndex` — no index number
-- `OnForestSurface` — inverted palette (in development)
-- `GridOf4` — 2×2 grid showing border sharing behavior
+- `Default` - with all props
+- `WithoutIndex` - no index number
+- `OnForestSurface` - inverted palette (in development)
+- `GridOf4` - 2×2 grid showing border sharing behavior
 
 ---
 

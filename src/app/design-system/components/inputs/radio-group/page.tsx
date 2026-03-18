@@ -16,7 +16,7 @@ export default function RadioGroupPage() {
       filePath={meta.filePath}
     >
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Exemplo — Quiz</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Exemplo - Quiz</h2>
         <div className="flex flex-col gap-4">
           <p className="text-sm font-medium text-foreground">O que significa GHG Protocol?</p>
           <RadioGroup defaultValue="b" className="flex flex-col gap-3">

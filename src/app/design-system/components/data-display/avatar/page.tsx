@@ -34,7 +34,7 @@ export default function AvatarPage() {
             <Avatar className="h-14 w-14">
               <AvatarFallback className="text-lg">SA</AvatarFallback>
             </Avatar>
-            <span className="text-xs text-muted-foreground">SA — maior</span>
+            <span className="text-xs text-muted-foreground">SA - maior</span>
           </div>
         </div>
       </section>

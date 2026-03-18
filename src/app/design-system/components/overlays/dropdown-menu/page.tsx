@@ -23,7 +23,7 @@ export default function DropdownMenuPage() {
       filePath={meta.filePath}
     >
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Interativo — clique em Ações</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Interativo - clique em Ações</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="primary">Ações</Button>
@@ -42,7 +42,7 @@ export default function DropdownMenuPage() {
       <Separator />
 
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Preview estático — estrutura do menu</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Preview estático - estrutura do menu</h2>
         <div className="w-48 border border-border bg-popover shadow-md">
           <div className="px-2 py-1.5 text-sm text-foreground hover:bg-accent cursor-default">Ver detalhes</div>
           <div className="px-2 py-1.5 text-sm text-foreground hover:bg-accent cursor-default">Editar</div>

@@ -2,6 +2,7 @@
 
 import { Heading } from '@/components/primitives/Heading'
 import { Eyebrow } from '@/components/primitives/Eyebrow'
+import { CopyPath } from '@/components/ui/CopyButton'
 
 type ComponentPageProps = {
   category: string
@@ -20,7 +21,7 @@ export function ComponentPage({ category, name, description, filePath, children 
         <p className="text-sm text-planton-muted leading-[1.65] max-w-2xl">{description}</p>
         <div className="flex items-center gap-2 mt-2">
           <span className="font-mono text-xs text-planton-muted/60">Path:</span>
-          <code className="font-mono text-xs text-planton-accent bg-planton-forest/10 px-2 py-1">{filePath}</code>
+          <CopyPath path={filePath} />
         </div>
       </div>
       <div className="flex flex-col gap-12">

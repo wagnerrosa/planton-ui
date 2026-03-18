@@ -15,7 +15,7 @@ export default function ComponentsIndexPage() {
         </Body>
       </div>
 
-      {/* Button — standalone */}
+      {/* Button - standalone */}
       <section className="flex flex-col gap-4">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Destaque</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 overflow-hidden border-t border-l border-border">

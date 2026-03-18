@@ -22,7 +22,7 @@ export default function PatternsPage() {
 
       {/* Login */}
       <section className="flex flex-col gap-6">
-        <Label>Auth — LoginScreen</Label>
+        <Label>Auth - LoginScreen</Label>
         <Separator />
         <div className="border border-border">
           <LoginScreen />
@@ -31,7 +31,7 @@ export default function PatternsPage() {
 
       {/* Course Grid */}
       <section className="flex flex-col gap-6">
-        <Label>Education — CourseGrid</Label>
+        <Label>Education - CourseGrid</Label>
         <Separator />
         <CourseGrid lessons={demoLessons} />
       </section>

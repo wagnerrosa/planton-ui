@@ -36,7 +36,7 @@ export default function CommandPage() {
               <CommandGroup heading="Conteúdos">
                 <CommandItem>Introdução ao Inventário de GEE</CommandItem>
                 <CommandItem>Relatórios GRI 404 na Prática</CommandItem>
-                <CommandItem>Escopo 1, 2 e 3 — Diferenças</CommandItem>
+                <CommandItem>Escopo 1, 2 e 3 - Diferenças</CommandItem>
               </CommandGroup>
             </CommandList>
           </Command>

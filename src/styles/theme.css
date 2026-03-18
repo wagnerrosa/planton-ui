@@ -30,9 +30,9 @@
   --duration-reveal: 400ms;
 }
 
-/* ── Planton Brand Tokens — Dark mode overrides ─────────── */
+/* ── Planton Brand Tokens - Dark mode overrides ─────────── */
 .dark {
-  /* Text colors — adapt for legibility on dark backgrounds */
+  /* Text colors - adapt for legibility on dark backgrounds */
   --planton-forest:  oklch(0.96 0 0);      /* títulos: branco */
   --planton-muted:   oklch(0.75 0 0);      /* corpo secundário: branco ~75% */
 
@@ -42,7 +42,7 @@
   --surface-dark:    #0A2D30;
   --surface-forest:  #145559;
 
-  /* Surface layering tokens — dark */
+  /* Surface layering tokens - dark */
   --surface:          oklch(0.18 0 0);
   --surface-elevated: oklch(0.22 0 0);
   --surface-hover:    oklch(0.25 0 0);

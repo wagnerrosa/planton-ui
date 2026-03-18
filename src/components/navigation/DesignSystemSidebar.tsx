@@ -78,13 +78,13 @@ export function DesignSystemSidebar() {
           </SidebarMenu>
         </SidebarGroup>
 
-        {/* System — Components */}
+        {/* System - Components */}
         <SidebarGroup className="mt-4">
           <SidebarGroupLabel className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
             System
           </SidebarGroupLabel>
           <SidebarMenu>
-            {/* Componentes — index */}
+            {/* Componentes - index */}
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
@@ -98,7 +98,7 @@ export function DesignSystemSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
 
-            {/* Button — standalone */}
+            {/* Button - standalone */}
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild

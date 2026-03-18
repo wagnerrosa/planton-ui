@@ -23,7 +23,7 @@ export default function PopoverPage() {
       filePath={meta.filePath}
     >
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Interativo — clique para abrir</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Interativo - clique para abrir</h2>
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="primary">Filtrar por status</Button>
@@ -53,7 +53,7 @@ export default function PopoverPage() {
       <Separator />
 
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Preview estático — conteúdo do popover</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Preview estático - conteúdo do popover</h2>
         <div className="w-52 border border-border bg-popover shadow-md p-4">
           <div className="flex flex-col gap-3">
             <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground">Status</p>

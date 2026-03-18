@@ -1,11 +1,14 @@
+'use client'
+
 import { colors } from '@/tokens/colors'
+import { CopyButton } from '@/components/ui/CopyButton'
 
 type Swatch = { name: string; value: string; usage: string; dark?: boolean }
 
 const swatches: Swatch[] = [
   { name: 'forest',         value: colors.planton.forest, usage: 'Primary text, headings, borders on light', dark: true },
   { name: 'dark',           value: colors.planton.dark,   usage: 'Deep contrast band backgrounds',          dark: true },
-  { name: 'accent',         value: colors.planton.accent, usage: 'Signal only — borders, labels, CTA',      dark: false },
+  { name: 'accent',         value: colors.planton.accent, usage: 'Signal only - borders, labels, CTA',      dark: false },
   { name: 'cream',          value: colors.planton.cream,  usage: 'On-dark text and backgrounds',            dark: false },
   { name: 'ink',            value: colors.planton.ink,    usage: 'Near-black body text',                    dark: true },
   { name: 'muted',          value: colors.planton.muted,  usage: 'Captions, secondary text',                dark: false },
@@ -36,7 +39,10 @@ export default function ColorsPage() {
               <span className="font-mono text-xs uppercase tracking-[0.05em] text-planton-accent">
                 {s.name}
               </span>
-              <span className="font-mono text-sm text-planton-forest">{s.value}</span>
+              <div className="flex items-center gap-1">
+                <span className="font-mono text-sm text-planton-forest flex-1">{s.value}</span>
+                <CopyButton value={s.value} title="Copiar valor" />
+              </div>
               <span className="font-sans text-xs text-planton-muted leading-[1.65]">{s.usage}</span>
             </div>
           </div>
@@ -48,11 +54,17 @@ export default function ColorsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="p-6 border border-border flex flex-col gap-1">
             <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">border-light</span>
-            <span className="font-sans text-sm text-planton-muted">rgba(0, 0, 0, 0.2) — superfícies claras</span>
+            <div className="flex items-center gap-1">
+              <span className="font-sans text-sm text-planton-muted flex-1">rgba(0, 0, 0, 0.2) - superfícies claras</span>
+              <CopyButton value="rgba(0, 0, 0, 0.2)" title="Copiar valor" />
+            </div>
           </div>
           <div className="p-6 bg-planton-dark border border-[rgba(255,255,255,0.1)] flex flex-col gap-1">
             <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">border-dark</span>
-            <span className="font-sans text-sm text-planton-cream/80">rgba(255, 255, 255, 0.1) — superfícies escuras</span>
+            <div className="flex items-center gap-1">
+              <span className="font-sans text-sm text-planton-cream/80 flex-1">rgba(255, 255, 255, 0.1) - superfícies escuras</span>
+              <CopyButton value="rgba(255, 255, 255, 0.1)" title="Copiar valor" />
+            </div>
           </div>
         </div>
       </div>
@@ -62,13 +74,13 @@ export default function ColorsPage() {
         <div className="flex flex-col gap-2">
           <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Dark Mode</h2>
           <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
-            No dark mode, as cores de brand permanecem inalteradas. Apenas os tokens de superfície e foreground são substituídos por valores neutros em OKLCH — sem croma, apenas luminosidade.
+            No dark mode, as cores de brand permanecem inalteradas. Apenas os tokens de superfície e foreground são substituídos por valores neutros em OKLCH - sem croma, apenas luminosidade.
           </p>
         </div>
 
         {/* Surfaces */}
         <div className="flex flex-col gap-3">
-          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Superfícies — neutras</span>
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Superfícies - neutras</span>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 border-t border-l border-border">
             {[
               { token: '--background',       oklch: 'oklch(0.145 0 0)', label: 'App background',    hex: '#1c1c1c' },
@@ -80,8 +92,14 @@ export default function ColorsPage() {
               <div key={s.token} className="border-b border-r border-border flex flex-col">
                 <div className="h-16 w-full" style={{ background: s.oklch }} />
                 <div className="p-4 flex flex-col gap-1">
-                  <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">{s.token}</span>
-                  <span className="font-mono text-xs text-foreground/60">{s.oklch}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em] flex-1">{s.token}</span>
+                    <CopyButton value={s.token} title="Copiar token" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-xs text-foreground/60 flex-1">{s.oklch}</span>
+                    <CopyButton value={s.oklch} title="Copiar valor" />
+                  </div>
                   <span className="font-sans text-xs text-planton-muted leading-[1.65]">{s.label}</span>
                 </div>
               </div>
@@ -91,7 +109,7 @@ export default function ColorsPage() {
 
         {/* Foreground */}
         <div className="flex flex-col gap-3">
-          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Foreground — texto</span>
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Foreground - texto</span>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-t border-l border-border">
             {[
               { token: '--foreground',      oklch: 'oklch(0.985 0 0)', label: 'Texto principal',   bg: '#141414' },
@@ -100,11 +118,17 @@ export default function ColorsPage() {
             ].map((s) => (
               <div key={s.token} className="border-b border-r border-border flex flex-col">
                 <div className="h-16 w-full flex items-center px-5" style={{ background: s.bg }}>
-                  <span className="font-sans text-sm" style={{ color: s.oklch }}>Aa — Planton</span>
+                  <span className="font-sans text-sm" style={{ color: s.oklch }}>Aa - Planton</span>
                 </div>
                 <div className="p-4 flex flex-col gap-1">
-                  <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">{s.token}</span>
-                  <span className="font-mono text-xs text-foreground/60">{s.oklch}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em] flex-1">{s.token}</span>
+                    <CopyButton value={s.token} title="Copiar token" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-xs text-foreground/60 flex-1">{s.oklch}</span>
+                    <CopyButton value={s.oklch} title="Copiar valor" />
+                  </div>
                   <span className="font-sans text-xs text-planton-muted leading-[1.65]">{s.label}</span>
                 </div>
               </div>
@@ -114,7 +138,7 @@ export default function ColorsPage() {
 
         {/* Brand constante */}
         <div className="flex flex-col gap-3">
-          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Brand — inalterado</span>
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Brand - inalterado</span>
           <p className="font-sans text-xs text-planton-muted leading-[1.65]">
             Estas cores não mudam entre temas. O sidebar sempre usa a paleta brand; o accent sempre sinaliza ação.
           </p>
@@ -122,14 +146,20 @@ export default function ColorsPage() {
             {[
               { token: '--sidebar',         value: '#0A2D30', label: 'Sidebar background' },
               { token: '--sidebar-accent',  value: '#145559', label: 'Sidebar hover / active' },
-              { token: '--planton-accent',  value: '#ADCF78', label: 'Accent — CTA, labels' },
+              { token: '--planton-accent',  value: '#ADCF78', label: 'Accent - CTA, labels' },
               { token: '--sidebar-primary', value: '#ADCF78', label: 'Sidebar primary action' },
             ].map((s) => (
               <div key={s.token} className="border-b border-r border-border flex flex-col">
                 <div className="h-16 w-full" style={{ background: s.value }} />
                 <div className="p-4 flex flex-col gap-1">
-                  <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em]">{s.token}</span>
-                  <span className="font-mono text-xs text-foreground/60">{s.value}</span>
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.05em] flex-1">{s.token}</span>
+                    <CopyButton value={s.token} title="Copiar token" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-xs text-foreground/60 flex-1">{s.value}</span>
+                    <CopyButton value={s.value} title="Copiar valor" />
+                  </div>
                   <span className="font-sans text-xs text-planton-muted leading-[1.65]">{s.label}</span>
                 </div>
               </div>

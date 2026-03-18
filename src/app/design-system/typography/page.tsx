@@ -13,14 +13,14 @@ export default function TypographyPage() {
 
       {/* Headings */}
       <section className="flex flex-col gap-8">
-        <Label>Heading — Space Grotesk</Label>
+        <Label>Heading - Space Grotesk</Label>
         <div className="flex flex-col gap-6 border-t border-border pt-8">
           {(
             [
-              ['display-xl', 'Display XL — 64–80px'],
-              ['display-lg', 'Display LG — 48–70px'],
-              ['heading-xl', 'Heading XL — 40–56px'],
-              ['heading-lg', 'Heading LG — 28–36px'],
+              ['display-xl', 'Display XL - 64–80px'],
+              ['display-lg', 'Display LG - 48–70px'],
+              ['heading-xl', 'Heading XL - 40–56px'],
+              ['heading-lg', 'Heading LG - 28–36px'],
             ] as const
           ).map(([size, label]) => (
             <div key={size} className="flex flex-col gap-1 border-b border-border/50 pb-6">
@@ -33,7 +33,7 @@ export default function TypographyPage() {
 
       {/* Body */}
       <section className="flex flex-col gap-8">
-        <Label>Body — Instrument Sans</Label>
+        <Label>Body - Instrument Sans</Label>
         <div className="flex flex-col gap-6 border-t border-border pt-8">
           {(['lg', 'base', 'sm'] as const).map((size) => (
             <div key={size} className="flex flex-col gap-1 border-b border-border/50 pb-6">
@@ -48,14 +48,14 @@ export default function TypographyPage() {
 
       {/* Utility */}
       <section className="flex flex-col gap-8">
-        <Label>Utility — Geist Mono</Label>
+        <Label>Utility - Geist Mono</Label>
         <div className="flex flex-col gap-6 border-t border-border pt-8">
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Eyebrow — 11px · 0.12em · uppercase</span>
+            <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Eyebrow - 11px · 0.12em · uppercase</span>
             <Eyebrow>Categoria do conteúdo</Eyebrow>
           </div>
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Label — 12px · 0.05em · uppercase</span>
+            <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Label - 12px · 0.05em · uppercase</span>
             <Label>Status · Indicador · Índice</Label>
           </div>
         </div>

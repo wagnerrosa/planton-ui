@@ -23,7 +23,7 @@ export default function TablePage() {
       filePath={meta.filePath}
     >
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Exemplo — Colaboradores</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Exemplo - Colaboradores</h2>
         <div className="border border-border overflow-hidden">
           <Table>
             <TableHeader>

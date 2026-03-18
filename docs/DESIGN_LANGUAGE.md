@@ -1,58 +1,58 @@
-# Planton Design Language — Extracted Foundations
+# Planton Design Language - Extracted Foundations
 
 > Reverse-engineered from the live product (March 2026).
 > Source of truth for any new Design System built on top of this brand.
 
 ---
 
-## Layer 1 — Surface UI (observations)
+## Layer 1 - Surface UI (observations)
 
-**Color** — The palette is minimal: a deep forest teal (`#145559`) dominates as the primary brand color across text, borders, and filled surfaces. An off-white warm cream (`#F7F3DB`) is the dominant background on dark surfaces (footer, mega menu). A light yellow-green accent (`#ADCF78`) appears exclusively as a highlight signal — CTAs, labels, author names, eyebrows, hover states. Sections alternate between white and near-black (`#0A2D30`) panels to create rhythm without introducing new hues.
+**Color** - The palette is minimal: a deep forest teal (`#145559`) dominates as the primary brand color across text, borders, and filled surfaces. An off-white warm cream (`#F7F3DB`) is the dominant background on dark surfaces (footer, mega menu). A light yellow-green accent (`#ADCF78`) appears exclusively as a highlight signal - CTAs, labels, author names, eyebrows, hover states. Sections alternate between white and near-black (`#0A2D30`) panels to create rhythm without introducing new hues.
 
-**Typography** — Three faces do clearly separated jobs: a display/utility sans (Instrument Sans) handles body copy and UI labels; a geometric heading sans (Space Grotesk) handles all large headlines with tight negative tracking; a display serif/slab (Roca) appears only in testimonial quotes and the footer tagline — acting as an emotional voice layer. A monospace face (Geist Mono) appears in small-caps eyebrows, product index numbers, and utility labels.
+**Typography** - Three faces do clearly separated jobs: a display/utility sans (Instrument Sans) handles body copy and UI labels; a geometric heading sans (Space Grotesk) handles all large headlines with tight negative tracking; a display serif/slab (Roca) appears only in testimonial quotes and the footer tagline - acting as an emotional voice layer. A monospace face (Geist Mono) appears in small-caps eyebrows, product index numbers, and utility labels.
 
-**Borders** — Hard, 1px lines at low opacity (`black/20` on light surfaces, `white/10` on dark) define every section boundary, column split, and card edge. There are no shadows. The visual separation language is entirely border-based.
+**Borders** - Hard, 1px lines at low opacity (`black/20` on light surfaces, `white/10` on dark) define every section boundary, column split, and card edge. There are no shadows. The visual separation language is entirely border-based.
 
-**Spacing** — Section internal padding follows a three-step scale: `p-8 → p-10 → p-12` (mobile → tablet → desktop), applied uniformly. Vertical section rhythm uses `py-24 → py-32`. This creates a consistent, breathable density.
+**Spacing** - Section internal padding follows a three-step scale: `p-8 → p-10 → p-12` (mobile → tablet → desktop), applied uniformly. Vertical section rhythm uses `py-24 → py-32`. This creates a consistent, breathable density.
 
-**Radius** — Effectively absent at the page content level. Cards, grids, and panels are all sharp-cornered rectangles. The only softness appears on small utility elements (buttons are borderless rectangles, not rounded pills).
+**Radius** - Effectively absent at the page content level. Cards, grids, and panels are all sharp-cornered rectangles. The only softness appears on small utility elements (buttons are borderless rectangles, not rounded pills).
 
 ---
 
-## Layer 2 — Design Patterns (recurring structures)
+## Layer 2 - Design Patterns (recurring structures)
 
-**The Grid Frame** — The most distinctive recurring pattern. A fixed max-width container (`1400px`) gains `border-l` and `border-r` at `black/20`. Inside, `border-b` and `border-t` horizontal rules separate rows. This creates a literal editorial grid structure — sections feel like cells in a newspaper layout. The border lines are structural, not decorative.
+**The Grid Frame** - The most distinctive recurring pattern. A fixed max-width container (`1400px`) gains `border-l` and `border-r` at `black/20`. Inside, `border-b` and `border-t` horizontal rules separate rows. This creates a literal editorial grid structure - sections feel like cells in a newspaper layout. The border lines are structural, not decorative.
 
-**Two-Column Content Split** — Most sections use a `1fr / 1fr` or `[160px / 1fr]` grid. Left carries a signal or label (quote icon, section number, chart), right carries the primary content. The dividing border is always rendered.
+**Two-Column Content Split** - Most sections use a `1fr / 1fr` or `[160px / 1fr]` grid. Left carries a signal or label (quote icon, section number, chart), right carries the primary content. The dividing border is always rendered.
 
-**The Eyebrow + Headline + Body hierarchy** — Every content section follows a three-tier stack:
-1. Eyebrow in Geist Mono, uppercase, tracked, accent green — acts as a category signal.
+**The Eyebrow + Headline + Body hierarchy** - Every content section follows a three-tier stack:
+1. Eyebrow in Geist Mono, uppercase, tracked, accent green - acts as a category signal.
 2. Headline in Space Grotesk, 40–70px, tracking `-0.04em` to `-0.05em`, forest teal.
 3. Body in Instrument Sans, 16–18px, relaxed line-height, same forest teal at lower visual weight.
 
-**The Sweep CTA Button** — The primary button is a sharp rectangle with an `#ADCF78` border and text. On hover, the background fills with a horizontal sweep animation from left to right, turning text white. A diagonal shine passes over. Zero border-radius. This pattern is reused on icon navigation buttons too — completely consistent across the system.
+**The Sweep CTA Button** - The primary button is a sharp rectangle with an `#ADCF78` border and text. On hover, the background fills with a horizontal sweep animation from left to right, turning text white. A diagonal shine passes over. Zero border-radius. This pattern is reused on icon navigation buttons too - completely consistent across the system.
 
-**The Hover Indicator Bar** — Product cards and mega-menu rows reveal a 3px tall `#ADCF78` vertical strip on the left edge when hovered. The rest of the card darkens subtly via a texture overlay. This creates a tactile, precise "selected row" affordance.
+**The Hover Indicator Bar** - Product cards and mega-menu rows reveal a 3px tall `#ADCF78` vertical strip on the left edge when hovered. The rest of the card darkens subtly via a texture overlay. This creates a tactile, precise "selected row" affordance.
 
-**The Dark Band** — Alternating full-width dark sections (`#0A2D30` or `#145559` background) punctuate the page between light content sections. These dark bands use the same border grid language but inverted to `white/10`. The Planton Genius branding appears here — a subproduct label in accent green above a large serif-style headline.
+**The Dark Band** - Alternating full-width dark sections (`#0A2D30` or `#145559` background) punctuate the page between light content sections. These dark bands use the same border grid language but inverted to `white/10`. The Planton Genius branding appears here - a subproduct label in accent green above a large serif-style headline.
 
-**Testimonial Block** — A grid with a decorative quote glyph image isolated in a narrow left column (bordered), and the quote rendered in Roca Bold at a large, editorial size. Author name in accent green, role/company in forest teal at reduced opacity. Carousel navigated by the same sweep icon buttons.
+**Testimonial Block** - A grid with a decorative quote glyph image isolated in a narrow left column (bordered), and the quote rendered in Roca Bold at a large, editorial size. Author name in accent green, role/company in forest teal at reduced opacity. Carousel navigated by the same sweep icon buttons.
 
 ---
 
-## Layer 3 — Design Principles (underlying philosophy)
+## Layer 3 - Design Principles (underlying philosophy)
 
-**Editorial layout, not app layout** — The interface is organized as a structured publication, not a product dashboard. The border grid language, column splits, and typeface hierarchy all recall print media — a sustainability company presenting itself with the authority of a financial newspaper.
+**Editorial layout, not app layout** - The interface is organized as a structured publication, not a product dashboard. The border grid language, column splits, and typeface hierarchy all recall print media - a sustainability company presenting itself with the authority of a financial newspaper.
 
-**Color restraint as institutional signal** — Three meaningful colors and a near-absence of decorative hue. This constraint communicates precision and credibility — the register of certifications, protocols, and regulatory compliance, which is the company's domain. Adding color would undermine the tone.
+**Color restraint as institutional signal** - Three meaningful colors and a near-absence of decorative hue. This constraint communicates precision and credibility - the register of certifications, protocols, and regulatory compliance, which is the company's domain. Adding color would undermine the tone.
 
-**Typography is the personality layer** — The switch from Space Grotesk (cool, geometric, modern) to Roca (expressive, humanist) is the most emotionally charged moment in any page. It only happens in testimonials and the footer tagline. This restraint makes those moments feel significant — when the brand speaks in Roca, it means it.
+**Typography is the personality layer** - The switch from Space Grotesk (cool, geometric, modern) to Roca (expressive, humanist) is the most emotionally charged moment in any page. It only happens in testimonials and the footer tagline. This restraint makes those moments feel significant - when the brand speaks in Roca, it means it.
 
-**Borders over shadows — structure over elevation** — There is no shadow vocabulary. Depth is not simulated; instead, structure is made explicit through hard lines. This communicates transparency and directness, qualities aligned with carbon reporting and ESG accountability.
+**Borders over shadows - structure over elevation** - There is no shadow vocabulary. Depth is not simulated; instead, structure is made explicit through hard lines. This communicates transparency and directness, qualities aligned with carbon reporting and ESG accountability.
 
-**Accent green as an action signal, never a fill** — `#ADCF78` never appears as a background fill on large surfaces. It only appears at the edge of interaction: hover bars, button outlines, labels, author names. This keeps the accent as a meaningful signal rather than decoration.
+**Accent green as an action signal, never a fill** - `#ADCF78` never appears as a background fill on large surfaces. It only appears at the edge of interaction: hover bars, button outlines, labels, author names. This keeps the accent as a meaningful signal rather than decoration.
 
-**Micro-animation through restraint** — Hover interactions are precise and mechanical (sweep, vertical bar, opacity). Scroll reveals are subtle (translateY 12px, 0.4s). Nothing bounces, pulses, or loops. Motion communicates control, not enthusiasm.
+**Micro-animation through restraint** - Hover interactions are precise and mechanical (sweep, vertical bar, opacity). Scroll reveals are subtle (translateY 12px, 0.4s). Nothing bounces, pulses, or loops. Motion communicates control, not enthusiasm.
 
 ---
 
@@ -79,7 +79,7 @@
 - **`accent`** (`#ADCF78`) is used **only as a signal**: borders, indicator bars, labels, and interactive highlights. Never as a large filled area. Never in small continuous body text.
 - **`cream`** is the exclusive text and background color on `dark` and `forest` surfaces.
 - White (`#FFFFFF`) is used as the content surface between dark bands. The page background is white.
-- Opacity variants are first-class — `cream/80`, `forest/35`, `white/10` — used for hierarchy within surfaces.
+- Opacity variants are first-class - `cream/80`, `forest/35`, `white/10` - used for hierarchy within surfaces.
 
 ### Surface Tokens
 
@@ -107,7 +107,7 @@
 |---|---|---|
 | **Display / Heading** | Space Grotesk | All section headlines, hero titles, mega menu titles |
 | **Body / UI** | Instrument Sans | Body copy, UI labels, nav links, form fields, footer links |
-| **Editorial Voice** | Roca (slab serif) | Testimonial quotes, footer tagline — emotional register only |
+| **Editorial Voice** | Roca (slab serif) | Testimonial quotes, footer tagline - emotional register only |
 | **Utility / Code** | Geist Mono | Eyebrows, product index numbers, CTA labels, login, status |
 
 ### Scale
@@ -128,7 +128,7 @@
 
 ### Type Rules
 
-- Headlines always use tight negative tracking (`-0.04` to `-0.05em`). This is non-negotiable — it's what makes the wordmark-quality of the headings.
+- Headlines always use tight negative tracking (`-0.04` to `-0.05em`). This is non-negotiable - it's what makes the wordmark-quality of the headings.
 - Line height for headings: `1.1`. For body: `1.6–1.7` (relaxed). For quotes: `1.3`.
 - Eyebrow and utility labels in Geist Mono always uppercase with generous letter-spacing. They signal categories, not titles.
 - Roca must never appear in functional UI. It exists exclusively in the "voice" register: quotes and brand taglines.
@@ -162,7 +162,7 @@ Spacing is **consistent and generous**, not tight. The system uses a limited 3-s
 
 ### Density Strategy
 
-Sections breathe. The system deliberately avoids packing multiple content blocks. Each unit of information — a headline, a paragraph, a feature list — occupies its own bordered row or cell. This low density is a trust signal.
+Sections breathe. The system deliberately avoids packing multiple content blocks. Each unit of information - a headline, a paragraph, a feature list - occupies its own bordered row or cell. This low density is a trust signal.
 
 ---
 
@@ -181,8 +181,8 @@ This creates a **letterpress / editorial grid** feeling. The borders are structu
 
 ### Border Opacity
 
-- On white: `rgba(0, 0, 0, 0.2)` — visible but not heavy
-- On dark/forest: `rgba(255, 255, 255, 0.1)` — very subtle, barely visible
+- On white: `rgba(0, 0, 0, 0.2)` - visible but not heavy
+- On dark/forest: `rgba(255, 255, 255, 0.1)` - very subtle, barely visible
 
 ### No Shadows
 
@@ -202,22 +202,22 @@ Box shadows are absent from the design vocabulary. Elevation is communicated thr
 
 A Planton card is a **bordered rectangle with consistent internal padding**, sharp corners, and the following optional layers:
 
-1. **Index number** (top-left): Geist Mono, `xs`, accent green — indicates position in a set
-2. **Headline**: Space Grotesk, `heading-lg`, forest teal — primary label
-3. **Description**: Instrument Sans, `body-sm`, forest teal — supporting detail
-4. **CTA label** (bottom): Geist Mono, `xs`, uppercase, tracked, accent green — "discover →"
+1. **Index number** (top-left): Geist Mono, `xs`, accent green - indicates position in a set
+2. **Headline**: Space Grotesk, `heading-lg`, forest teal - primary label
+3. **Description**: Instrument Sans, `body-sm`, forest teal - supporting detail
+4. **CTA label** (bottom): Geist Mono, `xs`, uppercase, tracked, accent green - "discover →"
 
 ### Interactive State
 
 On hover a card reveals:
 - A **3px vertical bar** in `#ADCF78` on the left edge, animated from `h-0` to `h-full`
-- A **texture overlay** at reduced opacity (`~20%`) — a grain/noise texture in matching tonal range
+- A **texture overlay** at reduced opacity (`~20%`) - a grain/noise texture in matching tonal range
 
 No shadow, no scale transform, no color inversion. The hover state is **edge-marking**, not volumetric.
 
 ### Card Border Behavior
 
-Cards live inside the grid frame. Their borders are part of the frame — `border-b border-r border-black/20`. Cards share borders with adjacent cells.
+Cards live inside the grid frame. Their borders are part of the frame - `border-b border-r border-black/20`. Cards share borders with adjacent cells.
 
 ---
 
@@ -225,7 +225,7 @@ Cards live inside the grid frame. Their borders are part of the frame — `borde
 
 ### Principle: Mechanical Precision
 
-Motion is restrained, directional, and short. It does not express joy or playfulness — it expresses control and accuracy.
+Motion is restrained, directional, and short. It does not express joy or playfulness - it expresses control and accuracy.
 
 ### Entrance Animations
 
@@ -253,8 +253,8 @@ Motion is restrained, directional, and short. It does not express joy or playful
 ### Rules
 
 - Never use indefinitely looping animations on content elements (only technical data visualizations may use them if meaningful).
-- Never animate scale on content — lift via `translateY(-1px)` only.
-- Avoid `transition: all` — always specify the property.
+- Never animate scale on content - lift via `translateY(-1px)` only.
+- Avoid `transition: all` - always specify the property.
 
 ---
 
@@ -272,7 +272,7 @@ Motion is restrained, directional, and short. It does not express joy or playful
 ### Navigation Buttons (arrows, carousel controls)
 
 - Same rectangle + sweep hover pattern as CTA, but `40×40px` icon containers
-- Consistent design language — every interactive bordered rectangle behaves the same
+- Consistent design language - every interactive bordered rectangle behaves the same
 
 ### Links / Nav Items
 
@@ -282,7 +282,7 @@ Motion is restrained, directional, and short. It does not express joy or playful
 
 ### Dropdowns and Mega Menus
 
-- Background: `forest` (`#145559`) — creates a strong contrast shift from the white header
+- Background: `forest` (`#145559`) - creates a strong contrast shift from the white header
 - Items are full-width rows with `border-top/bottom` at `white/10`
 - Rows follow the card hover pattern (left indicator bar + texture)
 - Eyebrow labels in Geist Mono accent green introduce context above items
@@ -291,7 +291,7 @@ Motion is restrained, directional, and short. It does not express joy or playful
 
 - Used in CTA and newsletter contexts
 - Sharp borders, no border-radius
-- Minimal styling — border-bottom or full border in `border-light`
+- Minimal styling - border-bottom or full border in `border-light`
 - Placeholder text in muted opacity
 
 ---
@@ -308,17 +308,17 @@ Every content section follows:
 [body: Instrument Sans / relaxed / forest at body weight]
 ```
 
-This stack is applied consistently, meaning information hierarchy is always readable without needing to inspect color — size and typeface alone carry the meaning.
+This stack is applied consistently, meaning information hierarchy is always readable without needing to inspect color - size and typeface alone carry the meaning.
 
 ### Color for Emphasis, Not Decoration
 
 - `#ADCF78` appears where the eye should land to take an action or read a category.
-- `forest` teal is the neutral reading color — not a highlight.
+- `forest` teal is the neutral reading color - not a highlight.
 - White and cream are reserved for on-dark surfaces.
 
 ### The Silence Rule
 
-Significant amounts of white space and blank grid cells are used intentionally. A section with a single centered heading — no content around it — reads as a transition or emphasis beat. Do not fill every cell.
+Significant amounts of white space and blank grid cells are used intentionally. A section with a single centered heading - no content around it - reads as a transition or emphasis beat. Do not fill every cell.
 
 ### Hierarchy Inside Dark Sections
 
@@ -337,19 +337,19 @@ On dark backgrounds, text opacity tiers replace color tiers:
 
 ### Visual Tone Words
 
-- **Precise** — hard borders, exact type scales, no visual noise
-- **Institutional** — the border-grid reads like a financial data table
-- **Restrained** — color restraint, motion restraint, radius restraint
-- **Credible** — the interface uses the same seriousness as the certifications it displays (GHG Protocol, CDP, B Corp)
-- **Human at the edge** — warmth surfaces only in specific moments: the Roca serif, the `#ADCF78` green, testimonial quotes. It is never the default register.
+- **Precise** - hard borders, exact type scales, no visual noise
+- **Institutional** - the border-grid reads like a financial data table
+- **Restrained** - color restraint, motion restraint, radius restraint
+- **Credible** - the interface uses the same seriousness as the certifications it displays (GHG Protocol, CDP, B Corp)
+- **Human at the edge** - warmth surfaces only in specific moments: the Roca serif, the `#ADCF78` green, testimonial quotes. It is never the default register.
 
 ### What to Never Do
 
 - No playful rounded shapes or bubbly border-radii on content components
 - No gradient fills on brand surfaces (gradients reserved for dark atmospheric hero images only)
-- No saturated greens (`#22c55e` — explicitly excluded from the palette)
-- No `#ADCF78` in running body text — it is an action/signal color, not a reading color
-- No shadow vocabulary on components — borders define structure
+- No saturated greens (`#22c55e` - explicitly excluded from the palette)
+- No `#ADCF78` in running body text - it is an action/signal color, not a reading color
+- No shadow vocabulary on components - borders define structure
 - No type mixing within the same hierarchy tier (Roca must never be used for UI labels or functional text)
 
 ### Design Target

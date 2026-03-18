@@ -1,6 +1,6 @@
 # Planton UI
 
-Design system do **Planton Academy V2** — plataforma educacional B2B focada em sustentabilidade, gestão de emissões de GEE e ESG.
+Design system do **Planton Academy V2** - plataforma educacional B2B focada em sustentabilidade, gestão de emissões de GEE e ESG.
 
 Este repositório centraliza tokens de design, componentes e padrões de tela usados em todos os produtos Planton. O objetivo é garantir consistência visual e acelerar o desenvolvimento da plataforma.
 
@@ -96,11 +96,11 @@ Definidos em `src/styles/theme.css`, adaptam automaticamente entre light e dark 
 
 | Token | Descrição |
 |---|---|
-| `planton-accent` | Verde lima — cor principal de destaque e CTAs |
-| `planton-forest` | Verde escuro — texto principal no light mode |
-| `planton-cream` | Creme — texto em superfícies escuras |
-| `planton-muted` | Cinza — texto secundário |
-| `planton-ink` | Tinta escura — texto sobre accent |
+| `planton-accent` | Verde lima - cor principal de destaque e CTAs |
+| `planton-forest` | Verde escuro - texto principal no light mode |
+| `planton-cream` | Creme - texto em superfícies escuras |
+| `planton-muted` | Cinza - texto secundário |
+| `planton-ink` | Tinta escura - texto sobre accent |
 
 ### Tokens semânticos
 
@@ -111,7 +111,7 @@ Definidos em `src/styles/theme.css`, adaptam automaticamente entre light e dark 
 | `--border` | Cinza claro | Branco 10% |
 | `--foreground` | `planton-forest` | Branco |
 
-> **Regra:** sempre use tokens semânticos (`bg-card`, `border-border`, `text-foreground`) — nunca cores hardcoded como `bg-white` ou `border-gray-200`. Isso garante que o dark mode funcione automaticamente.
+> **Regra:** sempre use tokens semânticos (`bg-card`, `border-border`, `text-foreground`) - nunca cores hardcoded como `bg-white` ou `border-gray-200`. Isso garante que o dark mode funcione automaticamente.
 
 ---
 
@@ -139,7 +139,7 @@ Construídos do zero, sem dependência de shadcn.
 
 ### UI (`src/components/ui/`)
 
-**Card** — componente central e reutilizável
+**Card** - componente central e reutilizável
 ```tsx
 // Card estático com CTA
 <Card
@@ -170,7 +170,7 @@ Construídos do zero, sem dependência de shadcn.
 </div>
 ```
 
-**CourseGrid** — grid de aulas para o Academy
+**CourseGrid** - grid de aulas para o Academy
 ```tsx
 <CourseGrid lessons={[
   { id: '1', index: '01', title: 'Fundamentos do Solo', description: '...', href: '/aula/1' },
@@ -196,7 +196,7 @@ Cada componente tem sua própria página com exemplos visuais, descrição e **f
 
 ## Padrões de tela (`src/patterns/`)
 
-Composições de tela completas — diferente de componentes, encapsulam layout e lógica de uma tela inteira.
+Composições de tela completas - diferente de componentes, encapsulam layout e lógica de uma tela inteira.
 
 | Padrão | Arquivo | Descrição |
 |---|---|---|
@@ -217,7 +217,7 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 
 ---
 
-## Design System — páginas
+## Design System - páginas
 
 | Rota | Conteúdo |
 |---|---|

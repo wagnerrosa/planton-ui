@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
-import { Check, Copy } from 'lucide-react'
 import { Eyebrow } from '@/components/primitives/Eyebrow'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
+import { CopyPath } from '@/components/ui/CopyButton'
 import { cn } from '@/lib/utils'
 
 type LogoAsset = {
@@ -22,14 +21,14 @@ const brandLogos: { group: string; description: string; items: LogoAsset[] }[] =
     description: 'Versão principal. Use como padrão sempre que houver espaço horizontal suficiente.',
     items: [
       {
-        name: 'Horizontal — Forest',
+        name: 'Horizontal - Forest',
         description: 'Logo horizontal em verde forest. Para fundos claros.',
         usage: 'Fundos claros (white, card)',
         file: 'public/Logo_Planton_01.svg',
         bg: 'light',
       },
       {
-        name: 'Horizontal — Accent',
+        name: 'Horizontal - Accent',
         description: 'Logo horizontal em verde accent (lima). Para fundos escuros.',
         usage: 'Fundos escuros (forest, dark)',
         file: 'public/logos_planton/planton_horizontal_aberto_accent.svg',
@@ -59,7 +58,7 @@ const brandLogos: { group: string; description: string; items: LogoAsset[] }[] =
         description: 'Versão completa com tagline. Uso restrito a materiais de marca.',
         usage: 'Materiais de marketing e branding',
         file: 'public/logos_planton/planton_vertical_tagline.svg',
-        bg: 'light',
+        bg: 'dark',
       },
     ],
   },
@@ -90,14 +89,14 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
     product: 'Planton Academy',
     items: [
       {
-        name: 'Academy — Forest',
+        name: 'Academy - Forest',
         description: 'Logo Academy em verde forest.',
         usage: 'Fundos claros',
         file: 'public/logos_produtos/planton_academy_forest.svg',
         bg: 'light',
       },
       {
-        name: 'Academy — Branco',
+        name: 'Academy - Branco',
         description: 'Logo Academy em branco.',
         usage: 'Fundos escuros',
         file: 'public/logos_produtos/planton_academy_branco.svg',
@@ -109,14 +108,14 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
     product: 'Planton Genius',
     items: [
       {
-        name: 'Genius — Forest',
+        name: 'Genius - Forest',
         description: 'Logo Genius em verde forest.',
         usage: 'Fundos claros',
         file: 'public/logos_produtos/planton_genius_forest.svg',
         bg: 'light',
       },
       {
-        name: 'Genius — Branco',
+        name: 'Genius - Branco',
         description: 'Logo Genius em branco.',
         usage: 'Fundos escuros',
         file: 'public/logos_produtos/planton_genius_branco.svg',
@@ -126,36 +125,12 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
   },
 ]
 
-function CopyPath({ path }: { path: string }) {
-  const [copied, setCopied] = useState(false)
-
-  function handleCopy() {
-    navigator.clipboard.writeText(path)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  return (
-    <div className="flex items-center gap-2 mt-1">
-      <code className="font-mono text-xs text-planton-accent bg-planton-forest/10 px-2 py-1 flex-1 truncate">
-        {path}
-      </code>
-      <button
-        onClick={handleCopy}
-        className="shrink-0 p-1 text-planton-muted hover:text-planton-accent transition-colors"
-        title="Copiar path"
-      >
-        {copied ? <Check size={13} className="text-planton-accent" /> : <Copy size={13} />}
-      </button>
-    </div>
-  )
-}
 
 function LogoCard({ asset }: { asset: LogoAsset }) {
   const publicPath = '/' + asset.file.replace('public/', '')
 
   return (
-    <div className="border border-border flex flex-col">
+    <div className="border-r border-b border-border flex flex-col">
       {/* Preview */}
       <div
         className={`flex items-center justify-center h-36 px-8 ${
@@ -168,6 +143,7 @@ function LogoCard({ asset }: { asset: LogoAsset }) {
           width={200}
           height={80}
           className="object-contain max-h-16 w-auto"
+          unoptimized
         />
       </div>
 
@@ -233,10 +209,11 @@ export default function LogoPage() {
             <div className="bg-white flex items-center justify-center h-40 px-12">
               <Image
                 src="/Logo_Planton_01.svg"
-                alt="Planton — fundo claro"
+                alt="Planton - fundo claro"
                 width={200}
                 height={50}
                 className="object-contain"
+                unoptimized
               />
             </div>
             <div className="p-4 bg-surface-card border-t border-border flex flex-col gap-1">
@@ -251,10 +228,11 @@ export default function LogoPage() {
             <div className="bg-planton-forest flex items-center justify-center h-40 px-12">
               <Image
                 src="/logos_planton/planton_horizontal_aberto_accent.svg"
-                alt="Planton — fundo escuro"
+                alt="Planton - fundo escuro"
                 width={200}
                 height={50}
                 className="object-contain"
+                unoptimized
               />
             </div>
             <div className="p-4 bg-surface-card border-t border-border flex flex-col gap-1">
@@ -288,7 +266,7 @@ export default function LogoPage() {
           <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Logos de produto</span>
           <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Produtos Planton</h2>
           <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
-            Cada produto tem versões para fundos claros (forest) e escuros (branco). Nunca misture — use sempre a versão correta para o contexto.
+            Cada produto tem versões para fundos claros (forest) e escuros (branco). Nunca misture - use sempre a versão correta para o contexto.
           </p>
         </div>
 
