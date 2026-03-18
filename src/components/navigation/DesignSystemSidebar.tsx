@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Palette, Type, Layout, MousePointer, Component, ImageIcon } from 'lucide-react'
+import { Palette, Type, MousePointer, Component, ImageIcon, Monitor } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -153,18 +153,49 @@ export function DesignSystemSidebar() {
               )
             })}
 
-            {/* Patterns */}
+          </SidebarMenu>
+        </SidebarGroup>
+
+        {/* Screens */}
+        <SidebarGroup className="mt-4">
+          <SidebarGroupLabel className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
+            Screens
+          </SidebarGroupLabel>
+          <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === '/design-system/patterns'}
+                isActive={pathname.startsWith('/design-system/screens/academy')}
                 className={menuButtonClass}
               >
-                <Link href="/design-system/patterns">
-                  <Layout size={15} />
-                  Padrões
+                <Link href="/design-system/screens/academy/login">
+                  <Monitor size={15} />
+                  Academy
                 </Link>
               </SidebarMenuButton>
+
+              {pathname.startsWith('/design-system/screens/academy') && (
+                <SidebarMenuSub>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={pathname === '/design-system/screens/academy/login'}
+                      className={subButtonClass}
+                    >
+                      <Link href="/design-system/screens/academy/login">Login</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={pathname === '/design-system/screens/academy/home'}
+                      className={subButtonClass}
+                    >
+                      <Link href="/design-system/screens/academy/home">Home</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                </SidebarMenuSub>
+              )}
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>

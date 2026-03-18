@@ -1,39 +1,42 @@
+import Link from 'next/link'
 import { Heading } from '@/components/primitives/Heading'
 import { Eyebrow } from '@/components/primitives/Eyebrow'
-import { Label } from '@/components/primitives/Label'
-import { LoginScreen } from '@/patterns/auth/LoginScreen'
-import { CourseGrid } from '@/components/ui/CourseGrid'
-import { Separator } from '@/components/shadcn/separator'
-
-const demoLessons = [
-  { id: '1', index: '01', title: 'Fundamentos do Solo', description: 'Composição, textura e estrutura do solo agrícola.' },
-  { id: '2', index: '02', title: 'Irrigação por Gotejamento', description: 'Eficiência hídrica e instalação de sistemas.' },
-  { id: '3', index: '03', title: 'Manejo de Pragas', description: 'Controle integrado e uso responsável de defensivos.' },
-  { id: '4', index: '04', title: 'Adubação Verde', description: 'Cobertura vegetal e fixação biológica de nitrogênio.' },
-]
+import { Body } from '@/components/primitives/Body'
 
 export default function PatternsPage() {
   return (
-    <main className="min-h-screen bg-surface-default max-w-[1400px] mx-auto px-6 py-16 flex flex-col gap-20">
+    <main className="min-h-screen bg-surface-default max-w-[1400px] mx-auto px-6 py-16 flex flex-col gap-12">
       <div className="flex flex-col gap-2">
         <Eyebrow>Patterns</Eyebrow>
         <Heading as="h1" size="heading-xl">Padrões de Tela</Heading>
+        <Body muted className="max-w-2xl">
+          Os padrões de tela foram promovidos para <strong>Screens</strong> — telas reais dos produtos Planton.
+          Navegue pela seção Screens no menu lateral para visualizar cada tela.
+        </Body>
       </div>
 
-      {/* Login */}
-      <section className="flex flex-col gap-6">
-        <Label>Auth - LoginScreen</Label>
-        <Separator />
-        <div className="border border-border">
-          <LoginScreen />
+      <section className="flex flex-col gap-4">
+        <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Ir para</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 overflow-hidden border-t border-l border-border">
+          <Link
+            href="/design-system/screens/academy/login"
+            className="group border-r border-b border-border p-6 flex flex-col gap-2 hover:bg-card transition-colors"
+          >
+            <span className="font-sans text-base font-medium text-foreground group-hover:text-planton-accent transition-colors">
+              Academy — Login
+            </span>
+            <span className="text-sm text-planton-muted leading-[1.65]">Tela de autenticação</span>
+          </Link>
+          <Link
+            href="/design-system/screens/academy/home"
+            className="group border-r border-b border-border p-6 flex flex-col gap-2 hover:bg-card transition-colors"
+          >
+            <span className="font-sans text-base font-medium text-foreground group-hover:text-planton-accent transition-colors">
+              Academy — Home
+            </span>
+            <span className="text-sm text-planton-muted leading-[1.65]">Listagem de trilhas e cursos</span>
+          </Link>
         </div>
-      </section>
-
-      {/* Course Grid */}
-      <section className="flex flex-col gap-6">
-        <Label>Education - CourseGrid</Label>
-        <Separator />
-        <CourseGrid lessons={demoLessons} />
       </section>
     </main>
   )

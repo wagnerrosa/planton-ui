@@ -4,7 +4,7 @@ const sections = [
   { href: '/design-system/colors',     label: 'Cores',       description: 'Paleta de brand, tokens de cor e uso' },
   { href: '/design-system/typography', label: 'Tipografia',  description: 'Escalas de fonte, espaçamento e hierarquia' },
   { href: '/design-system/components', label: 'Componentes', description: 'Button, Card, Input, Dialog, Tabs, Badge' },
-  { href: '/design-system/patterns',   label: 'Padrões',     description: 'Login, LessonCard e composições de tela' },
+  { href: '/design-system/screens',    label: 'Screens',     description: 'Telas reais dos produtos Planton' },
 ]
 
 export default function DesignSystemPage() {
