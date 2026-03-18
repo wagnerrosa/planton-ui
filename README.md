@@ -224,6 +224,7 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system` | Índice com navegação para todas as seções |
 | `/design-system/colors` | Paleta completa + tokens + dark mode |
 | `/design-system/typography` | Escalas de fonte e hierarquia |
+| `/design-system/logo` | Logo da marca, variações, produtos e download |
 | `/design-system/components` | Índice de componentes por categoria |
 | `/design-system/components/button` | Button (standalone) |
 | `/design-system/components/inputs/*` | Input, Textarea, Select, Checkbox, etc. |

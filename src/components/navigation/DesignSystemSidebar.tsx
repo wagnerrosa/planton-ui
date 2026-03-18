@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Palette, Type, Layout, MousePointer, Component } from 'lucide-react'
+import { Palette, Type, Layout, MousePointer, Component, ImageIcon } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -24,6 +24,7 @@ import { componentCategories, buttonMeta } from '@/lib/components-registry'
 const foundations = [
   { href: '/design-system/colors',     label: 'Cores',      icon: Palette },
   { href: '/design-system/typography', label: 'Tipografia', icon: Type },
+  { href: '/design-system/logo',       label: 'Logo',       icon: ImageIcon },
 ]
 
 const menuButtonClass = "rounded-none font-sans text-sm text-sidebar-foreground gap-2.5 px-2 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-planton-accent"
