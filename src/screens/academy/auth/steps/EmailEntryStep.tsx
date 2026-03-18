@@ -1,0 +1,127 @@
+'use client'
+
+import { useState } from 'react'
+import { Heading } from '@/components/primitives/Heading'
+import { Body } from '@/components/primitives/Body'
+import { Button } from '@/components/primitives/Button'
+import { Alert, AlertDescription } from '@/components/shadcn/alert'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/shadcn/dialog'
+import { AlertCircle } from 'lucide-react'
+import type { AuthStep, AuthContext } from '../LoginFlow'
+
+const BLOCKED_DOMAINS = [
+  'gmail.com',
+  'hotmail.com',
+  'outlook.com',
+  'yahoo.com.br',
+  'yahoo.com',
+  'live.com',
+  'bol.com.br',
+  'uol.com.br',
+  'terra.com.br',
+  'ig.com.br',
+  'icloud.com',
+  'mac.com',
+  'zoho.com',
+]
+
+type EmailEntryStepProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onNavigate: (step: AuthStep) => void
+  onUpdateContext: (updates: Partial<AuthContext>) => void
+}
+
+export function EmailEntryStep({
+  open,
+  onOpenChange,
+  onNavigate,
+  onUpdateContext,
+}: EmailEntryStepProps) {
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
+
+  function getDomain(emailValue: string) {
+    return emailValue.split('@')[1]?.toLowerCase() ?? ''
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError('')
+
+    const domain = getDomain(email)
+
+    if (BLOCKED_DOMAINS.includes(domain)) {
+      setError('Acesso exclusivo com e-mail corporativo. Utilize o e-mail da sua empresa.')
+      return
+    }
+
+    onUpdateContext({ email })
+
+    if (email.endsWith('@empresa.com')) {
+      onUpdateContext({ scenario: 'A' })
+      onNavigate('domain-active')
+      return
+    }
+
+    if (email.endsWith('@inativo.com')) {
+      onUpdateContext({ scenario: 'B' })
+      onNavigate('domain-inactive')
+      return
+    }
+
+    onUpdateContext({ scenario: 'C' })
+    onNavigate('domain-unknown')
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle asChild>
+            <Heading as="h2" size="heading-lg">Criar cadastro</Heading>
+          </DialogTitle>
+        </DialogHeader>
+
+        <Body size="sm" muted>
+          Informe seu e-mail corporativo para verificar o acesso.
+        </Body>
+
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-1">
+            <label className="font-mono text-xs uppercase tracking-[0.05em] text-planton-muted">
+              E-mail corporativo
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                setError('')
+              }}
+              className="border-b border-border bg-transparent py-2 font-sans text-sm text-planton-forest outline-none focus:border-planton-accent transition-colors"
+              placeholder="voce@suaempresa.com"
+              required
+            />
+          </div>
+
+          <Button variant="primary" className="w-full justify-center">
+            Verificar
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}

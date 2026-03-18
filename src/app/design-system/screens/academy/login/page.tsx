@@ -1,5 +1,5 @@
-import { LoginScreen } from '@/screens/academy/auth/LoginScreen'
+import { LoginFlow } from '@/screens/academy/auth/LoginFlow'
 
 export default function LoginScreenPage() {
-  return <LoginScreen />
+  return <LoginFlow />
 }

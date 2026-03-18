@@ -77,9 +77,12 @@ src/
 ├── lib/
 │   └── components-registry.ts          # Registro central de componentes e categorias
 │
-├── patterns/
-│   └── auth/
-│       └── LoginScreen.tsx             # Padrão de tela completo
+├── screens/
+│   └── academy/
+│       └── auth/
+│           ├── LoginFlow.tsx           # Fluxo de autenticação multi-step
+│           ├── LoginScreen.tsx         # Tela de login estática (legado)
+│           └── steps/                  # 13 step components do fluxo
 │
 └── styles/
     ├── theme.css                       # Tokens de design (cores, bordas, superfícies)
@@ -194,15 +197,132 @@ Cada componente tem sua própria página com exemplos visuais, descrição e **f
 
 ---
 
-## Padrões de tela (`src/patterns/`)
+## Telas (`src/screens/`)
 
 Composições de tela completas - diferente de componentes, encapsulam layout e lógica de uma tela inteira.
 
-| Padrão | Arquivo | Descrição |
-|---|---|---|
-| LoginScreen | `auth/LoginScreen.tsx` | Tela de login com campos e-mail/senha |
+### Fluxo de Autenticação (`academy/auth/`)
 
-> **Em construção:** novos padrões serão adicionados conforme o desenvolvimento do Planton Academy V2, incluindo fluxo de cadastro multi-etapas, onboarding, quiz, emissão de certificado, painel do Gestor Master e painel do Super Admin.
+Fluxo multi-step completo com 13 steps gerenciados por `useState<AuthStep>` em `LoginFlow.tsx`.
+
+| Step | Arquivo | Descrição |
+|---|---|---|
+| login | `LoginStep.tsx` | Login com e-mail + senha |
+| access-denied | `AccessDeniedStep.tsx` | Domínio sem autorização (dead end) |
+| forgot-password | `ForgotPasswordStep.tsx` | Solicitar recuperação de senha |
+| reset-password-sent | `ResetPasswordSentStep.tsx` | Confirmação de envio |
+| email-entry | `EmailEntryStep.tsx` | Dialog: e-mail corporativo + validação de domínio |
+| domain-active | `DomainActiveStep.tsx` | Cenário A: empresa ativa → perfil |
+| domain-inactive | `DomainInactiveStep.tsx` | Cenário B: empresa inativa → voucher |
+| domain-unknown | `DomainUnknownStep.tsx` | Cenário C: empresa desconhecida (dead end) |
+| profile-form | `ProfileFormStep.tsx` | Formulário de perfil (react-hook-form + zod) |
+| set-password | `SetPasswordStep.tsx` | Definição de senha (react-hook-form + zod) |
+| otp-verification | `OTPVerificationStep.tsx` | Código de 6 dígitos (InputOTP) |
+| onboarding | `OnboardingStep.tsx` | Vídeo introdutório |
+| success | `SuccessStep.tsx` | Acesso liberado |
+
+**Como testar o fluxo (sem backend)**
+
+Acesse: `http://localhost:3000/design-system/screens/academy/login`
+
+Todos os dados são simulados no frontend — nenhuma API é chamada.
+
+---
+
+#### Fluxo 1 — Login com credenciais inválidas
+
+1. Digite qualquer texto que contenha a palavra `erro` no campo e-mail (ex: `erro@test.com`)
+2. Digite qualquer senha
+3. Clique em **Entrar**
+4. ✅ Alert vermelho inline: *"E-mail ou senha incorretos"* — permanece na tela de login
+
+---
+
+#### Fluxo 2 — Login sem acesso autorizado
+
+1. Digite qualquer texto que contenha a palavra `semacesso` no campo e-mail (ex: `semacesso@test.com`)
+2. Digite qualquer senha
+3. Clique em **Entrar**
+4. ✅ Navega para **Acesso Negado** com opção de tentar outro e-mail
+
+---
+
+#### Fluxo 3 — Login bem-sucedido
+
+1. Digite qualquer e-mail que não contenha `erro` nem `semacesso` (ex: `usuario@planton.com`)
+2. Digite qualquer senha
+3. Clique em **Entrar**
+4. ✅ Navega direto para **Acesso liberado**
+
+---
+
+#### Fluxo 4 — Cadastro: Cenário A (domínio ativo)
+
+1. Clique em **Criar novo cadastro** — abre o Dialog
+2. Digite um e-mail terminando em `@empresa.com` (ex: `joao@empresa.com`)
+3. Clique em **Verificar**
+4. ✅ Navega para **Empresa encontrada** → redireciona automaticamente para o formulário de perfil
+5. Preencha nome completo e cargo (obrigatórios) → **Continuar**
+6. Defina uma senha (mín. 8 caracteres) e confirme → **Continuar**
+7. Digite o código OTP `123456` → **Verificar**
+8. ✅ Navega para **Onboarding** → clique em **Começar** ou **Pular**
+9. ✅ Navega para **Acesso liberado**
+
+---
+
+#### Fluxo 5 — Cadastro: Cenário B (domínio inativo + voucher)
+
+1. Clique em **Criar novo cadastro** — abre o Dialog
+2. Digite um e-mail terminando em `@inativo.com` (ex: `maria@inativo.com`)
+3. Clique em **Verificar**
+4. ✅ Navega para **Ativar acesso** (empresa inativa)
+5. Para testar **voucher válido**: digite `PLANTON-2026-ATIVO` → **Continuar** → segue para perfil
+6. Para testar **voucher expirado**: digite `PLANTON-2026-EXPIRADO` → alert de código expirado
+7. Para testar **voucher inválido**: digite qualquer outro valor → alert de código não associado
+
+---
+
+#### Fluxo 6 — Cadastro: Cenário C (domínio desconhecido)
+
+1. Clique em **Criar novo cadastro** — abre o Dialog
+2. Digite qualquer e-mail corporativo que não termine em `@empresa.com` ou `@inativo.com` (ex: `nome@outraempresa.com`)
+3. Clique em **Verificar**
+4. ✅ Navega para **Empresa não encontrada** (dead end) com link externo para o site
+
+---
+
+#### Fluxo 7 — Domínio genérico bloqueado
+
+1. Clique em **Criar novo cadastro** — abre o Dialog
+2. Digite um e-mail de provedor pessoal (ex: `usuario@gmail.com`, `contato@hotmail.com`)
+3. ✅ Alert: *"Acesso exclusivo com e-mail corporativo"* — formulário não avança
+
+---
+
+#### Fluxo 8 — Recuperação de senha
+
+1. Clique em **Esqueci minha senha**
+2. Digite qualquer e-mail → **Enviar link**
+3. ✅ Tela de confirmação com o e-mail digitado
+4. Clique em **Voltar ao login**
+
+---
+
+#### Referência rápida de credenciais de teste
+
+| Campo | Valor | Efeito |
+|---|---|---|
+| E-mail login | `erro@...` | Erro de credenciais |
+| E-mail login | `semacesso@...` | Acesso negado |
+| E-mail login | qualquer outro | Login direto (success) |
+| E-mail cadastro | `@empresa.com` | Cenário A — domínio ativo |
+| E-mail cadastro | `@inativo.com` | Cenário B — domínio inativo |
+| E-mail cadastro | outro corporativo | Cenário C — domínio desconhecido |
+| Voucher | `PLANTON-2026-ATIVO` | Ativa o acesso |
+| Voucher | `PLANTON-2026-EXPIRADO` | Código expirado |
+| Código OTP | `123456` | Verificação concluída |
+
+> **Em construção:** novos padrões serão adicionados conforme o desenvolvimento do Planton Academy V2, incluindo quiz, emissão de certificado, painel do Gestor Master e painel do Super Admin.
 
 ---
 
@@ -233,7 +353,9 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system/components/navigation/*` | Tabs, Breadcrumb, Pagination, Command |
 | `/design-system/components/overlays/*` | DropdownMenu, Popover, HoverCard, Calendar |
 | `/design-system/components/layout/*` | Accordion, Collapsible, ScrollArea |
-| `/design-system/patterns` | Padrões de tela em construção |
+| `/design-system/screens` | Índice de telas |
+| `/design-system/screens/academy/login` | Fluxo de autenticação multi-step |
+| `/design-system/screens/academy/home` | Home do Academy |
 
 ---
 
