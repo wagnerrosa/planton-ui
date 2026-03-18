@@ -26,6 +26,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Planton UI",
   description: "Planton Design System",
+  robots: {
+    index: false,
+    follow: false,
+  },
   icons: {
     icon: [
       { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
