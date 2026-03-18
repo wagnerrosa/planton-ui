@@ -38,42 +38,52 @@ Acesse `http://localhost:3000/` para visualizar o design system completo.
 src/
 ├── app/
 │   ├── design-system/
-│   │   ├── page.tsx          # Índice do design system
-│   │   ├── colors/           # Paleta, tokens e dark mode
-│   │   ├── typography/       # Escalas tipográficas
-│   │   ├── components/       # 34 componentes documentados
-│   │   └── patterns/         # Padrões de tela (em construção)
-│   └── layout.tsx            # ThemeProvider + Toaster
+│   │   ├── page.tsx                    # Índice do design system
+│   │   ├── colors/                     # Paleta, tokens e dark mode
+│   │   ├── typography/                 # Escalas tipográficas
+│   │   ├── components/
+│   │   │   ├── page.tsx                # Índice de componentes por categoria
+│   │   │   ├── button/                 # Button (standalone)
+│   │   │   ├── inputs/                 # Inputs & Forms (9 componentes)
+│   │   │   ├── data-display/           # Data Display (5 componentes)
+│   │   │   ├── feedback/               # Feedback (3 componentes)
+│   │   │   ├── navigation/             # Navigation (4 componentes)
+│   │   │   ├── overlays/               # Overlays (4 componentes)
+│   │   │   └── layout/                 # Layout & Structure (3 componentes)
+│   │   └── patterns/                   # Padrões de tela (em construção)
+│   └── layout.tsx                      # ThemeProvider + Toaster
 │
 ├── components/
-│   ├── navigation/           # Componentes de navegação do design system
+│   ├── navigation/                     # Componentes de navegação do design system
 │   │   └── DesignSystemSidebar.tsx
-│   ├── primitives/           # Componentes próprios base
+│   ├── primitives/                     # Componentes próprios base
 │   │   ├── Button.tsx
 │   │   ├── Heading.tsx
 │   │   ├── Body.tsx
 │   │   ├── Eyebrow.tsx
 │   │   └── Label.tsx
-│   ├── ui/                   # Componentes UI compostos
+│   ├── ui/                             # Componentes UI compostos
 │   │   ├── Card.tsx
+│   │   ├── ComponentPage.tsx
 │   │   ├── CourseGrid.tsx
 │   │   ├── Surface.tsx
 │   │   ├── ThemeProvider.tsx
 │   │   └── ThemeToggle.tsx
-│   └── shadcn/               # Componentes shadcn/ui
+│   └── shadcn/                         # Componentes shadcn/ui
 │
 ├── hooks/
-│   └── use-mobile.tsx        # Hook para detecção de viewport mobile
+│   └── use-mobile.tsx                  # Hook para detecção de viewport mobile
 │
-├── lib/                      # Utilitários e helpers
+├── lib/
+│   └── components-registry.ts          # Registro central de componentes e categorias
 │
 ├── patterns/
 │   └── auth/
-│       └── LoginScreen.tsx   # Padrão de tela completo
+│       └── LoginScreen.tsx             # Padrão de tela completo
 │
 └── styles/
-    ├── theme.css             # Tokens de design (cores, bordas, superfícies)
-    └── globals.css           # Base CSS
+    ├── theme.css                       # Tokens de design (cores, bordas, superfícies)
+    └── globals.css                     # Base CSS
 ```
 
 ---
@@ -169,7 +179,18 @@ Construídos do zero, sem dependência de shadcn.
 
 ### shadcn (`src/components/shadcn/`)
 
-34 componentes instalados e documentados: Badge, Button, Dialog, Input, Separator, Sheet, Sidebar, Skeleton, Tabs, Textarea, Tooltip, Form, InputOTP, Select, Checkbox, RadioGroup, Switch, Alert, AlertDialog, Sonner, Progress, Slider, Table, DropdownMenu, Pagination, ScrollArea, Avatar, HoverCard, Popover, Calendar, Command, Breadcrumb, Collapsible, Accordion.
+29 componentes organizados em 6 categorias no design system:
+
+| Categoria | Componentes |
+|---|---|
+| Inputs & Forms | Input, Textarea, Select, Checkbox, RadioGroup, Switch, Form, InputOTP, Slider |
+| Data Display | Card, Table, Avatar, Badge, Progress |
+| Feedback | Alert, AlertDialog, Sonner |
+| Navigation | Tabs, Breadcrumb, Pagination, Command |
+| Overlays | DropdownMenu, Popover, HoverCard, Calendar |
+| Layout & Structure | Accordion, Collapsible, ScrollArea |
+
+Cada componente tem sua própria página com exemplos visuais, descrição e **file path** no codebase. O registro centralizado está em `src/lib/components-registry.ts`.
 
 ---
 
@@ -203,7 +224,14 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system` | Índice com navegação para todas as seções |
 | `/design-system/colors` | Paleta completa + tokens + dark mode |
 | `/design-system/typography` | Escalas de fonte e hierarquia |
-| `/design-system/components` | 34 componentes com exemplos contextualizados |
+| `/design-system/components` | Índice de componentes por categoria |
+| `/design-system/components/button` | Button (standalone) |
+| `/design-system/components/inputs/*` | Input, Textarea, Select, Checkbox, etc. |
+| `/design-system/components/data-display/*` | Card, Table, Avatar, Badge, Progress |
+| `/design-system/components/feedback/*` | Alert, AlertDialog, Sonner |
+| `/design-system/components/navigation/*` | Tabs, Breadcrumb, Pagination, Command |
+| `/design-system/components/overlays/*` | DropdownMenu, Popover, HoverCard, Calendar |
+| `/design-system/components/layout/*` | Accordion, Collapsible, ScrollArea |
 | `/design-system/patterns` | Padrões de tela em construção |
 
 ---
