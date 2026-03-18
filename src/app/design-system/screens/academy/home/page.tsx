@@ -1,4 +1,4 @@
-import { HomeScreen } from '@/screens/academy/education/HomeScreen'
+import { HomeScreen } from '@/screens/academy/home/HomeScreen'
 
 export default function HomeScreenPage() {
   return <HomeScreen />

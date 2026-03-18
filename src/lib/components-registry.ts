@@ -92,6 +92,8 @@ export const componentCategories: ComponentCategory[] = [
       { slug: 'accordion', name: 'Accordion', description: 'Seções expansíveis e colapsáveis.', filePath: 'src/components/shadcn/accordion.tsx' },
       { slug: 'collapsible', name: 'Collapsible', description: 'Contêiner que pode ser expandido ou recolhido.', filePath: 'src/components/shadcn/collapsible.tsx' },
       { slug: 'scroll-area', name: 'Scroll Area', description: 'Área com scroll customizado.', filePath: 'src/components/shadcn/scroll-area.tsx' },
+      { slug: 'aspect-ratio', name: 'Aspect Ratio', description: 'Container que mantém uma proporção fixa (ex: 16/9).', filePath: 'src/components/shadcn/aspect-ratio.tsx' },
+      { slug: 'carousel', name: 'Carousel', description: 'Carrossel horizontal com navegação e snap.', filePath: 'src/components/shadcn/carousel.tsx' },
     ],
   },
 ]
