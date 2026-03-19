@@ -15,12 +15,22 @@ type ContentCardProps = {
   showTrail?: boolean
 }
 
+// start aleatório para variar o frame inicial do GIF (mock duration 392s)
+function getGifStart(id: string): number {
+  let hash = 0
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0
+  return hash % 392
+}
+
 export function ContentCard({ content, showProgress = false, showTrail = false }: ContentCardProps) {
   const [hovered, setHovered] = useState(false)
 
   const href = content.trail
     ? `/design-system/screens/academy/trail/${content.trail.id}`
     : `/design-system/screens/academy/content/${content.id}`
+
+  const gifUrl = `${content.previewUrl}?start=${getGifStart(content.id)}`
+  const isVideo = content.type === 'video'
 
   return (
     <Link
@@ -29,21 +39,27 @@ export function ContentCard({ content, showProgress = false, showTrail = false }
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Thumbnail — troca para animated.gif no hover, sem zoom, sem shadow, sem layout shift */}
+      {/* Thumbnail */}
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16/9' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={hovered ? content.previewUrl : content.thumbnailUrl}
-          alt={content.title}
-          className="w-full h-full object-cover"
-          draggable={false}
-        />
+        {isVideo ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={hovered ? gifUrl : content.thumbnailUrl}
+            alt={content.title}
+            className="w-full h-full object-cover"
+            draggable={false}
+          />
+        ) : (
+          <div className="w-full h-full bg-planton-accent flex items-center justify-center">
+            <ContentTypeIcon type={content.type} size="lg" />
+          </div>
+        )}
 
         {/* Progress bar overlay (bottom of thumbnail) */}
         {showProgress && content.progress > 0 && (
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-black/40">
             <div
-              className="h-full bg-planton-accent"
+              className="h-full bg-planton-primary"
               style={{ width: `${content.progress}%` }}
             />
           </div>

@@ -10,12 +10,22 @@ const iconMap: Record<ContentType, { icon: typeof PlayCircle; label: string }> =
   guia: { icon: BookOpen, label: 'Guia' },
 }
 
-export function ContentTypeIcon({ type, showLabel = true }: { type: ContentType; showLabel?: boolean }) {
+export function ContentTypeIcon({
+  type,
+  showLabel = true,
+  size = 'sm',
+}: {
+  type: ContentType
+  showLabel?: boolean
+  size?: 'sm' | 'lg'
+}) {
   const { icon: Icon, label } = iconMap[type]
+  const iconClass = size === 'lg' ? 'h-10 w-10' : 'h-3.5 w-3.5'
+  const colorClass = size === 'lg' ? 'text-background' : 'text-planton-muted'
   return (
-    <span className="inline-flex items-center gap-1 text-planton-muted">
-      <Icon className="h-3.5 w-3.5" />
-      {showLabel && <span className="text-xs">{label}</span>}
+    <span className={`inline-flex items-center gap-1 ${colorClass}`}>
+      <Icon className={iconClass} />
+      {showLabel && size !== 'lg' && <span className="text-xs">{label}</span>}
     </span>
   )
 }

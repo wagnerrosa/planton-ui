@@ -6,3 +6,9 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* Lucide icons — stroke fino globalmente */
+svg.lucide,
+svg.lucide * {
+  stroke-width: 1 !important;
+}

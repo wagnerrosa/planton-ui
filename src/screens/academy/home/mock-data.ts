@@ -25,6 +25,22 @@ export type ContentItem = {
   isNew?: boolean
 }
 
+export type QuizQuestion = {
+  question: string
+  options: string[]
+  correctIndex: number
+}
+
+export type Quiz = {
+  questions: QuizQuestion[]
+  status: 'bloqueado' | 'disponivel' | 'concluido'
+}
+
+export type Certificate = {
+  title: string
+  status: 'bloqueado' | 'disponivel'
+}
+
 export type Trail = {
   id: string
   title: string
@@ -35,6 +51,8 @@ export type Trail = {
   status: 'nao-iniciada' | 'em-andamento' | 'concluida' | 'em-breve'
   contents: ContentItem[]
   accentColor: string
+  quiz: Quiz
+  certificate: Certificate
 }
 
 // ---------------------------------------------------------------------------
@@ -235,6 +253,59 @@ export const CONTENT_ITEMS: ContentItem[] = [
 // Trails
 // ---------------------------------------------------------------------------
 
+const MOCK_QUIZ_GEE: Quiz = {
+  status: 'disponivel',
+  questions: [
+    {
+      question: 'Qual protocolo é o padrão global para inventário de gases de efeito estufa?',
+      options: ['ISO 14001', 'GHG Protocol', 'SASB', 'TCFD'],
+      correctIndex: 1,
+    },
+    {
+      question: 'O Escopo 3 refere-se a emissões:',
+      options: ['Diretas da empresa', 'De energia comprada', 'Da cadeia de valor', 'De combustíveis fósseis'],
+      correctIndex: 2,
+    },
+    {
+      question: 'Um fator de emissão é utilizado para:',
+      options: ['Medir consumo de energia', 'Converter atividade em CO₂e', 'Calcular créditos de carbono', 'Auditar relatórios ESG'],
+      correctIndex: 1,
+    },
+  ],
+}
+
+const MOCK_QUIZ_ESG: Quiz = {
+  status: 'concluido',
+  questions: [
+    {
+      question: 'ESG é a sigla para:',
+      options: ['Energy, Safety, Governance', 'Environmental, Social, Governance', 'Equity, Sustainability, Growth', 'Emissions, Standards, Goals'],
+      correctIndex: 1,
+    },
+    {
+      question: 'O framework GRI é utilizado principalmente para:',
+      options: ['Calcular emissões', 'Reporte de sustentabilidade', 'Gestão de riscos', 'Auditoria financeira'],
+      correctIndex: 1,
+    },
+  ],
+}
+
+const MOCK_QUIZ_CARBONO: Quiz = {
+  status: 'bloqueado',
+  questions: [
+    {
+      question: 'A norma ISO 14064 trata de:',
+      options: ['Gestão ambiental', 'Inventário de gases de efeito estufa', 'Eficiência energética', 'Biodiversidade'],
+      correctIndex: 1,
+    },
+    {
+      question: 'SBTi significa:',
+      options: ['Sustainable Business Targets Initiative', 'Science Based Targets initiative', 'Standard Based Trading Index', 'Sustainability Benchmark Tools International'],
+      correctIndex: 1,
+    },
+  ],
+}
+
 export const MOCK_TRAILS: Trail[] = [
   {
     id: 'trail-1',
@@ -246,6 +317,8 @@ export const MOCK_TRAILS: Trail[] = [
     status: 'em-andamento',
     accentColor: '#145559',
     contents: CONTENT_ITEMS.filter((c) => c.trail?.id === 'trail-1'),
+    quiz: MOCK_QUIZ_GEE,
+    certificate: { title: 'Gestão de Emissões de GEE', status: 'bloqueado' },
   },
   {
     id: 'trail-2',
@@ -257,6 +330,8 @@ export const MOCK_TRAILS: Trail[] = [
     status: 'concluida',
     accentColor: '#ADCF78',
     contents: CONTENT_ITEMS.filter((c) => c.trail?.id === 'trail-2'),
+    quiz: MOCK_QUIZ_ESG,
+    certificate: { title: 'Fundamentos ESG', status: 'disponivel' },
   },
   {
     id: 'trail-3',
@@ -268,6 +343,8 @@ export const MOCK_TRAILS: Trail[] = [
     status: 'nao-iniciada',
     accentColor: '#64BDC6',
     contents: CONTENT_ITEMS.filter((c) => c.trail?.id === 'trail-3'),
+    quiz: MOCK_QUIZ_CARBONO,
+    certificate: { title: 'Pegada de Carbono Corporativa', status: 'bloqueado' },
   },
   {
     id: 'trail-4',
@@ -279,6 +356,8 @@ export const MOCK_TRAILS: Trail[] = [
     status: 'em-breve',
     accentColor: '#3C4829',
     contents: [],
+    quiz: { status: 'bloqueado', questions: [] },
+    certificate: { title: 'Normas ISO de Sustentabilidade', status: 'bloqueado' },
   },
 ]
 
