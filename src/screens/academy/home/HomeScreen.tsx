@@ -53,7 +53,6 @@ export function HomeScreen() {
             title={`Comece: ${trail.title}`}
             items={trail.contents}
             trailHref={`/design-system/screens/academy/trail/${trail.id}`}
-            trailLabel="Ver trilha →"
           />
         ))}
 

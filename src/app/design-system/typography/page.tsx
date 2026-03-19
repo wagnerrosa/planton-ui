@@ -92,6 +92,34 @@ export default function TypographyPage() {
         </div>
       </section>
 
+      {/* Line Height */}
+      <section className="flex flex-col gap-8">
+        <Label>Line Height — Headings</Label>
+        <div className="flex flex-col gap-0 border-t border-border">
+          {(
+            [
+              ['display-xl', 'Display XL', '1.0'],
+              ['display-lg', 'Display LG', '1.0'],
+              ['heading-xl', 'Heading XL', '1.05'],
+              ['heading-lg', 'Heading LG', '1.15'],
+            ] as const
+          ).map(([size, label, lh]) => (
+            <div key={size} className="flex items-baseline justify-between border-b border-border/50 py-5">
+              <Heading as="h3" size={size}>{label}</Heading>
+              <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em] shrink-0 ml-6">
+                leading {lh}
+              </span>
+            </div>
+          ))}
+          <div className="flex items-baseline justify-between border-b border-border/50 py-5">
+            <Body>Body (lg / base / sm)</Body>
+            <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em] shrink-0 ml-6">
+              leading 1.65
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* On dark */}
       <section className="flex flex-col gap-4">
         <Label>Em superfície escura</Label>

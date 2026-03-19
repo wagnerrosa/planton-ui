@@ -22,6 +22,7 @@ export type ContentItem = {
     id: string
     name: string
   }
+  trails?: { id: string; name: string }[]
   isNew?: boolean
 }
 
@@ -115,9 +116,13 @@ export const CONTENT_ITEMS: ContentItem[] = [
     type: 'video',
     duration: '31min',
     ...muxUrls(MUX_ID),
-    status: 'nao-iniciado',
-    progress: 0,
+    status: 'visualizado',
+    progress: 35,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
+    trails: [
+      { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
+      { id: 'trail-2', name: 'Fundamentos ESG' },
+    ],
   },
   {
     id: 'c5',
@@ -137,8 +142,8 @@ export const CONTENT_ITEMS: ContentItem[] = [
     type: 'podcast',
     duration: '40min',
     ...muxUrls(MUX_ID),
-    status: 'nao-iniciado',
-    progress: 0,
+    status: 'visualizado',
+    progress: 80,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
   },
 

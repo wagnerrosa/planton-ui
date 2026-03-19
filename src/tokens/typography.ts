@@ -26,7 +26,10 @@ export const letterSpacing = {
 } as const
 
 export const lineHeight = {
-  heading: '1.1',
-  quote:   '1.3',
-  body:    '1.65',
+  displayXl: '1.0',
+  displayLg: '1.0',
+  headingXl: '1.05',
+  headingLg: '1.15',
+  quote:     '1.3',
+  body:      '1.65',
 } as const

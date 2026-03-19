@@ -13,6 +13,8 @@ type ContentCardProps = {
   showProgress?: boolean
   /** Mostra label "Da trilha X" abaixo do título */
   showTrail?: boolean
+  /** Se true, o clique abre a página da trilha em vez do conteúdo avulso */
+  linkToTrail?: boolean
 }
 
 // start aleatório para variar o frame inicial do GIF (mock duration 392s)
@@ -22,10 +24,10 @@ function getGifStart(id: string): number {
   return hash % 392
 }
 
-export function ContentCard({ content, showProgress = false, showTrail = false }: ContentCardProps) {
+export function ContentCard({ content, showProgress = false, showTrail = false, linkToTrail = false }: ContentCardProps) {
   const [hovered, setHovered] = useState(false)
 
-  const href = content.trail
+  const href = linkToTrail && content.trail
     ? `/design-system/screens/academy/trail/${content.trail.id}`
     : `/design-system/screens/academy/content/${content.id}`
 
@@ -59,7 +61,7 @@ export function ContentCard({ content, showProgress = false, showTrail = false }
         {showProgress && content.progress > 0 && (
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-black/40">
             <div
-              className="h-full bg-planton-primary"
+              className="h-full bg-planton-accent"
               style={{ width: `${content.progress}%` }}
             />
           </div>

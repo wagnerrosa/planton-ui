@@ -23,7 +23,7 @@ export default function ColorsPage() {
     <main className="min-h-screen bg-surface-default max-w-[1400px] mx-auto px-6 py-16">
       <div className="flex flex-col gap-2 mb-12">
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Foundations</span>
-        <h1 className="font-heading text-[clamp(2.5rem,3.5vw,3.5rem)] leading-[1.1] tracking-[-0.04em] text-planton-forest">
+        <h1 className="font-heading text-[clamp(2.5rem,3.5vw,3.5rem)] leading-[1.05] tracking-[-0.04em] text-planton-forest">
           Cores
         </h1>
       </div>

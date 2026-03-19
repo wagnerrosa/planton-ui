@@ -59,6 +59,17 @@ export default function ButtonPage() {
         </div>
       </section>
 
+      {/* Small com ícone */}
+      <section className="flex flex-col gap-6">
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Small com ícone</h2>
+        <div className="flex flex-wrap gap-4 items-center">
+          <Button variant="primary" size="sm"><ArrowRight /> Ver mais</Button>
+          <Button variant="outline" size="sm"><ArrowRight /> Ver mais</Button>
+          <Button variant="ghost" size="sm">Ver trilha <ArrowRight /></Button>
+          <Button variant="ghost" size="sm"><Download /> Baixar</Button>
+        </div>
+      </section>
+
       {/* Como link */}
       <section className="flex flex-col gap-6">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Como link</h2>

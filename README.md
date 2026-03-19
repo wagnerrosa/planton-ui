@@ -152,6 +152,18 @@ Construídos do zero, sem dependência de shadcn.
 <Label>Separador de seção</Label>
 ```
 
+Escala de `Heading` com line-height por tamanho (definido em `src/tokens/typography.ts`):
+
+| Tamanho | Font size | Line height |
+|---|---|---|
+| `display-xl` | 64–80px | 1.0 |
+| `display-lg` | 48–70px | 1.0 |
+| `heading-xl` | 40–56px | 1.05 |
+| `heading-lg` | 28–36px | 1.15 |
+| Body | — | 1.65 |
+
+> Cada tamanho tem seu próprio `leading` — não use `leading-*` customizado em cima de `<Heading>`, pois o valor já está calibrado por tamanho.
+
 ### UI (`src/components/ui/`)
 
 **Card** - componente central e reutilizável

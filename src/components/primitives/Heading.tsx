@@ -12,10 +12,10 @@ type HeadingProps = {
 }
 
 const sizeClasses: Record<HeadingSize, string> = {
-  'display-xl': 'text-[clamp(4rem,5vw,5rem)] tracking-[-0.05em]',
-  'display-lg': 'text-[clamp(3rem,4.375vw,4.375rem)] tracking-[-0.05em]',
-  'heading-xl': 'text-[clamp(2.5rem,3.5vw,3.5rem)] tracking-[-0.04em]',
-  'heading-lg': 'text-[clamp(1.75rem,2.25vw,2.25rem)] tracking-[-0.02em]',
+  'display-xl': 'text-[clamp(4rem,5vw,5rem)] tracking-[-0.05em] leading-[1.0]',
+  'display-lg': 'text-[clamp(3rem,4.375vw,4.375rem)] tracking-[-0.05em] leading-[1.0]',
+  'heading-xl': 'text-[clamp(2.5rem,3.5vw,3.5rem)] tracking-[-0.04em] leading-[1.05]',
+  'heading-lg': 'text-[clamp(1.75rem,2.25vw,2.25rem)] tracking-[-0.02em] leading-[1.15]',
 }
 
 export function Heading({
@@ -28,7 +28,7 @@ export function Heading({
   return (
     <Tag
       className={cn(
-        'font-heading leading-[1.1]',
+        'font-heading',
         sizeClasses[size],
         surface === 'light' ? 'text-planton-forest' : 'text-planton-cream',
         className,

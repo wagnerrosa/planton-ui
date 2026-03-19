@@ -39,7 +39,6 @@ export default function ContentRowPage() {
           title="Fundamentos ESG"
           items={CONTENT_ITEMS.slice(0, 4)}
           trailHref="/design-system/screens/academy/trail/trail-1"
-          trailLabel="Ver trilha →"
         />
       </section>
     </ComponentPage>

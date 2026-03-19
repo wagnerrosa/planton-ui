@@ -42,7 +42,7 @@ export function HeroContent({ content }: HeroContentProps) {
             </span>
           )}
 
-          <Heading as="h1" size="heading-xl" className="!text-white !leading-tight">
+          <Heading as="h1" size="heading-xl" className="!text-white">
             {content.title}
           </Heading>
 

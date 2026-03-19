@@ -13,7 +13,7 @@ export default function Home() {
           priority
         />
         <div className="flex flex-col gap-2">
-          <h1 className="font-heading text-[clamp(3rem,5vw,5rem)] leading-[1.1] tracking-[-0.05em] text-planton-forest">
+          <h1 className="font-heading text-[clamp(3rem,5vw,5rem)] leading-[1.05] tracking-[-0.05em] text-planton-forest">
             Design System
           </h1>
           <p className="font-sans text-base leading-[1.65] text-planton-muted max-w-md">

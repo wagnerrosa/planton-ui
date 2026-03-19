@@ -82,7 +82,7 @@ export function EmailEntryStep({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md border-none shadow-xl">
         <DialogHeader>
-          <DialogTitle className="font-heading text-[clamp(1.75rem,2.25vw,2.25rem)] tracking-[-0.02em] leading-[1.1] text-planton-forest">
+          <DialogTitle className="font-heading text-[clamp(1.75rem,2.25vw,2.25rem)] tracking-[-0.02em] leading-[1.05] text-planton-forest">
             Criar cadastro
           </DialogTitle>
         </DialogHeader>

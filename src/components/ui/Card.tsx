@@ -43,7 +43,7 @@ export function Card({
           {index && (
             <span className="font-mono text-[0.75rem] text-planton-accent">{index}</span>
           )}
-          <h3 className={cn('font-heading text-xl leading-[1.1] tracking-[-0.02em]', isDark ? 'text-planton-cream' : 'text-planton-forest')}>
+          <h3 className={cn('font-heading text-xl leading-[1.15] tracking-[-0.02em]', isDark ? 'text-planton-cream' : 'text-planton-forest')}>
             {headline}
           </h3>
           {description && (

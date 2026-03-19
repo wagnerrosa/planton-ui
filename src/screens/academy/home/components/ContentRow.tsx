@@ -1,6 +1,8 @@
 'use client'
 
-import Link from 'next/link'
+import { Heading } from '@/components/primitives/Heading'
+import { Button } from '@/components/primitives/Button'
+import { ArrowRight } from 'lucide-react'
 import {
   Carousel,
   CarouselContent,
@@ -16,9 +18,8 @@ type ContentRowProps = {
   items: ContentItem[]
   showProgress?: boolean
   showTrail?: boolean
-  /** Link "Ver trilha →" exibido ao lado do título */
+  /** Botão "Ver trilha →" exibido ao lado do título */
   trailHref?: string
-  trailLabel?: string
 }
 
 export function ContentRow({
@@ -27,7 +28,6 @@ export function ContentRow({
   showProgress = false,
   showTrail = false,
   trailHref,
-  trailLabel,
 }: ContentRowProps) {
   if (items.length === 0) return null
 
@@ -35,16 +35,11 @@ export function ContentRow({
     <section className="flex flex-col gap-3">
       {/* Row header */}
       <div className="flex items-baseline gap-3">
-        <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">
-          {title}
-        </span>
+        <Heading as="h2" size="heading-lg">{title}</Heading>
         {trailHref && (
-          <Link
-            href={trailHref}
-            className="font-sans text-xs text-planton-muted hover:text-foreground transition-colors"
-          >
-            {trailLabel ?? 'Ver trilha →'}
-          </Link>
+          <Button variant="icon" href={trailHref}>
+            <ArrowRight className="h-4 w-4" />
+          </Button>
         )}
       </div>
 
@@ -54,7 +49,7 @@ export function ContentRow({
           <CarouselContent className="-ml-3">
             {items.map((item) => (
               <CarouselItem key={item.id} className="pl-3 basis-auto">
-                <ContentCard content={item} showProgress={showProgress} showTrail={showTrail} />
+                <ContentCard content={item} showProgress={showProgress} showTrail={showTrail} linkToTrail={!!trailHref} />
               </CarouselItem>
             ))}
           </CarouselContent>
