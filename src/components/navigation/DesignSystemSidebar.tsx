@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Palette, Type, MousePointer, Component, ImageIcon, Monitor } from 'lucide-react'
+import { Palette, Type, MousePointer, Component, ImageIcon, Monitor, ChevronLeft, ChevronRight } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -17,6 +17,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarHeader,
+  useSidebar,
 } from '@/components/shadcn/sidebar'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { componentCategories, buttonMeta } from '@/lib/components-registry'
@@ -31,13 +32,32 @@ const menuButtonClass = "rounded-none font-sans text-sm text-sidebar-foreground 
 
 const subButtonClass = "rounded-none font-sans text-[13px] text-sidebar-foreground/70 px-2 py-1.5 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:text-planton-accent"
 
+export function SidebarCollapseButton() {
+  const { state, toggleSidebar } = useSidebar()
+  const isOpen = state === 'expanded'
+
+  return (
+    <button
+      onClick={toggleSidebar}
+      className="fixed top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+      style={{
+        left: isOpen ? 'calc(260px - 12px)' : '12px',
+        transition: 'left 200ms ease, background-color 150ms ease, color 150ms ease',
+      }}
+      aria-label={isOpen ? 'Colapsar menu' : 'Expandir menu'}
+    >
+      {isOpen ? <ChevronLeft size={12} /> : <ChevronRight size={12} />}
+    </button>
+  )
+}
+
 export function DesignSystemSidebar() {
   const pathname = usePathname()
 
   return (
     <Sidebar
       className="w-[260px] shrink-0 border-r border-sidebar-border rounded-none"
-      collapsible="none"
+      collapsible="offcanvas"
     >
       <SidebarHeader className="px-5 py-5 border-b border-sidebar-border">
         <Link href="/" className="flex flex-col gap-2">
