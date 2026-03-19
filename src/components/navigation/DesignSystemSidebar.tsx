@@ -165,6 +165,19 @@ export function DesignSystemSidebar() {
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
+                isActive={pathname === '/design-system/screens'}
+                className={menuButtonClass}
+              >
+                <Link href="/design-system/screens">
+                  <Monitor size={15} />
+                  Overview
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
                 isActive={pathname.startsWith('/design-system/screens/academy')}
                 className={menuButtonClass}
               >
