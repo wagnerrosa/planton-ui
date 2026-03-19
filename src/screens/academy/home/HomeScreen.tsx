@@ -1,6 +1,7 @@
 'use client'
 
 import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
+import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { HeroContent } from './components/HeroContent'
 import { ContentRow } from './components/ContentRow'
 import {
@@ -63,6 +64,8 @@ export function HomeScreen() {
         />
 
       </div>
+
+      <AcademyFooter />
     </div>
   )
 }

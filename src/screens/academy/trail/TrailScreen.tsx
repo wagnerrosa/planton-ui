@@ -9,6 +9,7 @@ import { Button } from '@/components/primitives/Button'
 import { RadioGroup, RadioGroupItem } from '@/components/shadcn/radio-group'
 import { Label } from '@/components/shadcn/label'
 import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
+import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { ContentTypeIcon } from '../home/components/ContentTypeIcon'
 import {
   CheckCircle,
@@ -434,6 +435,8 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
           </div>
         </div>
       </div>
+
+      <AcademyFooter />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
+import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { ContentTypeIcon } from '../home/components/ContentTypeIcon'
 import { CONTENT_ITEMS } from '../home/mock-data'
 import type { ContentItem } from '../home/mock-data'
@@ -174,6 +175,8 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
           </>
         )}
       </div>
+
+      <AcademyFooter />
     </div>
   )
 }
