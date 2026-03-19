@@ -104,7 +104,7 @@ export const componentCategories: ComponentCategory[] = [
 export const buttonMeta: ComponentMeta = {
   slug: 'button',
   name: 'Button',
-  description: 'Componente primitivo de ação. Suporta variantes primary, primary-dark e icon.',
+  description: 'Componente primitivo de ação. Variantes: primary, primary-dark, secondary, outline, ghost e icon.',
   filePath: 'src/components/primitives/Button.tsx',
 }
 

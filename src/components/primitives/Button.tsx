@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 
-type ButtonVariant = 'primary' | 'primary-dark' | 'icon'
+type ButtonVariant = 'primary' | 'primary-dark' | 'secondary' | 'outline' | 'ghost' | 'icon'
 type ButtonSize = 'default' | 'sm'
 
 type ButtonProps = {
@@ -15,10 +15,16 @@ type ButtonProps = {
   className?: string
 }
 
+/** Variantes com efeito sweep (fundo desliza no hover) */
+const SWEEP_VARIANTS: ButtonVariant[] = ['primary', 'primary-dark', 'icon']
+
 const variantClasses: Record<ButtonVariant, string> = {
-  'primary':      'border-planton-accent text-planton-accent hover:text-button-on-accent',
+  'primary':    'border-planton-accent text-planton-accent hover:text-button-on-accent',
   'primary-dark': 'border-planton-accent text-planton-accent hover:text-button-on-accent',
-  'icon':         'border-planton-accent w-10 h-10 p-0 justify-center text-planton-accent hover:text-button-on-accent',
+  'secondary':  'border-planton-accent bg-planton-accent text-button-on-accent hover:bg-planton-accent/80 hover:border-planton-accent/80',
+  'outline':    'border-border text-foreground hover:border-planton-accent hover:text-planton-accent',
+  'ghost':      'border-transparent text-foreground hover:text-planton-accent',
+  'icon':       'border-planton-accent w-10 h-10 p-0 justify-center text-planton-accent hover:text-button-on-accent',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -35,42 +41,42 @@ export function Button({
   disabled,
   className,
 }: ButtonProps) {
+  const hasSweep = SWEEP_VARIANTS.includes(variant)
+
   const baseClasses = cn(
-    'relative inline-flex items-center overflow-hidden border rounded-none',
+    'relative inline-flex items-center gap-2 overflow-hidden border rounded-none',
     'font-sans font-medium tracking-[0.02em]',
-    'transition-[color] duration-[300ms] ease-out',
+    'transition-colors duration-200 ease-out',
     'disabled:opacity-40 disabled:cursor-not-allowed',
+    '[&_svg]:shrink-0',
     variantClasses[variant],
     variant !== 'icon' && sizeClasses[size],
     className,
   )
 
-  const sweepBg = 'bg-planton-accent'
-
-  const content = (
+  const innerContent = hasSweep ? (
     <>
       <span
         aria-hidden
-        className={cn(
-          'absolute inset-0 -translate-x-full transition-transform ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:translate-x-0',
-          sweepBg,
-        )}
+        className="absolute inset-0 -translate-x-full transition-transform ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:translate-x-0 bg-planton-accent"
       />
-      <span className="relative z-10">{children}</span>
+      <span className="relative z-10 inline-flex items-center gap-2">{children}</span>
     </>
+  ) : (
+    <>{children}</>
   )
 
   if (href) {
     return (
-      <a href={href} className={cn('group', baseClasses)}>
-        {content}
+      <a href={href} className={cn(hasSweep && 'group', baseClasses)}>
+        {innerContent}
       </a>
     )
   }
 
   return (
-    <button onClick={onClick} disabled={disabled} className={cn('group', baseClasses)}>
-      {content}
+    <button onClick={onClick} disabled={disabled} className={cn(hasSweep && 'group', baseClasses)}>
+      {innerContent}
     </button>
   )
 }

@@ -6,7 +6,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Progress } from '@/components/shadcn/progress'
 import { ScrollArea } from '@/components/shadcn/scroll-area'
-import { Button } from '@/components/shadcn/button'
+import { Button } from '@/components/primitives/Button'
 import { RadioGroup, RadioGroupItem } from '@/components/shadcn/radio-group'
 import { Label } from '@/components/shadcn/label'
 import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
@@ -296,15 +296,17 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                 const isActive = active.kind === 'content' && active.index === i
                 return (
                   <SidebarItem key={item.id} isActive={isActive} onClick={() => setActive({ kind: 'content', index: i })}>
-                    <span className="text-xs text-planton-muted w-5 shrink-0 text-right">{i + 1}</span>
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
                     <StatusIcon status={item.status} />
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                      <span className={`text-sm truncate ${isActive ? 'text-planton-accent font-medium' : 'text-foreground'}`}>
+                      <span className={`text-sm truncate ${isActive ? 'text-sidebar-accent-foreground font-medium' : 'text-foreground'}`}>
                         {item.title}
                       </span>
                       <div className="flex items-center gap-2">
-                        <ContentTypeIcon type={item.type} showLabel />
-                        <span className="text-xs text-planton-muted">{item.duration}</span>
+                        <ContentTypeIcon type={item.type} showLabel className={isActive ? 'text-sidebar-accent-foreground/60' : ''} />
+                        <span className={`text-xs ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>{item.duration}</span>
                       </div>
                     </div>
                   </SidebarItem>
@@ -415,12 +417,14 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                       isActive ? 'bg-sidebar-accent' : 'hover:bg-card/80'
                     }`}
                   >
-                    <span className="text-xs text-planton-muted w-5 shrink-0 text-right">{i + 1}</span>
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
                     <StatusIcon status={item.status} />
-                    <span className={`text-sm truncate flex-1 ${isActive ? 'text-planton-accent font-medium' : 'text-foreground'}`}>
+                    <span className={`text-sm truncate flex-1 ${isActive ? 'text-sidebar-accent-foreground font-medium' : 'text-foreground'}`}>
                       {item.title}
                     </span>
-                    <span className="text-xs text-planton-muted shrink-0">{item.duration}</span>
+                    <span className={`text-xs shrink-0 ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>{item.duration}</span>
                   </button>
                 )
               })}
