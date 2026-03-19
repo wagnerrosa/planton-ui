@@ -50,7 +50,7 @@ export function HomeScreen() {
         {trailsComConteudo.map((trail) => (
           <ContentRow
             key={trail.id}
-            title={`Comece: ${trail.title}`}
+            title={`Trilha: ${trail.title}`}
             items={trail.contents}
             trailHref={`/design-system/screens/academy/trail/${trail.id}`}
           />
@@ -60,7 +60,6 @@ export function HomeScreen() {
         <ContentRow
           title="Todos os conteúdos"
           items={CONTENT_ITEMS}
-          showTrail
         />
 
       </div>
