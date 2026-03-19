@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Progress } from '@/components/shadcn/progress'
@@ -273,18 +272,15 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
         <aside className="w-[340px] shrink-0 border-r border-border bg-card hidden md:flex flex-col">
           {/* Back + Trail header */}
           <div className="p-5 border-b border-border flex flex-col gap-3">
-            <Link
-              href="/design-system/screens/academy/home"
-              className="flex items-center gap-1 text-xs text-planton-muted hover:text-foreground transition-colors w-fit"
-            >
+            <Button variant="ghost" size="sm" href="/design-system/screens/academy/home" className="-ml-4">
               <ChevronLeft className="h-3.5 w-3.5" />
               Voltar para trilhas
-            </Link>
+            </Button>
             <Heading as="h2" size="heading-lg">{trail.title}</Heading>
-            <Body size="sm" muted>{trail.totalItems} conteúdos · {trail.totalDuration}</Body>
+            <span className="font-mono text-xs text-planton-muted">{trail.totalItems} conteúdos · {trail.totalDuration}</span>
             <div className="flex items-center gap-3">
-              <Progress value={trail.progress} className="flex-1 h-2" />
-              <span className="text-sm font-medium text-foreground">{trail.progress}%</span>
+              <Progress value={trail.progress} className="flex-1 h-1" />
+              <span className="font-mono text-sm font-medium text-foreground">{trail.progress}%</span>
             </div>
           </div>
 
@@ -296,17 +292,17 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                 const isActive = active.kind === 'content' && active.index === i
                 return (
                   <SidebarItem key={item.id} isActive={isActive} onClick={() => setActive({ kind: 'content', index: i })}>
-                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <StatusIcon status={item.status} />
                     <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                      <span className={`text-sm truncate ${isActive ? 'text-sidebar-accent-foreground font-medium' : 'text-foreground'}`}>
+                      <span className={`text-sm truncate ${isActive ? 'text-planton-accent font-medium' : 'text-foreground'}`}>
                         {item.title}
                       </span>
                       <div className="flex items-center gap-2">
-                        <ContentTypeIcon type={item.type} showLabel className={isActive ? 'text-sidebar-accent-foreground/60' : ''} />
-                        <span className={`text-xs ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>{item.duration}</span>
+                        <ContentTypeIcon type={item.type} showLabel className={isActive ? 'text-white/60' : ''} />
+                        <span className={`font-mono text-xs ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>{item.duration}</span>
                       </div>
                     </div>
                   </SidebarItem>
@@ -319,7 +315,9 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                   isActive={active.kind === 'quiz'}
                   onClick={() => setActive({ kind: 'quiz' })}
                 >
-                  <span className="w-5 shrink-0" />
+                  <span className={`font-mono text-xs w-5 shrink-0 text-right ${active.kind === 'quiz' ? 'text-white/60' : 'text-planton-muted'}`}>
+                    {String(trail.contents.length + 1).padStart(2, '0')}
+                  </span>
                   {trail.quiz.status === 'concluido' ? (
                     <CheckCircle className="h-4 w-4 text-planton-accent shrink-0" />
                   ) : trail.quiz.status === 'disponivel' ? (
@@ -338,25 +336,29 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                 </SidebarItem>
 
                 {/* Certificate */}
-                <SidebarItem
-                  isActive={active.kind === 'certificate'}
-                  onClick={() => setActive({ kind: 'certificate' })}
-                >
-                  <span className="w-5 shrink-0" />
-                  {trail.certificate.status === 'disponivel' ? (
-                    <GraduationCap className="h-4 w-4 text-planton-accent shrink-0" />
-                  ) : (
-                    <Lock className="h-4 w-4 text-planton-muted/50 shrink-0" />
-                  )}
-                  <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                    <span className={`text-sm truncate ${active.kind === 'certificate' ? 'text-planton-accent font-medium' : trail.certificate.status === 'bloqueado' ? 'text-planton-muted/50' : 'text-foreground'}`}>
-                      Certificado
+                <div className="border-t border-border">
+                  <SidebarItem
+                    isActive={active.kind === 'certificate'}
+                    onClick={() => setActive({ kind: 'certificate' })}
+                  >
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${active.kind === 'certificate' ? 'text-white/60' : 'text-planton-muted'}`}>
+                      {String(trail.contents.length + 2).padStart(2, '0')}
                     </span>
-                    <span className="text-xs text-planton-muted">
-                      {trail.certificate.status === 'disponivel' ? 'Disponível' : 'Bloqueado'}
-                    </span>
-                  </div>
-                </SidebarItem>
+                    {trail.certificate.status === 'disponivel' ? (
+                      <GraduationCap className="h-4 w-4 text-planton-accent shrink-0" />
+                    ) : (
+                      <Lock className="h-4 w-4 text-planton-muted/50 shrink-0" />
+                    )}
+                    <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                      <span className={`text-sm truncate ${active.kind === 'certificate' ? 'text-planton-accent font-medium' : trail.certificate.status === 'bloqueado' ? 'text-planton-muted/50' : 'text-foreground'}`}>
+                        Certificado
+                      </span>
+                      <span className="text-xs text-planton-muted">
+                        {trail.certificate.status === 'disponivel' ? 'Disponível' : 'Bloqueado'}
+                      </span>
+                    </div>
+                  </SidebarItem>
+                </div>
               </div>
             </div>
           </ScrollArea>
@@ -389,7 +391,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                 <div className="max-w-[900px] px-6 py-6 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <ContentTypeIcon type={activeContent.type} showLabel />
-                    <Body size="sm" muted>{activeContent.duration}</Body>
+                    <span className="font-mono text-xs text-planton-muted">{activeContent.duration}</span>
                   </div>
                   <Heading as="h1" size="heading-xl">{activeContent.title}</Heading>
                   <Body muted>{activeContent.description}</Body>
@@ -417,14 +419,14 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                       isActive ? 'bg-sidebar-accent' : 'hover:bg-card/80'
                     }`}
                   >
-                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <StatusIcon status={item.status} />
-                    <span className={`text-sm truncate flex-1 ${isActive ? 'text-sidebar-accent-foreground font-medium' : 'text-foreground'}`}>
+                    <span className={`text-sm truncate flex-1 ${isActive ? 'text-planton-accent font-medium' : 'text-foreground'}`}>
                       {item.title}
                     </span>
-                    <span className={`text-xs shrink-0 ${isActive ? 'text-sidebar-accent-foreground/60' : 'text-planton-muted'}`}>{item.duration}</span>
+                    <span className={`font-mono text-xs shrink-0 ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>{item.duration}</span>
                   </button>
                 )
               })}

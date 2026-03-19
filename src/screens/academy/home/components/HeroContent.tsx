@@ -48,7 +48,7 @@ export function HeroContent({ content }: HeroContentProps) {
 
           <div className="flex items-center gap-3">
             <ContentTypeIcon type={content.type} />
-            <Body size="sm" className="text-white/60">{content.duration}</Body>
+            <span className="font-mono text-xs text-white/60">{content.duration}</span>
           </div>
 
           <Body className="text-white/70 line-clamp-2">{content.description}</Body>

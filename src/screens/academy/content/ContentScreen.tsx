@@ -60,7 +60,7 @@ function ContentMeta({
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <ContentTypeIcon type={content.type} />
-          <Body size="sm" muted>{content.duration}</Body>
+          <span className="font-mono text-xs text-planton-muted">{content.duration}</span>
         </div>
         <TrailBadges trails={trails} />
       </div>

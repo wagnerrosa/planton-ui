@@ -27,7 +27,7 @@ export function ContentTypeIcon({
   return (
     <span className={`inline-flex items-center gap-1 ${colorClass} ${className ?? ''}`}>
       <Icon className={iconClass} />
-      {showLabel && size !== 'lg' && <span className="text-xs">{label}</span>}
+      {showLabel && size !== 'lg' && <span className="font-mono text-xs">{label}</span>}
     </span>
   )
 }

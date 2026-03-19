@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Body } from '@/components/primitives/Body'
-import { Progress } from '@/components/shadcn/progress'
 import { ContentTypeIcon } from './ContentTypeIcon'
 import type { ContentItem } from '../mock-data'
 
@@ -82,7 +80,7 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
 
         <div className="flex items-center gap-2">
           <ContentTypeIcon type={content.type} />
-          <Body size="sm" muted>{content.duration}</Body>
+          <span className="font-mono text-xs text-planton-muted">{content.duration}</span>
         </div>
       </div>
     </Link>
