@@ -101,7 +101,7 @@ function GuideView({ content }: { content: ContentItem }) {
         <Heading as="h2" size="heading-lg">{content.title}</Heading>
         <Body muted>{content.description}</Body>
         <Button variant="outline" className="mt-2">
-          <Download className="h-4 w-4 mr-2" />
+          <Download className="h-4 w-4" />
           Abrir PDF
         </Button>
       </div>
@@ -169,7 +169,7 @@ function QuizView({ trail }: { trail: Trail }) {
           </div>
         ))}
       </RadioGroup>
-      <Button onClick={handleNext} disabled={!answered} className="self-start">
+      <Button variant="primary" onClick={handleNext} disabled={!answered} className="self-start">
         {isLast ? 'Finalizar' : 'Próxima'}
       </Button>
     </div>
@@ -198,12 +198,12 @@ function CertificateView({ trail }: { trail: Trail }) {
           <Body muted>{trail.certificate.title}</Body>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
+          <Button variant="primary">
+            <Download className="h-4 w-4" />
             Baixar PDF
           </Button>
           <Button variant="outline">
-            <Linkedin className="h-4 w-4 mr-2" />
+            <Linkedin className="h-4 w-4" />
             Adicionar ao LinkedIn
           </Button>
         </div>

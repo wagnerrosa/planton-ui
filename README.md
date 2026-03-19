@@ -79,10 +79,22 @@ src/
 │
 ├── screens/
 │   └── academy/
-│       └── auth/
-│           ├── LoginFlow.tsx           # Fluxo de autenticação multi-step
-│           ├── LoginScreen.tsx         # Tela de login estática (legado)
-│           └── steps/                  # 13 step components do fluxo
+│       ├── auth/
+│       │   ├── LoginFlow.tsx           # Fluxo de autenticação multi-step
+│       │   ├── LoginScreen.tsx         # Tela de login estática (legado)
+│       │   └── steps/                  # 13 step components do fluxo
+│       ├── home/
+│       │   ├── HomeScreen.tsx          # Home do Academy (hero + content rows)
+│       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos)
+│       │   └── components/
+│       │       ├── HeroContent.tsx     # Banner hero com conteúdo em destaque
+│       │       ├── ContentRow.tsx      # Row horizontal de cards de conteúdo
+│       │       ├── ContentCard.tsx     # Card de conteúdo (vídeo, podcast, artigo)
+│       │       └── ContentTypeIcon.tsx # Ícone por tipo de conteúdo
+│       ├── trail/
+│       │   └── TrailScreen.tsx         # Tela de trilha (lista de conteúdos)
+│       └── content/
+│           └── ContentScreen.tsx       # Player de conteúdo (vídeo/podcast/artigo)
 │
 └── styles/
     ├── theme.css                       # Tokens de design (cores, bordas, superfícies)
@@ -200,6 +212,36 @@ Cada componente tem sua própria página com exemplos visuais, descrição e **f
 ## Telas (`src/screens/`)
 
 Composições de tela completas - diferente de componentes, encapsulam layout e lógica de uma tela inteira.
+
+### Home do Academy (`academy/home/`)
+
+Tela principal do Academy com hero, seções de "Continue assistindo", "Novos conteúdos" e rows por trilha.
+
+Acesse: `http://localhost:3000/design-system/screens/academy/home`
+
+Dados mockados em `mock-data.ts` — nenhuma API é chamada.
+
+---
+
+### Trilha (`academy/trail/`)
+
+Tela de detalhe de uma trilha: header com metadados e lista de conteúdos.
+
+Acesse: `http://localhost:3000/design-system/screens/academy/trail/[id]`
+
+IDs disponíveis nos mocks: `solo`, `irrigacao`, `pragas`
+
+---
+
+### Conteúdo (`academy/content/`)
+
+Player de conteúdo com suporte a vídeo (Mux), podcast, artigo e guia. Exibe título, tipo, duração, trilha e progresso.
+
+Acesse: `http://localhost:3000/design-system/screens/academy/content/[id]`
+
+IDs disponíveis: qualquer `id` dos `CONTENT_ITEMS` em `mock-data.ts`
+
+---
 
 ### Fluxo de Autenticação (`academy/auth/`)
 
@@ -355,7 +397,9 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system/components/layout/*` | Accordion, Collapsible, ScrollArea |
 | `/design-system/screens` | Índice de telas |
 | `/design-system/screens/academy/login` | Fluxo de autenticação multi-step |
-| `/design-system/screens/academy/home` | Home do Academy |
+| `/design-system/screens/academy/home` | Home do Academy (hero + trilhas + conteúdos) |
+| `/design-system/screens/academy/trail/[id]` | Tela de trilha com lista de conteúdos |
+| `/design-system/screens/academy/content/[id]` | Player de conteúdo (vídeo, podcast, artigo) |
 
 ---
 

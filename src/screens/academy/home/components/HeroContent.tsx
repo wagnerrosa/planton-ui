@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { Button } from '@/components/primitives/Button'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
@@ -61,12 +60,14 @@ export function HeroContent({ content }: HeroContentProps) {
             </Button>
 
             {trailHref && (
-              <Link
+              <Button
+                variant="outline"
+                size="sm"
                 href={trailHref}
-                className="font-sans text-sm text-white/70 hover:text-white transition-colors px-3 py-2 border border-white/20 hover:border-white/40"
+                className="border-white/30 text-white/80 hover:border-white hover:text-white"
               >
                 Ver trilha →
-              </Link>
+              </Button>
             )}
           </div>
         </div>
