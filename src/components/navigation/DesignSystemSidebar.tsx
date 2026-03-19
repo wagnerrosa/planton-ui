@@ -227,6 +227,24 @@ export function DesignSystemSidebar() {
                       <Link href="/design-system/screens/academy/home">Home</Link>
                     </SidebarMenuSubButton>
                   </SidebarMenuSubItem>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={pathname.startsWith('/design-system/screens/academy/trail')}
+                      className={subButtonClass}
+                    >
+                      <Link href="/design-system/screens/academy/trail/trail-1">Trail</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                  <SidebarMenuSubItem>
+                    <SidebarMenuSubButton
+                      asChild
+                      isActive={pathname.startsWith('/design-system/screens/academy/content')}
+                      className={subButtonClass}
+                    >
+                      <Link href="/design-system/screens/academy/content/c1">Content</Link>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
                 </SidebarMenuSub>
               )}
             </SidebarMenuItem>

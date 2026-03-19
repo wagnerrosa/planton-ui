@@ -1,129 +1,70 @@
 'use client'
 
-import { useState } from 'react'
-import { Heading } from '@/components/primitives/Heading'
-import { Body } from '@/components/primitives/Body'
-import { Separator } from '@/components/shadcn/separator'
-import { ContinueWatchingCard } from './components/ContinueWatchingCard'
-import { TrailsRow } from './components/TrailsRow'
-import { ContentModal } from './components/ContentModal'
-import { TrailDetailView } from './components/TrailDetailView'
-import { MOCK_TRAILS, CONTINUE_WATCHING } from './mock-data'
-import type { ContentItem, Trail } from './mock-data'
+import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
+import { HeroContent } from './components/HeroContent'
+import { ContentRow } from './components/ContentRow'
+import {
+  HERO_CONTENT,
+  CONTINUE_WATCHING_ITEMS,
+  NEW_CONTENT_ITEMS,
+  CONTENT_ITEMS,
+  MOCK_TRAILS,
+} from './mock-data'
 
 export function HomeScreen() {
-  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null)
-  const [selectedTrail, setSelectedTrail] = useState<Trail | null>(null)
-  const [contentModalOpen, setContentModalOpen] = useState(false)
-  const [detailTrail, setDetailTrail] = useState<Trail | null>(null)
-  const [detailOpen, setDetailOpen] = useState(false)
-
-  const trailsEmAndamento = MOCK_TRAILS.filter((t) => t.status === 'em-andamento')
-  const trailsConcluidas = MOCK_TRAILS.filter((t) => t.status === 'concluida')
-
-  function handleOpenContent(content: ContentItem, trail: Trail) {
-    setSelectedContent(content)
-    setSelectedTrail(trail)
-    setContentModalOpen(true)
-  }
-
-  function handleOpenDetail(trail: Trail) {
-    setDetailTrail(trail)
-    setDetailOpen(true)
-  }
-
-  function handleResumeContinueWatching() {
-    const trail = MOCK_TRAILS.find((t) => t.id === CONTINUE_WATCHING.trailId)
-    if (trail) {
-      handleOpenContent(CONTINUE_WATCHING.content, trail)
-    }
-  }
+  const trailsComConteudo = MOCK_TRAILS.filter(
+    (t) => t.status !== 'em-breve' && t.contents.length > 0
+  )
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navbar placeholder */}
-      <nav className="border-b border-border bg-card">
-        <div className="max-w-[1400px] mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logos_produtos/planton_academy_forest.svg"
-              alt="Planton Academy"
-              width={140}
-              height={28}
-              className="dark:hidden"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logos_produtos/planton_academy_branco.svg"
-              alt="Planton Academy"
-              width={140}
-              height={28}
-              className="hidden dark:block"
-            />
-          </div>
-          <div className="flex items-center gap-4">
-            <Body size="sm" muted>Wagner Rosa</Body>
-          </div>
-        </div>
-      </nav>
+      <AcademyNavbar
+        userName="Wagner Rosa"
+        breadcrumbs={[{ label: 'Home' }]}
+      />
 
-      {/* Content */}
-      <div className="max-w-[1400px] mx-auto px-6 py-8 flex flex-col gap-10">
-        {/* Header */}
-        <div className="flex flex-col gap-1">
-          <Heading as="h1" size="heading-xl">Minhas trilhas</Heading>
-          <Body muted>Continue de onde parou ou explore novas trilhas de aprendizado.</Body>
-        </div>
+      {/* 1. Hero */}
+      <HeroContent content={HERO_CONTENT} />
 
-        {/* Continue watching */}
-        <ContinueWatchingCard onResume={handleResumeContinueWatching} />
+      <div className="max-w-[1400px] mx-auto px-6 py-10 flex flex-col gap-12">
 
-        <Separator />
-
-        {/* Em andamento */}
-        {trailsEmAndamento.length > 0 && (
-          <TrailsRow
-            title="Em andamento"
-            trails={trailsEmAndamento}
-            onOpenDetail={handleOpenDetail}
-            onOpenContent={handleOpenContent}
+        {/* 2. Continue assistindo */}
+        {CONTINUE_WATCHING_ITEMS.length > 0 && (
+          <ContentRow
+            title="Continue assistindo"
+            items={CONTINUE_WATCHING_ITEMS}
+            showProgress
+            showTrail
           />
         )}
 
-        {/* Todas as trilhas */}
-        <TrailsRow
-          title="Todas as trilhas"
-          trails={MOCK_TRAILS}
-          onOpenDetail={handleOpenDetail}
-          onOpenContent={handleOpenContent}
+        {/* 3. Novos conteúdos */}
+        {NEW_CONTENT_ITEMS.length > 0 && (
+          <ContentRow
+            title="Novos conteúdos"
+            items={NEW_CONTENT_ITEMS}
+          />
+        )}
+
+        {/* 4. Trilhas — uma row por trilha */}
+        {trailsComConteudo.map((trail) => (
+          <ContentRow
+            key={trail.id}
+            title={`Comece: ${trail.title}`}
+            items={trail.contents}
+            trailHref={`/design-system/screens/academy/trail/${trail.id}`}
+            trailLabel="Ver trilha →"
+          />
+        ))}
+
+        {/* 5. Todos os conteúdos */}
+        <ContentRow
+          title="Todos os conteúdos"
+          items={CONTENT_ITEMS}
+          showTrail
         />
 
-        {/* Concluídas */}
-        {trailsConcluidas.length > 0 && (
-          <TrailsRow
-            title="Concluídas"
-            trails={trailsConcluidas}
-            onOpenDetail={handleOpenDetail}
-            onOpenContent={handleOpenContent}
-          />
-        )}
       </div>
-
-      {/* Overlays */}
-      <ContentModal
-        content={selectedContent}
-        trail={selectedTrail}
-        open={contentModalOpen}
-        onClose={() => setContentModalOpen(false)}
-      />
-
-      <TrailDetailView
-        trail={detailTrail}
-        open={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        onOpenContent={handleOpenContent}
-      />
     </div>
   )
 }
