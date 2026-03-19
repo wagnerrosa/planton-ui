@@ -8,7 +8,7 @@ import { ScrollArea } from '@/components/shadcn/scroll-area'
 import { Button } from '@/components/primitives/Button'
 import { RadioGroup, RadioGroupItem } from '@/components/shadcn/radio-group'
 import { Label } from '@/components/shadcn/label'
-import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
+import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { ContentTypeIcon } from '../home/components/ContentTypeIcon'
 import {
@@ -260,8 +260,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AcademyNavbar
-        userName="Wagner Rosa"
+      <AcademyNavbarSync
         breadcrumbs={[
           { label: 'Trilhas', href: '/design-system/screens/academy/home' },
           { label: trail.title },

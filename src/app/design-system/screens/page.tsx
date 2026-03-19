@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { ExternalLink } from 'lucide-react'
 import { Heading } from '@/components/primitives/Heading'
 import { Eyebrow } from '@/components/primitives/Eyebrow'
 import { Body } from '@/components/primitives/Body'
@@ -7,8 +7,10 @@ const screens = [
   {
     product: 'Academy',
     items: [
-      { href: '/design-system/screens/academy/login', label: 'Login', description: 'Tela de autenticação' },
-      { href: '/design-system/screens/academy/home',  label: 'Home',  description: 'Listagem de trilhas e cursos' },
+      { href: '/design-system/screens/academy/login',      label: 'Login',   description: 'Tela de autenticação' },
+      { href: '/design-system/screens/academy/home',       label: 'Home',    description: 'Listagem de trilhas e cursos' },
+      { href: '/design-system/screens/academy/trail/1',    label: 'Trilha',  description: 'Player de trilha com sidebar de conteúdos' },
+      { href: '/design-system/screens/academy/content/c1', label: 'Conteúdo', description: 'Tela individual de conteúdo' },
     ],
   },
 ]
@@ -29,16 +31,19 @@ export default function ScreensPage() {
           <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">{product.product}</span>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 overflow-hidden border-t border-l border-border">
             {product.items.map((item) => (
-              <Link
+              <a
                 key={item.href}
                 href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group border-r border-b border-border p-6 flex flex-col gap-2 hover:bg-card transition-colors"
               >
-                <span className="font-sans text-base font-medium text-foreground group-hover:text-planton-accent transition-colors">
+                <span className="flex items-center gap-2 font-sans text-base font-medium text-foreground group-hover:text-planton-accent transition-colors">
                   {item.label}
+                  <ExternalLink size={13} className="opacity-40 group-hover:opacity-100 transition-opacity" />
                 </span>
                 <span className="text-sm text-planton-muted leading-[1.65]">{item.description}</span>
-              </Link>
+              </a>
             ))}
           </div>
         </section>

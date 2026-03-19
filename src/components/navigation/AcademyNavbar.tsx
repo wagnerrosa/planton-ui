@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/shadcn/dropdown-menu'
+import { useSidebar } from '@/components/shadcn/sidebar'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -95,49 +96,48 @@ export function AcademyNavbar({
   onLogout,
   onProfile,
 }: AcademyNavbarProps) {
+  const { toggleSidebar } = useSidebar()
+
   return (
-    <nav className="sticky top-0 z-40 border-b border-sidebar-border bg-sidebar">
-      <div className="max-w-[1400px] mx-auto px-4 h-14 flex items-center gap-4">
+    <nav className="sticky top-0 z-[60] border-b border-sidebar-border bg-sidebar">
+      <div className="w-full h-14 flex items-stretch">
 
         {/* ---- Left ---- */}
-        <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex items-stretch self-stretch flex-1 min-w-0">
           {/* Hamburger */}
-          <button
-            onClick={onMenuToggle}
-            className="flex items-center justify-center w-8 h-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-            aria-label="Abrir/fechar menu"
-          >
-            <Menu size={18} />
-          </button>
+          <div className="flex items-center px-4 border-r border-sidebar-border">
+            <button
+              onClick={() => { toggleSidebar(); onMenuToggle?.() }}
+              className="flex items-center justify-center w-8 h-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              aria-label="Abrir/fechar menu"
+            >
+              <Menu size={18} />
+            </button>
+          </div>
 
           {/* Logo */}
-          <div className="shrink-0">
+          <div className="flex items-center px-5 shrink-0 border-r border-sidebar-border">
             <Image
               src="/logos_produtos/planton_academy_forest.svg"
               alt="Planton Academy"
-              width={130}
-              height={26}
+              width={164}
+              height={33}
               priority
               className="dark:hidden"
             />
             <Image
               src="/logos_produtos/planton_academy_branco.svg"
               alt="Planton Academy"
-              width={130}
-              height={26}
+              width={164}
+              height={33}
               priority
               className="hidden dark:block"
             />
           </div>
 
-          {/* Divider */}
-          {breadcrumbs.length > 0 && (
-            <span className="shrink-0 text-sidebar-border select-none">|</span>
-          )}
-
           {/* Breadcrumb */}
           {breadcrumbs.length > 0 && (
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1 min-w-0 overflow-hidden">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1 px-5 border-r border-sidebar-border min-w-0 overflow-hidden">
               {breadcrumbs.map((item, index) => {
                 const isLast = index === breadcrumbs.length - 1
                 return (
@@ -171,12 +171,12 @@ export function AcademyNavbar({
         </div>
 
         {/* ---- Right ---- */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-stretch gap-0 shrink-0 self-stretch">
           {/* Search */}
-          <div className="relative hidden sm:flex items-center">
+          <div className="relative hidden sm:flex items-center px-4 border-l border-sidebar-border">
             <Search
               size={14}
-              className="absolute left-2.5 text-sidebar-foreground/40 pointer-events-none"
+              className="absolute left-6.5 text-sidebar-foreground/40 pointer-events-none"
             />
             <input
               type="search"
@@ -187,13 +187,15 @@ export function AcademyNavbar({
           </div>
 
           {/* Theme toggle */}
-          <ThemeToggleButton />
+          <div className="flex items-center px-4 border-l border-sidebar-border">
+            <ThemeToggleButton />
+          </div>
 
           {/* User dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className="flex items-center gap-2 px-2 h-8 hover:bg-sidebar-accent transition-colors"
+                className="flex items-center gap-2 px-4 border-l border-sidebar-border self-stretch hover:bg-sidebar-accent transition-colors"
                 aria-label="Menu do usuário"
               >
                 <UserAvatar name={userName} avatarUrl={userAvatarUrl} />

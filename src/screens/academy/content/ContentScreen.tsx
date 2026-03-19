@@ -5,7 +5,7 @@ import { Download } from 'lucide-react'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
-import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
+import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { ContentTypeIcon } from '../home/components/ContentTypeIcon'
 import { CONTENT_ITEMS } from '../home/mock-data'
@@ -99,8 +99,7 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AcademyNavbar
-        userName="Wagner Rosa"
+      <AcademyNavbarSync
         breadcrumbs={[
           { label: 'Conteúdos', href: '/design-system/screens/academy/home' },
           { label: content.title },

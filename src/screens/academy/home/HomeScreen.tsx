@@ -1,6 +1,6 @@
 'use client'
 
-import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
+import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { HeroContent } from './components/HeroContent'
 import { ContentRow } from './components/ContentRow'
@@ -19,10 +19,7 @@ export function HomeScreen() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AcademyNavbar
-        userName="Wagner Rosa"
-        breadcrumbs={[{ label: 'Home' }]}
-      />
+      <AcademyNavbarSync breadcrumbs={[{ label: 'Home' }]} />
 
       {/* 1. Hero */}
       <HeroContent content={HERO_CONTENT} />

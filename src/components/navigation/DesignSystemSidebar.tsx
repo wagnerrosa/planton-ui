@@ -4,23 +4,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Palette, Type, MousePointer, Component, ImageIcon, Monitor, ChevronLeft, ChevronRight } from 'lucide-react'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
-  SidebarHeader,
-  useSidebar,
-} from '@/components/shadcn/sidebar'
+import { useSidebar } from '@/components/shadcn/sidebar'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
-import { componentCategories, buttonMeta } from '@/lib/components-registry'
+import { componentCategories } from '@/lib/components-registry'
 
 const foundations = [
   { href: '/design-system/colors',     label: 'Cores',      icon: Palette },
@@ -28,233 +14,178 @@ const foundations = [
   { href: '/design-system/logo',       label: 'Logo',       icon: ImageIcon },
 ]
 
-const menuButtonClass = "rounded-none font-sans text-sm text-sidebar-foreground gap-2.5 px-2 py-2 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:text-planton-accent"
+const itemClass = (active: boolean) =>
+  `flex items-center gap-2.5 px-2 py-2 text-sm font-sans transition-colors rounded-none ${
+    active
+      ? 'bg-sidebar-accent text-planton-accent'
+      : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+  }`
 
-const subButtonClass = "rounded-none font-sans text-[13px] text-sidebar-foreground/70 px-2 py-1.5 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:text-planton-accent"
-
-export function SidebarCollapseButton() {
-  const { state, toggleSidebar } = useSidebar()
-  const isOpen = state === 'expanded'
-
-  return (
-    <button
-      onClick={toggleSidebar}
-      className="fixed top-1/2 -translate-y-1/2 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent"
-      style={{
-        left: isOpen ? 'calc(260px - 12px)' : '12px',
-        transition: 'left 200ms ease, background-color 150ms ease, color 150ms ease',
-      }}
-      aria-label={isOpen ? 'Colapsar menu' : 'Expandir menu'}
-    >
-      {isOpen ? <ChevronLeft size={12} /> : <ChevronRight size={12} />}
-    </button>
-  )
-}
+const subItemClass = (active: boolean) =>
+  `block px-2 py-1.5 text-[13px] font-sans transition-colors rounded-none ${
+    active
+      ? 'text-planton-accent'
+      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+  }`
 
 export function DesignSystemSidebar() {
+  const { open, toggleSidebar } = useSidebar()
   const pathname = usePathname()
 
+  if (!open) return null
+
   return (
-    <Sidebar
-      className="w-[260px] shrink-0 border-r border-sidebar-border rounded-none"
-      collapsible="offcanvas"
-    >
-      <SidebarHeader className="px-5 py-5 border-b border-sidebar-border">
+    <aside className="w-[260px] shrink-0 border-r border-sidebar-border bg-sidebar flex flex-col overflow-y-auto">
+      {/* Header */}
+      <div className="px-5 py-5 border-b border-sidebar-border shrink-0 flex items-center justify-between">
         <Link href="/" className="flex flex-col gap-2">
-          <Image
-            src="/Logo_Planton_01.svg"
-            alt="Planton"
-            width={120}
-            height={26}
-            priority
-          />
+          <Image src="/Logo_Planton_01.svg" alt="Planton" width={120} height={26} priority />
           <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40">
             Design System
           </span>
         </Link>
-      </SidebarHeader>
+        <button
+          onClick={toggleSidebar}
+          className="flex items-center justify-center w-6 h-6 rounded-full border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors self-start mt-0.5"
+          aria-label="Colapsar menu"
+        >
+          <ChevronLeft size={12} />
+        </button>
+      </div>
 
-      <SidebarContent className="px-3 py-4">
+      {/* Nav */}
+      <nav className="px-3 py-4 flex flex-col gap-4 flex-1">
+
         {/* Foundations */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
             Foundations
-          </SidebarGroupLabel>
-          <SidebarMenu>
-            {foundations.map(({ href, label, icon: Icon }) => (
-              <SidebarMenuItem key={href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === href}
-                  className={menuButtonClass}
-                >
-                  <Link href={href}>
-                    <Icon size={15} />
-                    {label}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+          </span>
+          {foundations.map(({ href, label, icon: Icon }) => (
+            <Link key={href} href={href} className={itemClass(pathname === href)}>
+              <Icon size={15} />
+              {label}
+            </Link>
+          ))}
+        </div>
 
-        {/* System - Components */}
-        <SidebarGroup className="mt-4">
-          <SidebarGroupLabel className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
+        {/* System */}
+        <div className="flex flex-col gap-0.5">
+          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
             System
-          </SidebarGroupLabel>
-          <SidebarMenu>
-            {/* Componentes - index */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/design-system/components'}
-                className={menuButtonClass}
-              >
-                <Link href="/design-system/components">
-                  <Component size={15} />
-                  Componentes
+          </span>
+
+          <Link
+            href="/design-system/components"
+            className={itemClass(pathname === '/design-system/components')}
+          >
+            <Component size={15} />
+            Componentes
+          </Link>
+
+          <Link
+            href="/design-system/components/button"
+            className={itemClass(pathname === '/design-system/components/button')}
+          >
+            <MousePointer size={15} />
+            Button
+          </Link>
+
+          {componentCategories.map((category) => {
+            const base = `/design-system/components/${category.slug}`
+            const isActive = pathname.startsWith(base)
+            const CategoryIcon = category.icon
+            return (
+              <div key={category.slug}>
+                <Link
+                  href={`${base}/${category.components[0].slug}`}
+                  className={itemClass(isActive)}
+                >
+                  <CategoryIcon size={15} />
+                  {category.label}
                 </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {/* Button - standalone */}
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/design-system/components/button'}
-                className={menuButtonClass}
-              >
-                <Link href="/design-system/components/button">
-                  <MousePointer size={15} />
-                  Button
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-
-            {/* Component categories with sub-items */}
-            {componentCategories.map((category) => {
-              const categoryBasePath = `/design-system/components/${category.slug}`
-              const isCategoryActive = pathname.startsWith(categoryBasePath)
-              const CategoryIcon = category.icon
-
-              return (
-                <SidebarMenuItem key={category.slug}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isCategoryActive}
-                    className={menuButtonClass}
-                  >
-                    <Link href={`${categoryBasePath}/${category.components[0].slug}`}>
-                      <CategoryIcon size={15} />
-                      {category.label}
-                    </Link>
-                  </SidebarMenuButton>
-
-                  {isCategoryActive && (
-                    <SidebarMenuSub>
-                      {category.components.map((comp) => {
-                        const compPath = `${categoryBasePath}/${comp.slug}`
-                        return (
-                          <SidebarMenuSubItem key={comp.slug}>
-                            <SidebarMenuSubButton
-                              asChild
-                              isActive={pathname === compPath}
-                              className={subButtonClass}
-                            >
-                              <Link href={compPath}>{comp.name}</Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        )
-                      })}
-                    </SidebarMenuSub>
-                  )}
-                </SidebarMenuItem>
-              )
-            })}
-
-          </SidebarMenu>
-        </SidebarGroup>
+                {isActive && (
+                  <div className="flex flex-col mt-0.5">
+                    {category.components.map((comp) => {
+                      const path = `${base}/${comp.slug}`
+                      return (
+                        <Link key={comp.slug} href={path} className={subItemClass(pathname === path)}>
+                          <span className="pl-7">{comp.name}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
 
         {/* Screens */}
-        <SidebarGroup className="mt-4">
-          <SidebarGroupLabel className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
             Screens
-          </SidebarGroupLabel>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/design-system/screens'}
-                className={menuButtonClass}
-              >
-                <Link href="/design-system/screens">
-                  <Monitor size={15} />
-                  Overview
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+          </span>
 
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/design-system/screens/academy')}
-                className={menuButtonClass}
-              >
-                <Link href="/design-system/screens/academy/login">
-                  <Monitor size={15} />
-                  Academy
-                </Link>
-              </SidebarMenuButton>
+          <Link
+            href="/design-system/screens"
+            className={itemClass(pathname === '/design-system/screens')}
+          >
+            <Monitor size={15} />
+            Overview
+          </Link>
 
-              {pathname.startsWith('/design-system/screens/academy') && (
-                <SidebarMenuSub>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton
-                      asChild
-                      isActive={pathname === '/design-system/screens/academy/login'}
-                      className={subButtonClass}
-                    >
-                      <Link href="/design-system/screens/academy/login">Login</Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton
-                      asChild
-                      isActive={pathname === '/design-system/screens/academy/home'}
-                      className={subButtonClass}
-                    >
-                      <Link href="/design-system/screens/academy/home">Home</Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton
-                      asChild
-                      isActive={pathname.startsWith('/design-system/screens/academy/trail')}
-                      className={subButtonClass}
-                    >
-                      <Link href="/design-system/screens/academy/trail/trail-1">Trail</Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                  <SidebarMenuSubItem>
-                    <SidebarMenuSubButton
-                      asChild
-                      isActive={pathname.startsWith('/design-system/screens/academy/content')}
-                      className={subButtonClass}
-                    >
-                      <Link href="/design-system/screens/academy/content/c1">Content</Link>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                </SidebarMenuSub>
-              )}
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
+          <div>
+            <Link
+              href="/design-system/screens/academy/login"
+              className={itemClass(pathname.startsWith('/design-system/screens/academy'))}
+            >
+              <Monitor size={15} />
+              Academy
+            </Link>
+            {pathname.startsWith('/design-system/screens/academy') && (
+              <div className="flex flex-col mt-0.5">
+                {[
+                  { href: '/design-system/screens/academy/login', label: 'Login' },
+                  { href: '/design-system/screens/academy/home',  label: 'Home' },
+                  { href: '/design-system/screens/academy/trail/trail-1', label: 'Trail', match: '/design-system/screens/academy/trail' },
+                  { href: '/design-system/screens/academy/content/c1', label: 'Content', match: '/design-system/screens/academy/content' },
+                ].map(({ href, label, match }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={subItemClass(pathname === href || (!!match && pathname.startsWith(match)))}
+                  >
+                    <span className="pl-7">{label}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-      <SidebarFooter className="border-t border-sidebar-border px-3 py-3">
+      </nav>
+
+      {/* Footer */}
+      <div className="border-t border-sidebar-border px-3 py-3 shrink-0">
         <ThemeToggle />
-      </SidebarFooter>
-    </Sidebar>
+      </div>
+    </aside>
+  )
+}
+
+export function SidebarCollapseButton() {
+  const { open, toggleSidebar } = useSidebar()
+
+  if (open) return null
+
+  return (
+    <button
+      onClick={toggleSidebar}
+      className="fixed top-[22px] left-3 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+      aria-label="Expandir menu"
+    >
+      <ChevronRight size={12} />
+    </button>
   )
 }
