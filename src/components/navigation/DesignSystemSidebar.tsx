@@ -35,7 +35,14 @@ export function DesignSystemSidebar() {
   if (!open) return null
 
   return (
-    <aside className="w-[260px] shrink-0 border-r border-sidebar-border bg-sidebar flex flex-col overflow-y-auto">
+    <>
+      {/* Overlay para fechar no mobile ao tocar fora */}
+      <div
+        className="fixed inset-0 z-30 bg-black/40 md:hidden"
+        onClick={toggleSidebar}
+        aria-hidden="true"
+      />
+      <aside className="w-[260px] shrink-0 border-r border-sidebar-border bg-sidebar flex flex-col overflow-y-auto relative z-40">
       {/* Header */}
       <div className="px-5 py-5 border-b border-sidebar-border shrink-0 flex items-center justify-between">
         <Link href="/" className="flex flex-col gap-2">
@@ -46,7 +53,7 @@ export function DesignSystemSidebar() {
         </Link>
         <button
           onClick={toggleSidebar}
-          className="flex items-center justify-center w-6 h-6 rounded-full border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors self-start mt-0.5"
+          className="flex items-center justify-center w-11 h-11 -mr-2 rounded-full text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors self-start -mt-2"
           aria-label="Colapsar menu"
         >
           <ChevronLeft size={12} />
@@ -144,6 +151,7 @@ export function DesignSystemSidebar() {
         <ThemeToggle />
       </div>
     </aside>
+    </>
   )
 }
 
@@ -155,7 +163,7 @@ export function SidebarCollapseButton() {
   return (
     <button
       onClick={toggleSidebar}
-      className="fixed top-[22px] left-3 z-50 flex items-center justify-center w-6 h-6 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+      className="fixed top-[10px] left-1 z-50 flex items-center justify-center w-11 h-11 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
       aria-label="Expandir menu"
     >
       <ChevronRight size={12} />

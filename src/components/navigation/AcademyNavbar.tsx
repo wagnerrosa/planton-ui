@@ -132,7 +132,7 @@ export function AcademyNavbar({
 
           {/* Logo */}
           <div className="flex items-center px-5 shrink-0 border-r border-sidebar-border">
-            <Link href="/design-system/screens/academy" className="flex items-center">
+            <Link href="/design-system/screens/academy/home" className="flex items-center">
               <Image
                 src="/logos_produtos/planton_academy_forest.svg"
                 alt="Planton Academy"
