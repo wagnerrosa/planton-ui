@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { Menu, Search, ChevronRight, LogOut, User } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
@@ -48,7 +49,7 @@ function ThemeToggleButton() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="flex items-center justify-center w-8 h-8 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+      className="flex items-center justify-center w-8 h-8 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
       aria-label="Alternar tema"
     >
       <Sun size={16} className="dark:hidden" />
@@ -105,10 +106,12 @@ export function AcademyNavbar({
         {/* ---- Left ---- */}
         <div className="flex items-stretch self-stretch flex-1 min-w-0">
           {/* Hamburger */}
-          <div className="flex items-center px-4 border-r border-sidebar-border">
+          <div
+            className="flex items-center px-4 border-r border-sidebar-border hover:bg-sidebar-accent transition-colors cursor-pointer"
+            onClick={() => { toggleSidebar(); onMenuToggle?.() }}
+          >
             <button
-              onClick={() => { toggleSidebar(); onMenuToggle?.() }}
-              className="flex items-center justify-center w-8 h-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+              className="flex items-center justify-center w-8 h-8 shrink-0 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
               aria-label="Abrir/fechar menu"
             >
               <Menu size={18} />
@@ -117,22 +120,24 @@ export function AcademyNavbar({
 
           {/* Logo */}
           <div className="flex items-center px-5 shrink-0 border-r border-sidebar-border">
-            <Image
-              src="/logos_produtos/planton_academy_forest.svg"
-              alt="Planton Academy"
-              width={164}
-              height={33}
-              priority
-              className="dark:hidden"
-            />
-            <Image
-              src="/logos_produtos/planton_academy_branco.svg"
-              alt="Planton Academy"
-              width={164}
-              height={33}
-              priority
-              className="hidden dark:block"
-            />
+            <Link href="/design-system/screens/academy" className="flex items-center">
+              <Image
+                src="/logos_produtos/planton_academy_forest.svg"
+                alt="Planton Academy"
+                width={164}
+                height={33}
+                priority
+                className="dark:hidden"
+              />
+              <Image
+                src="/logos_produtos/planton_academy_branco.svg"
+                alt="Planton Academy"
+                width={164}
+                height={33}
+                priority
+                className="hidden dark:block"
+              />
+            </Link>
           </div>
 
           {/* Breadcrumb */}
@@ -176,18 +181,18 @@ export function AcademyNavbar({
           <div className="relative hidden sm:flex items-center px-4 border-l border-sidebar-border">
             <Search
               size={14}
-              className="absolute left-6.5 text-sidebar-foreground/40 pointer-events-none"
+              className="absolute left-7 text-sidebar-foreground/40 pointer-events-none"
             />
             <input
               type="search"
-              placeholder="Buscar..."
+              placeholder="Buscar conteúdos, trilhas..."
               onChange={(e) => onSearch?.(e.target.value)}
-              className="h-8 w-44 pl-8 pr-3 font-sans text-[13px] bg-sidebar-accent/50 border border-sidebar-border text-sidebar-foreground placeholder:text-sidebar-foreground/40 focus:outline-none focus:ring-1 focus:ring-planton-accent/50 transition-all"
+              className="h-8 w-56 pl-9 pr-3 font-sans text-[13px] bg-sidebar-accent/30 border border-transparent text-sidebar-foreground placeholder:text-sidebar-foreground/40 hover:bg-sidebar-accent/50 focus:bg-sidebar-accent/60 focus:outline-none focus:ring-1 focus:ring-planton-accent/40 transition-all"
             />
           </div>
 
           {/* Theme toggle */}
-          <div className="flex items-center px-4 border-l border-sidebar-border">
+          <div className="flex items-center px-4 border-l border-sidebar-border hover:bg-sidebar-accent transition-colors">
             <ThemeToggleButton />
           </div>
 
