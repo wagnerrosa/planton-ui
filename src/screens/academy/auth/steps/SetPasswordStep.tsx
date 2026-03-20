@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Heading } from '@/components/primitives/Heading'
 import { AcademyLogo } from '../AcademyLogo'
+import { AuthCard } from '../AuthCard'
 import { Button } from '@/components/primitives/Button'
 import {
   Form,
@@ -46,7 +47,7 @@ export function SetPasswordStep({ onNavigate }: SetPasswordStepProps) {
   }
 
   return (
-    <div className="w-full max-w-md border border-border p-10 flex flex-col gap-6">
+    <AuthCard>
       <div className="flex flex-col gap-2">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Defina sua senha</Heading>
@@ -109,6 +110,6 @@ export function SetPasswordStep({ onNavigate }: SetPasswordStepProps) {
       >
         Voltar
       </button>
-    </div>
+    </AuthCard>
   )
 }

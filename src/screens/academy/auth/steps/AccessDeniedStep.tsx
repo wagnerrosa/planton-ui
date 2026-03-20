@@ -3,6 +3,7 @@
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { AcademyLogo } from '../AcademyLogo'
+import { AuthCard } from '../AuthCard'
 import { Button } from '@/components/primitives/Button'
 import type { AuthStep } from '../LoginFlow'
 
@@ -12,7 +13,7 @@ type AccessDeniedStepProps = {
 
 export function AccessDeniedStep({ onNavigate }: AccessDeniedStepProps) {
   return (
-    <div className="w-full max-w-md border border-border p-10 flex flex-col gap-6">
+    <AuthCard>
       <div className="flex flex-col gap-2">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Acesso negado</Heading>
@@ -40,6 +41,6 @@ export function AccessDeniedStep({ onNavigate }: AccessDeniedStepProps) {
           Quero conhecer o Planton Academy →
         </a>
       </Body>
-    </div>
+    </AuthCard>
   )
 }

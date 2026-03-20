@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { AcademyLogo } from '../AcademyLogo'
+import { AuthCard } from '../AuthCard'
 import { Button } from '@/components/primitives/Button'
 import { Alert, AlertDescription } from '@/components/shadcn/alert'
 import { AlertCircle } from 'lucide-react'
@@ -40,7 +41,7 @@ export function LoginStep({ onNavigate, onUpdateContext, onOpenEmailDialog }: Lo
   }
 
   return (
-    <div className="w-full max-w-md border border-border bg-background p-10 flex flex-col gap-6">
+    <AuthCard>
       <div className="flex flex-col gap-2">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Entrar na plataforma</Heading>
@@ -107,6 +108,6 @@ export function LoginStep({ onNavigate, onUpdateContext, onOpenEmailDialog }: Lo
           Criar novo cadastro
         </button>
       </Body>
-    </div>
+    </AuthCard>
   )
 }

@@ -55,10 +55,10 @@ export function LoginFlow() {
         src="/assets/trigo-bg.jpg"
         alt=""
         fill
-        className="object-cover"
+        className="object-cover scale-102 blur-[2px]"
         priority
       />
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-black/10" />
       <div className="relative z-10 w-full flex items-center justify-center">
       {step === 'login' && (
         <LoginStep

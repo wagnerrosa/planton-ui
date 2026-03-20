@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { AcademyLogo } from '../AcademyLogo'
+import { AuthCard } from '../AuthCard'
 import { Button } from '@/components/primitives/Button'
 import { Alert, AlertDescription } from '@/components/shadcn/alert'
 import { AlertCircle } from 'lucide-react'
@@ -37,7 +38,7 @@ export function DomainInactiveStep({ onNavigate, onUpdateContext }: DomainInacti
   }
 
   return (
-    <div className="w-full max-w-md border border-border p-10 flex flex-col gap-6">
+    <AuthCard>
       <div className="flex flex-col gap-2">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Ativar acesso</Heading>
@@ -92,6 +93,6 @@ export function DomainInactiveStep({ onNavigate, onUpdateContext }: DomainInacti
       >
         Voltar ao login
       </button>
-    </div>
+    </AuthCard>
   )
 }

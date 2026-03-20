@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { AcademyLogo } from '../AcademyLogo'
+import { AuthCard } from '../AuthCard'
 import { CheckCircle } from 'lucide-react'
 import type { AuthStep } from '../LoginFlow'
 
@@ -20,7 +21,7 @@ export function DomainActiveStep({ onNavigate }: DomainActiveStepProps) {
   }, [onNavigate])
 
   return (
-    <div className="w-full max-w-md border border-border p-10 flex flex-col gap-6">
+    <AuthCard>
       <div className="flex flex-col gap-2">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Empresa encontrada</Heading>
@@ -32,6 +33,6 @@ export function DomainActiveStep({ onNavigate }: DomainActiveStepProps) {
           Encontramos sua empresa. Complete seu cadastro para acessar.
         </Body>
       </div>
-    </div>
+    </AuthCard>
   )
 }
