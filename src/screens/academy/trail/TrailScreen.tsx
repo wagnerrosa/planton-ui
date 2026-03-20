@@ -15,7 +15,8 @@ import {
   CheckCircle,
   Circle,
   CircleDot,
-  Award,
+  AlertCircle,
+  XCircle,
   GraduationCap,
   ChevronLeft,
   Lock,
@@ -23,6 +24,8 @@ import {
   Download,
   Linkedin,
 } from 'lucide-react'
+import { Badge } from '@/components/shadcn/badge'
+import { Alert, AlertBody, AlertDescription } from '@/components/shadcn/alert'
 import { MOCK_TRAILS } from '../home/mock-data'
 import type { ContentItem, Trail } from '../home/mock-data'
 
@@ -89,12 +92,23 @@ function PodcastView() {
   )
 }
 
+type QuizStatus = 'in-progress' | 'passed' | 'failed' | 'failed-final'
+
+const ATTEMPT_LABELS: Record<number, string> = {
+  1: '1ª tentativa',
+  2: '2ª tentativa',
+  3: '3ª tentativa',
+}
+
 function QuizView({ trail }: { trail: Trail }) {
   const [currentQ, setCurrentQ] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const [answered, setAnswered] = useState(false)
   const [score, setScore] = useState(0)
-  const [finished, setFinished] = useState(trail.quiz.status === 'concluido')
+  const [attempt, setAttempt] = useState(1)
+  const [status, setStatus] = useState<QuizStatus>(
+    trail.quiz.status === 'concluido' ? 'passed' : 'in-progress'
+  )
 
   if (trail.quiz.status === 'bloqueado') {
     return (
@@ -108,14 +122,74 @@ function QuizView({ trail }: { trail: Trail }) {
     )
   }
 
-  if (finished) {
+  if (status === 'passed') {
+    const pct = trail.quiz.status === 'concluido' ? 92 : Math.round((score / trail.quiz.questions.length) * 100)
     return (
-      <div className="w-full" style={{ aspectRatio: '16/9' }}>
-        <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-          <CheckCircle className="h-12 w-12 text-planton-accent" />
-          <Heading as="h2" size="heading-lg">Quiz concluído!</Heading>
-          <Body muted>Você acertou {score} de {trail.quiz.questions.length} questões.</Body>
+      <div className="w-full max-w-[760px] mx-auto px-6 pt-12 pb-16 flex flex-col gap-6">
+        <Badge variant="success" className="self-start">{ATTEMPT_LABELS[attempt]}</Badge>
+        <div className="flex flex-col gap-4">
+          <CheckCircle className="h-10 w-10 text-success" strokeWidth={1.5} />
+          <Heading as="h2" size="heading-xl">Parabéns! Você foi aprovado</Heading>
+          <Body muted>Você atingiu {pct}% de acertos.</Body>
         </div>
+        <Button variant="primary" className="self-start">
+          Gerar certificado
+        </Button>
+      </div>
+    )
+  }
+
+  function handleRetry() {
+    setCurrentQ(0)
+    setSelected(null)
+    setAnswered(false)
+    setScore(0)
+    setAttempt((a) => a + 1)
+    setStatus('in-progress')
+  }
+
+  if (status === 'failed') {
+    const pct = Math.round((score / trail.quiz.questions.length) * 100)
+    return (
+      <div className="w-full max-w-[760px] mx-auto px-6 pt-12 pb-16 flex flex-col gap-6">
+        <Badge variant="warning" className="self-start">{ATTEMPT_LABELS[attempt]}</Badge>
+        <div className="flex flex-col gap-4">
+          <AlertCircle className="h-10 w-10 text-warning" strokeWidth={1.5} />
+          <Heading as="h2" size="heading-xl">Não foi dessa vez</Heading>
+          <Body muted>Você atingiu {pct}% de acertos. O mínimo é 80%.</Body>
+        </div>
+        <Alert variant="warning">
+          <AlertCircle className="h-4 w-4" strokeWidth={1.5} />
+          <AlertBody>
+            <AlertDescription>Revise os conteúdos e tente novamente.</AlertDescription>
+          </AlertBody>
+        </Alert>
+        <Button variant="primary" onClick={handleRetry} className="self-start">
+          Rever conteúdos
+        </Button>
+      </div>
+    )
+  }
+
+  if (status === 'failed-final') {
+    const pct = Math.round((score / trail.quiz.questions.length) * 100)
+    return (
+      <div className="w-full max-w-[760px] mx-auto px-6 pt-12 pb-16 flex flex-col gap-6">
+        <Badge variant="destructive" className="self-start">{ATTEMPT_LABELS[attempt]}</Badge>
+        <div className="flex flex-col gap-4">
+          <XCircle className="h-10 w-10 text-destructive" strokeWidth={1.5} />
+          <Heading as="h2" size="heading-xl">Você atingiu o limite de tentativas</Heading>
+          <Body muted>Você atingiu {pct}% de acertos. O mínimo é 80%.</Body>
+        </div>
+        <Alert variant="destructive">
+          <XCircle className="h-4 w-4" strokeWidth={1.5} />
+          <AlertBody>
+            <AlertDescription>Revise os conteúdos para tentar novamente.</AlertDescription>
+          </AlertBody>
+        </Alert>
+        <Button variant="primary" className="self-start">
+          Rever conteúdos
+        </Button>
       </div>
     )
   }
@@ -127,8 +201,15 @@ function QuizView({ trail }: { trail: Trail }) {
     const correct = selected !== null && parseInt(selected) === question.correctIndex
     const newScore = score + (correct ? 1 : 0)
     if (isLast) {
+      const pct = Math.round(((newScore) / trail.quiz.questions.length) * 100)
       setScore(newScore)
-      setFinished(true)
+      if (pct >= 80) {
+        setStatus('passed')
+      } else if (attempt >= 3) {
+        setStatus('failed-final')
+      } else {
+        setStatus('failed')
+      }
     } else {
       setScore(newScore)
       setCurrentQ((q) => q + 1)
@@ -139,6 +220,7 @@ function QuizView({ trail }: { trail: Trail }) {
 
   return (
     <div className="w-full max-w-[760px] mx-auto px-6 pt-12 pb-16 flex flex-col gap-6">
+      <Badge variant="outline" className="self-start">{ATTEMPT_LABELS[attempt]}</Badge>
       <Body size="sm" muted className="font-mono">Questão {currentQ + 1} de {trail.quiz.questions.length}</Body>
       <Heading as="h2" size="heading-lg">{question.question}</Heading>
       <RadioGroup value={selected ?? ''} onValueChange={(v) => { setSelected(v); setAnswered(true) }}>

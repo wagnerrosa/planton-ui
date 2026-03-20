@@ -102,14 +102,9 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
         {content.type === 'artigo' && (
           <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-8">
             <ContentMeta content={content} trails={trails} />
-            {firstTrail && (
-              <Button variant="primary" href={`/academy/trail/${firstTrail.id}`} className="self-start">
-                Continuar trilha →
-              </Button>
-            )}
+
             <div className="prose prose-invert max-w-none border-t border-border pt-6">
-              <p className="text-foreground/80 leading-relaxed">{content.description}</p>
-              <p className="text-foreground/60 leading-relaxed mt-4">
+              <p className="text-foreground/60 leading-relaxed">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
                 incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
                 exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
@@ -120,6 +115,11 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
                 qui officia deserunt mollit anim id est laborum.
               </p>
             </div>
+                        {firstTrail && (
+              <Button variant="primary" href={`/academy/trail/${firstTrail.id}`} className="self-start">
+                Continuar trilha →
+              </Button>
+            )}
           </div>
         )}
 
