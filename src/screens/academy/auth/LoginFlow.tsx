@@ -119,7 +119,7 @@ export function LoginFlow() {
           style={{ opacity: nextVisible ? 1 : 0 }}
         />
       )}
-      <div className="absolute inset-0 bg-black/10" />
+      <div className="absolute inset-0 bg-black/20" />
       <div className="relative z-10 w-full flex items-center justify-center">
       {step === 'login' && (
         <LoginStep
