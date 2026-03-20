@@ -460,8 +460,9 @@ export const MOCK_TRAILS: Trail[] = [
 // Curated lists for Home sections
 // ---------------------------------------------------------------------------
 
-/** Conteúdo hero (destaque principal) */
-export const HERO_CONTENT = CONTENT_ITEMS[3] // c4: Calculando Emissões na Prática
+/** Conteúdos hero (destaque principal) — apenas vídeos, máx 3 */
+export const HERO_CONTENT = CONTENT_ITEMS[3] // c4: Calculando Emissões na Prática (backwards compat)
+export const HERO_CONTENTS = CONTENT_ITEMS.filter((c) => c.type === 'video').slice(0, 3)
 
 /** Conteúdos com progresso para "Continue assistindo" */
 export const CONTINUE_WATCHING_ITEMS = CONTENT_ITEMS.filter(

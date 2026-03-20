@@ -6,7 +6,7 @@ import { HeroContent } from './components/HeroContent'
 import { ContentRow } from './components/ContentRow'
 import { ContinueTrailsCard } from './components/ContinueTrailsCard'
 import {
-  HERO_CONTENT,
+  HERO_CONTENTS,
   CONTINUE_WATCHING_ITEMS,
   NEW_CONTENT_ITEMS,
   CONTENT_ITEMS,
@@ -28,7 +28,7 @@ export function HomeScreen() {
       <AcademyNavbarSync breadcrumbs={[{ label: 'Home' }]} />
 
       {/* 1. Hero */}
-      <HeroContent content={HERO_CONTENT} />
+      <HeroContent contents={HERO_CONTENTS} />
 
       <div className="max-w-[1400px] mx-auto px-6 py-10 flex flex-col gap-12">
 
