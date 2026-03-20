@@ -4,6 +4,7 @@ import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { HeroContent } from './components/HeroContent'
 import { ContentRow } from './components/ContentRow'
+import { ContinueTrailsCard } from './components/ContinueTrailsCard'
 import {
   HERO_CONTENT,
   CONTINUE_WATCHING_ITEMS,
@@ -16,6 +17,11 @@ export function HomeScreen() {
   const trailsComConteudo = MOCK_TRAILS.filter(
     (t) => t.status !== 'em-breve' && t.contents.length > 0
   )
+  const trailsEmAndamento = MOCK_TRAILS.filter(
+    (t) => t.status !== 'concluida' && t.progress > 0
+  )
+  const hasContinueWatching = CONTINUE_WATCHING_ITEMS.length > 0
+  const hasTrailsInProgress = trailsEmAndamento.length > 0
 
   return (
     <div className="min-h-screen bg-background">
@@ -26,14 +32,30 @@ export function HomeScreen() {
 
       <div className="max-w-[1400px] mx-auto px-6 py-10 flex flex-col gap-12">
 
-        {/* 2. Continue assistindo */}
-        {CONTINUE_WATCHING_ITEMS.length > 0 && (
+        {/* 2. Continue assistindo + Trilhas em andamento */}
+        {hasContinueWatching && !hasTrailsInProgress && (
           <ContentRow
             title="Continue assistindo"
             items={CONTINUE_WATCHING_ITEMS}
             showProgress
             showTrail
           />
+        )}
+
+        {hasContinueWatching && hasTrailsInProgress && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 -my-10">
+            <div className="lg:col-span-2 pr-8 py-10">
+              <ContentRow
+                title="Continue assistindo"
+                items={CONTINUE_WATCHING_ITEMS}
+                showProgress
+                showTrail
+              />
+            </div>
+            <div className="pt-10 pb-10 lg:pl-8 lg:border-l border-border flex flex-col overflow-hidden">
+              <ContinueTrailsCard trails={MOCK_TRAILS} />
+            </div>
+          </div>
         )}
 
       </div>
@@ -49,6 +71,7 @@ export function HomeScreen() {
           <ContentRow
             title="Novos conteúdos"
             items={NEW_CONTENT_ITEMS}
+            loop
           />
         )}
 

@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import { SidebarProvider } from '@/components/shadcn/sidebar'
 import { AcademySidebar } from '@/components/navigation/AcademySidebar'
 import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
@@ -7,6 +9,12 @@ import { AcademyNavbarProvider, useAcademyNavbar } from '@/components/navigation
 
 function AcademyLayoutInner({ children }: { children: React.ReactNode }) {
   const { breadcrumbs, userName } = useAcademyNavbar()
+  const mainRef = useRef<HTMLElement>(null)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    mainRef.current?.scrollTo(0, 0)
+  }, [pathname])
 
   return (
     <SidebarProvider>
@@ -17,7 +25,7 @@ function AcademyLayoutInner({ children }: { children: React.ReactNode }) {
         {/* Sidebar + conteúdo */}
         <div className="flex flex-1 overflow-hidden">
           <AcademySidebar />
-          <main className="flex-1 overflow-auto">
+          <main ref={mainRef} className="flex-1 overflow-auto">
             {children}
           </main>
         </div>

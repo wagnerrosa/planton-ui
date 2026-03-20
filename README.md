@@ -87,10 +87,11 @@ src/
 │       │   ├── HomeScreen.tsx          # Home do Academy (hero + content rows)
 │       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos)
 │       │   └── components/
-│       │       ├── HeroContent.tsx     # Banner hero com conteúdo em destaque
-│       │       ├── ContentRow.tsx      # Row horizontal de cards de conteúdo
-│       │       ├── ContentCard.tsx     # Card de conteúdo (vídeo, podcast, artigo)
-│       │       └── ContentTypeIcon.tsx # Ícone por tipo de conteúdo
+│       │       ├── HeroContent.tsx         # Banner hero com conteúdo em destaque
+│       │       ├── ContentRow.tsx          # Row horizontal de cards de conteúdo (loop opcional)
+│       │       ├── ContentCard.tsx         # Card de conteúdo (vídeo, podcast, artigo)
+│       │       ├── ContentTypeIcon.tsx     # Ícone por tipo de conteúdo
+│       │       └── ContinueTrailsCard.tsx  # Lista de trilhas em andamento com progress bars
 │       ├── trail/
 │       │   └── TrailScreen.tsx         # Tela de trilha (lista de conteúdos)
 │       └── content/
@@ -227,11 +228,47 @@ Composições de tela completas - diferente de componentes, encapsulam layout e 
 
 ### Home do Academy (`academy/home/`)
 
-Tela principal do Academy com hero, seções de "Continue assistindo", "Novos conteúdos" e rows por trilha.
+Tela principal do Academy. Composta por hero, seção de retomada de conteúdo, novidades e rows por trilha.
 
 Acesse: `http://localhost:3000/design-system/screens/academy/home`
 
 Dados mockados em `mock-data.ts` — nenhuma API é chamada.
+
+#### Seções e lógica condicional
+
+| Seção | Condição de exibição |
+|---|---|
+| Hero | Sempre visível |
+| Continue assistindo | `CONTINUE_WATCHING_ITEMS.length > 0` (itens com `progress > 0 && < 100`) |
+| Trilhas em andamento | `MOCK_TRAILS` com `status !== 'concluida' && progress > 0` |
+| Novos conteúdos | `NEW_CONTENT_ITEMS.length > 0` (itens com `isNew: true`) |
+| Rows por trilha | Trilhas com `status !== 'em-breve' && contents.length > 0` |
+| Todos os conteúdos | Sempre visível |
+
+#### Layout da seção de retomada (2 variantes)
+
+**Variante A — usuário com trilhas em andamento:**
+Layout de duas colunas separadas por divisor vertical. Esquerda (2/3): carousel "Continue assistindo". Direita (1/3): `ContinueTrailsCard` com progress bars das trilhas.
+
+```
+┌─────────────────────────────┬────────────────────┐
+│  Continue assistindo        │ Trilhas em andamento│
+│  [card] [card] [card] →     │ Trilha A ── 65%  → │
+│                             │ Trilha B ── 55%  → │
+│                             │ Trilha C ── 45%  → │
+└─────────────────────────────┴────────────────────┘
+```
+
+**Variante B — usuário sem trilhas em andamento:**
+`ContentRow` ocupa 100% da largura, sem divisor e sem `ContinueTrailsCard`.
+
+#### ContinueTrailsCard
+
+- Filtra trilhas com `status !== 'concluida' && progress > 0`
+- Ordena por `progress DESC` (mais avançadas primeiro)
+- Scroll interno limitado a ~5 itens visíveis; demais ficam ocultos
+- Cada item: nome clicável com seta inline → navega para a trilha
+- Progress bar usa `bg-planton-accent/10` no track (padrão do design system)
 
 ---
 

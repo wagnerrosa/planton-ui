@@ -20,6 +20,8 @@ type ContentRowProps = {
   showTrail?: boolean
   /** Botão "Ver trilha →" exibido ao lado do título */
   trailHref?: string
+  /** Ativa loop infinito no carousel */
+  loop?: boolean
 }
 
 export function ContentRow({
@@ -28,6 +30,7 @@ export function ContentRow({
   showProgress = false,
   showTrail = false,
   trailHref,
+  loop = true,
 }: ContentRowProps) {
   if (items.length === 0) return null
 
@@ -45,7 +48,7 @@ export function ContentRow({
 
       {/* Carousel */}
       <div className="relative">
-        <Carousel opts={{ align: 'start', loop: false }}>
+        <Carousel opts={{ align: 'start', loop }}>
           <CarouselContent className="-ml-3">
             {items.map((item) => (
               <CarouselItem key={item.id} className="pl-3 basis-auto">
