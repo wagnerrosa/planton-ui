@@ -21,23 +21,23 @@ export default function ProgressPage() {
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm text-foreground">Trilha: Gestão de Emissões de GEE</span>
-              <span className="text-sm text-muted-foreground">65%</span>
+              <span className="font-mono text-sm text-muted-foreground">65%</span>
             </div>
-            <Progress value={65} />
+            <Progress value={65} className="h-1 bg-planton-accent/10" />
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm text-foreground">Trilha: Fundamentos ESG</span>
-              <Badge className="rounded-none bg-planton-accent text-planton-ink font-mono text-xs">Concluída</Badge>
+              <Badge variant="default">Concluída</Badge>
             </div>
-            <Progress value={100} />
+            <Progress value={100} className="h-1 bg-planton-accent/10" />
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <span className="text-sm text-foreground">Trilha: GHG Protocol Avançado</span>
-              <span className="text-sm text-muted-foreground">20%</span>
+              <span className="font-mono text-sm text-muted-foreground">20%</span>
             </div>
-            <Progress value={20} />
+            <Progress value={20} className="h-1 bg-planton-accent/10" />
           </div>
         </div>
       </section>

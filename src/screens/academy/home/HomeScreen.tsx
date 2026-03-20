@@ -36,6 +36,14 @@ export function HomeScreen() {
           />
         )}
 
+      </div>
+
+      {CONTINUE_WATCHING_ITEMS.length > 0 && NEW_CONTENT_ITEMS.length > 0 && (
+        <div className="border-t border-border" />
+      )}
+
+      <div className="max-w-[1400px] mx-auto px-6 py-10 flex flex-col gap-12">
+
         {/* 3. Novos conteúdos */}
         {NEW_CONTENT_ITEMS.length > 0 && (
           <ContentRow
