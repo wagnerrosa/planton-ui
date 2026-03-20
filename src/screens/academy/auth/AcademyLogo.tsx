@@ -17,5 +17,5 @@ export function AcademyLogo() {
     : '/logos_produtos/planton_academy_forest.svg'
 
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt="Planton Academy" width={160} height={32} />
+  return <img src={src} alt="Planton Academy" width={240} height={48} className="mx-auto" />
 }

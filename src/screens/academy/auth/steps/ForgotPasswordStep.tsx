@@ -24,7 +24,7 @@ export function ForgotPasswordStep({ onNavigate, onUpdateContext }: ForgotPasswo
 
   return (
     <AuthCard>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-6">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Recuperar senha</Heading>
       </div>

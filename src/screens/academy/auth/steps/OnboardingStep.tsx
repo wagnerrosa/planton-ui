@@ -14,7 +14,7 @@ type OnboardingStepProps = {
 export function OnboardingStep({ onNavigate }: OnboardingStepProps) {
   return (
     <AuthCard>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-6">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Bem-vindo ao Planton Academy</Heading>
       </div>

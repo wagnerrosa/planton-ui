@@ -1,8 +1,57 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+
+const BG_IMAGES = [
+  '/assets/SERRA-SUL-BG.jpg',
+  '/assets/MATA-ATLANTICA-BG.jpg',
+  '/assets/CAATINGA-BG.jpg',
+  '/assets/PANTANAL-BG.jpg',
+  '/assets/PAMPA-BG.jpg',
+]
+
+function shuffled(arr: string[]): string[] {
+  return [...arr].sort(() => Math.random() - 0.5)
+}
+
+function useBgSlideshow(intervalMs = 20000) {
+  const queue = useRef<string[]>([])
+  const [current, setCurrent] = useState<string | null>(null)
+  const [next, setNext] = useState<string | null>(null)
+  const [nextVisible, setNextVisible] = useState(false)
+
+  useEffect(() => {
+    queue.current = shuffled(BG_IMAGES)
+    setCurrent(queue.current[0])
+
+    const timer = setInterval(() => {
+      queue.current.shift()
+      if (queue.current.length === 0) queue.current = shuffled(BG_IMAGES)
+      const nextImg = queue.current[0]
+
+      // Monta o next invisível, depois faz fade in
+      setNext(nextImg)
+      setNextVisible(false)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setNextVisible(true)
+        })
+      })
+
+      // Após a transição, promove next para current e limpa
+      setTimeout(() => {
+        setCurrent(nextImg)
+        setNext(null)
+        setNextVisible(false)
+      }, 1200)
+    }, intervalMs)
+    return () => clearInterval(timer)
+  }, [intervalMs])
+
+  return { current, next, nextVisible }
+}
 import { LoginStep } from './steps/LoginStep'
 import { AccessDeniedStep } from './steps/AccessDeniedStep'
 import { ForgotPasswordStep } from './steps/ForgotPasswordStep'
@@ -41,9 +90,10 @@ export type AuthContext = {
 export function LoginFlow() {
   const searchParams = useSearchParams()
   const initialStep = (searchParams.get('step') as AuthStep) ?? 'login'
-  const [step, setStep] = useState<AuthStep>(initialStep)
+  const [step, setStep] = useState<AuthStep>(initialStep === 'email-entry' ? 'login' : initialStep)
+  const { current, next, nextVisible } = useBgSlideshow()
   const [context, setContext] = useState<AuthContext>({ email: '' })
-  const [emailDialogOpen, setEmailDialogOpen] = useState(false)
+  const [emailDialogOpen, setEmailDialogOpen] = useState(initialStep === 'email-entry')
 
   const updateContext = (updates: Partial<AuthContext>) => {
     setContext((prev) => ({ ...prev, ...updates }))
@@ -51,13 +101,24 @@ export function LoginFlow() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
-      <Image
-        src="/assets/trigo-bg.jpg"
-        alt=""
-        fill
-        className="object-cover scale-102 blur-[2px]"
-        priority
-      />
+      {current && (
+        <Image
+          src={current}
+          alt=""
+          fill
+          className="object-cover"
+          priority
+        />
+      )}
+      {next && (
+        <Image
+          src={next}
+          alt=""
+          fill
+          className="object-cover transition-opacity duration-1000"
+          style={{ opacity: nextVisible ? 1 : 0 }}
+        />
+      )}
       <div className="absolute inset-0 bg-black/10" />
       <div className="relative z-10 w-full flex items-center justify-center">
       {step === 'login' && (

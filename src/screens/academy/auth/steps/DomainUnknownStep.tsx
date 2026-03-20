@@ -14,7 +14,7 @@ type DomainUnknownStepProps = {
 export function DomainUnknownStep({ onNavigate }: DomainUnknownStepProps) {
   return (
     <AuthCard>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-6">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Empresa não encontrada</Heading>
       </div>
