@@ -364,7 +364,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
               )}
               {/* Content info — only for media types (not article which renders inline) */}
               {activeContent.type !== 'artigo' && (
-                <div className="max-w-[900px] px-6 pt-6 pb-16 flex flex-col gap-3">
+                <div className="w-full max-w-[760px] mx-auto px-6 pt-6 pb-16 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <ContentTypeIcon type={activeContent.type} showLabel />
                     <span className="font-mono text-xs text-planton-muted">{activeContent.duration}</span>
