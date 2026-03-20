@@ -19,7 +19,7 @@ function findContentById(id: string) {
 function MuxPlayer({ playbackId, title }: { playbackId: string; title: string }) {
   return (
     <iframe
-      src={`https://player.mux.com/${playbackId}?metadata-video-title=${encodeURIComponent(title)}`}
+      src={`https://player.mux.com/${playbackId}?metadata-video-title=${encodeURIComponent(title)}&accent-color=%2396d35f`}
       title={title}
       style={{ width: '100%', border: 'none', aspectRatio: '16/9' }}
       allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"

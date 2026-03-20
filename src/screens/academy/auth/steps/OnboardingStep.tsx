@@ -24,7 +24,7 @@ export function OnboardingStep({ onNavigate }: OnboardingStepProps) {
       </Body>
 
       <iframe
-        src="https://player.mux.com/WKpT00e9YdvWkU3IR7JzqLQaPtXhsfXDfhBXuHMyCrd8"
+        src="https://player.mux.com/WKpT00e9YdvWkU3IR7JzqLQaPtXhsfXDfhBXuHMyCrd8?accent-color=%2396d35f"
         title="Bem-vindo ao Planton Academy"
         style={{ width: '100%', border: 'none', aspectRatio: '16/9' }}
         allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"

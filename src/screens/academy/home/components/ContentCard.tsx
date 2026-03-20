@@ -35,7 +35,7 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
   return (
     <Link
       href={href}
-      className="flex flex-col gap-2 group focus:outline-none w-[200px] sm:w-[220px] md:w-[240px] lg:w-[260px] flex-shrink-0"
+      className="flex flex-col gap-2 group/card focus:outline-none w-[200px] sm:w-[220px] md:w-[240px] lg:w-[260px] flex-shrink-0"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -68,7 +68,7 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
 
       {/* Info */}
       <div className="flex flex-col gap-1">
-        <span className="font-sans text-sm font-medium text-foreground leading-snug group-hover:text-planton-accent transition-colors line-clamp-2">
+        <span className="font-sans text-sm font-medium text-foreground leading-snug group-hover/card:text-planton-accent transition-colors line-clamp-2">
           {content.title}
         </span>
 
