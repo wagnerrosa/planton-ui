@@ -4,7 +4,6 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { AcademyLogo } from '../AcademyLogo'
 import { Button } from '@/components/primitives/Button'
-import { Play } from 'lucide-react'
 import type { AuthStep } from '../LoginFlow'
 
 type OnboardingStepProps = {
@@ -20,12 +19,16 @@ export function OnboardingStep({ onNavigate }: OnboardingStepProps) {
       </div>
 
       <Body size="sm" muted>
-        Antes de começar, assista ao vídeo abaixo para entender como funcionam as trilhas e a certificação.
+        Veja um vídeo rápido sobre como funcionam as trilhas e a certificação.
       </Body>
 
-      <div className="flex items-center justify-center aspect-video border border-border bg-planton-forest/5">
-        <Play className="h-12 w-12 text-planton-muted" />
-      </div>
+      <iframe
+        src="https://player.mux.com/WKpT00e9YdvWkU3IR7JzqLQaPtXhsfXDfhBXuHMyCrd8"
+        title="Bem-vindo ao Planton Academy"
+        style={{ width: '100%', border: 'none', aspectRatio: '16/9' }}
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
+        allowFullScreen
+      />
 
       <div className="flex flex-col gap-3">
         <Button
@@ -33,16 +36,8 @@ export function OnboardingStep({ onNavigate }: OnboardingStepProps) {
           className="w-full justify-center"
           onClick={() => onNavigate('success')}
         >
-          Começar
+          Ir para a plataforma
         </Button>
-
-        <button
-          type="button"
-          onClick={() => onNavigate('success')}
-          className="font-sans text-xs text-planton-muted underline-offset-2 hover:underline text-center"
-        >
-          Pular
-        </button>
       </div>
     </div>
   )

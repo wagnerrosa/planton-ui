@@ -40,7 +40,7 @@ export function LoginStep({ onNavigate, onUpdateContext, onOpenEmailDialog }: Lo
   }
 
   return (
-    <div className="w-full max-w-md border border-border p-10 flex flex-col gap-6">
+    <div className="w-full max-w-md border border-border bg-background p-10 flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Entrar na plataforma</Heading>

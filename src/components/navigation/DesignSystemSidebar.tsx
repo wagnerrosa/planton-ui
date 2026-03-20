@@ -135,33 +135,6 @@ export function DesignSystemSidebar() {
             Overview
           </Link>
 
-          <div>
-            <Link
-              href="/design-system/screens/academy/login"
-              className={itemClass(pathname.startsWith('/design-system/screens/academy'))}
-            >
-              <Monitor size={15} />
-              Academy
-            </Link>
-            {pathname.startsWith('/design-system/screens/academy') && (
-              <div className="flex flex-col mt-0.5">
-                {[
-                  { href: '/design-system/screens/academy/login', label: 'Login' },
-                  { href: '/design-system/screens/academy/home',  label: 'Home' },
-                  { href: '/design-system/screens/academy/trail/trail-1', label: 'Trail', match: '/design-system/screens/academy/trail' },
-                  { href: '/design-system/screens/academy/content/c1', label: 'Content', match: '/design-system/screens/academy/content' },
-                ].map(({ href, label, match }) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={subItemClass(pathname === href || (!!match && pathname.startsWith(match)))}
-                  >
-                    <span className="pl-7">{label}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
       </nav>

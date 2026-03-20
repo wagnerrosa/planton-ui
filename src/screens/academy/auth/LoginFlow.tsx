@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 import { LoginStep } from './steps/LoginStep'
 import { AccessDeniedStep } from './steps/AccessDeniedStep'
 import { ForgotPasswordStep } from './steps/ForgotPasswordStep'
@@ -37,7 +39,9 @@ export type AuthContext = {
 }
 
 export function LoginFlow() {
-  const [step, setStep] = useState<AuthStep>('login')
+  const searchParams = useSearchParams()
+  const initialStep = (searchParams.get('step') as AuthStep) ?? 'login'
+  const [step, setStep] = useState<AuthStep>(initialStep)
   const [context, setContext] = useState<AuthContext>({ email: '' })
   const [emailDialogOpen, setEmailDialogOpen] = useState(false)
 
@@ -46,7 +50,16 @@ export function LoginFlow() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-default p-6">
+    <div className="relative min-h-screen flex items-center justify-center p-6 overflow-hidden">
+      <Image
+        src="/assets/trigo-bg.jpg"
+        alt=""
+        fill
+        className="object-cover"
+        priority
+      />
+      <div className="absolute inset-0 bg-black/50" />
+      <div className="relative z-10 w-full flex items-center justify-center">
       {step === 'login' && (
         <LoginStep
           onNavigate={setStep}
@@ -111,6 +124,7 @@ export function LoginFlow() {
       )}
 
       {step === 'success' && <SuccessStep />}
+      </div>
 
       <EmailEntryStep
         open={emailDialogOpen}
