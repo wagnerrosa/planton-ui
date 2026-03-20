@@ -52,6 +52,7 @@ function useBgSlideshow(intervalMs = 20000) {
 
   return { current, next, nextVisible }
 }
+import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { LoginStep } from './steps/LoginStep'
 import { AccessDeniedStep } from './steps/AccessDeniedStep'
 import { ForgotPasswordStep } from './steps/ForgotPasswordStep'
@@ -120,72 +121,40 @@ export function LoginFlow() {
         />
       )}
       <div className="absolute inset-0 bg-black/20" />
-      <div className="relative z-10 w-full flex items-center justify-center">
-      {step === 'login' && (
-        <LoginStep
-          onNavigate={setStep}
-          onUpdateContext={updateContext}
-          onOpenEmailDialog={() => setEmailDialogOpen(true)}
-        />
-      )}
 
-      {step === 'access-denied' && (
-        <AccessDeniedStep onNavigate={setStep} />
-      )}
-
-      {step === 'forgot-password' && (
-        <ForgotPasswordStep
-          onNavigate={setStep}
-          onUpdateContext={updateContext}
-        />
-      )}
-
-      {step === 'reset-password-sent' && (
-        <ResetPasswordSentStep
-          email={context.email}
-          onNavigate={setStep}
-        />
-      )}
-
-      {step === 'domain-active' && (
-        <DomainActiveStep onNavigate={setStep} />
-      )}
-
-      {step === 'domain-inactive' && (
-        <DomainInactiveStep
-          onNavigate={setStep}
-          onUpdateContext={updateContext}
-        />
-      )}
-
-      {step === 'domain-unknown' && (
-        <DomainUnknownStep onNavigate={setStep} />
-      )}
-
-      {step === 'profile-form' && (
-        <ProfileFormStep
-          scenario={context.scenario}
-          onNavigate={setStep}
-        />
-      )}
-
-      {step === 'set-password' && (
-        <SetPasswordStep onNavigate={setStep} />
-      )}
-
-      {step === 'otp-verification' && (
-        <OTPVerificationStep
-          email={context.email}
-          onNavigate={setStep}
-        />
-      )}
-
-      {step === 'onboarding' && (
-        <OnboardingStep onNavigate={setStep} />
-      )}
-
-      {step === 'success' && <SuccessStep />}
+      {/* Card */}
+      <div className="relative z-20 w-full flex items-center justify-center">
+        {step === 'login' && (
+          <LoginStep
+            onNavigate={setStep}
+            onUpdateContext={updateContext}
+            onOpenEmailDialog={() => setEmailDialogOpen(true)}
+          />
+        )}
+        {step === 'access-denied' && <AccessDeniedStep onNavigate={setStep} />}
+        {step === 'forgot-password' && (
+          <ForgotPasswordStep onNavigate={setStep} onUpdateContext={updateContext} />
+        )}
+        {step === 'reset-password-sent' && (
+          <ResetPasswordSentStep email={context.email} onNavigate={setStep} />
+        )}
+        {step === 'domain-active' && <DomainActiveStep onNavigate={setStep} />}
+        {step === 'domain-inactive' && (
+          <DomainInactiveStep onNavigate={setStep} onUpdateContext={updateContext} />
+        )}
+        {step === 'domain-unknown' && <DomainUnknownStep onNavigate={setStep} />}
+        {step === 'profile-form' && (
+          <ProfileFormStep scenario={context.scenario} onNavigate={setStep} />
+        )}
+        {step === 'set-password' && <SetPasswordStep onNavigate={setStep} />}
+        {step === 'otp-verification' && (
+          <OTPVerificationStep email={context.email} onNavigate={setStep} />
+        )}
+        {step === 'onboarding' && <OnboardingStep onNavigate={setStep} />}
+        {step === 'success' && <SuccessStep />}
       </div>
+
+      <AcademyFooter variant="overlay" />
 
       <EmailEntryStep
         open={emailDialogOpen}

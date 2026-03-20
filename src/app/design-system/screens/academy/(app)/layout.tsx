@@ -1,5 +1,23 @@
 'use client'
 
+/**
+ * AcademyAppLayout
+ *
+ * Layout raiz de todas as telas do academy. Estrutura:
+ *
+ *   AcademyNavbarProvider        ← disponibiliza Context para navbar e telas
+ *     AcademyLayoutInner
+ *       AcademyNavbar            ← lê breadcrumbs/userName do Context
+ *       AcademySidebar
+ *       <main>
+ *         {children}             ← telas renderizam <AcademyNavbarSync> aqui
+ *                                   para atualizar os breadcrumbs da navbar
+ *
+ * Por que AcademyLayoutInner existe separado?
+ * O Provider precisa envolver quem consome o Context (AcademyNavbar).
+ * Como ambos estão no mesmo arquivo, o inner component resolve o boundary.
+ */
+
 import { useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import { SidebarProvider } from '@/components/shadcn/sidebar'

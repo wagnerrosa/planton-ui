@@ -1,5 +1,17 @@
 'use client'
 
+/**
+ * AcademyNavbarContext
+ *
+ * Resolve o problema de boundary no Next.js App Router:
+ * a <AcademyNavbar> vive no layout (fora da árvore das telas), mas precisa
+ * exibir breadcrumbs dinâmicos definidos por cada tela filha.
+ *
+ * Solução: Context compartilhado entre layout e telas.
+ * - O layout lê `breadcrumbs` e passa para <AcademyNavbar>
+ * - As telas escrevem via <AcademyNavbarSync> (ver AcademyNavbarSync.tsx)
+ */
+
 import { createContext, useContext, useState } from 'react'
 import type { BreadcrumbItem } from './AcademyNavbar'
 

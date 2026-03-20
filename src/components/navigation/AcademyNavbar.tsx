@@ -32,8 +32,20 @@ export interface AcademyNavbarProps {
   userAvatarUrl?: string
   /** Callback do botão hamburger (toggle sidebar). */
   onMenuToggle?: () => void
-  /** Callback do campo de busca global. */
-  onSearch?: (query: string) => void
+  /**
+   * Callback disparado quando o usuário clica no botão de busca (trigger ⌘K).
+   *
+   * TODO: implementar SearchModal (spotlight)
+   * - Abrir um modal/overlay fullscreen ou centrado com input real
+   * - Suportar busca em tempo real por conteúdos e trilhas
+   * - Fechar com Escape ou clique fora
+   * - Atalho de teclado ⌘K (ou Ctrl+K) deve também disparar este callback
+   *
+   * Por ora, este callback não recebe query — apenas sinaliza a intenção de abrir.
+   * Quando o modal for implementado, a assinatura pode evoluir para
+   * `onSearchOpen?: () => void` e a query será gerenciada internamente no modal.
+   */
+  onSearch?: () => void
   /** Callback de logout. */
   onLogout?: () => void
   /** Callback de perfil. */
@@ -177,18 +189,23 @@ export function AcademyNavbar({
 
         {/* ---- Right ---- */}
         <div className="flex items-stretch gap-0 shrink-0 self-stretch">
-          {/* Search */}
-          <div className="relative hidden sm:flex items-center px-4 border-l border-sidebar-border">
-            <Search
-              size={14}
-              className="absolute left-7 text-sidebar-foreground/40 pointer-events-none"
-            />
-            <input
-              type="search"
-              placeholder="Buscar conteúdos, trilhas..."
-              onChange={(e) => onSearch?.(e.target.value)}
-              className="h-8 w-56 pl-9 pr-3 font-sans text-[13px] bg-sidebar-accent/30 border border-transparent text-sidebar-foreground placeholder:text-sidebar-foreground/40 hover:bg-sidebar-accent/50 focus:bg-sidebar-accent/60 focus:outline-none focus:ring-1 focus:ring-planton-accent/40 transition-all"
-            />
+          {/* Search trigger */}
+          <div className="hidden sm:flex items-center px-4 border-l border-sidebar-border">
+            <button
+              onClick={() => onSearch?.()}
+              className="flex items-center gap-2.5 h-8 w-52 px-3 bg-sidebar-accent/20 border border-sidebar-border/60 text-sidebar-foreground/40 hover:bg-sidebar-accent/40 hover:border-sidebar-border hover:text-sidebar-foreground/60 transition-all group"
+              aria-label="Buscar"
+            >
+              <Search size={13} className="shrink-0" />
+              <span className="flex-1 text-left font-sans text-[13px] truncate">
+                Buscar...
+              </span>
+              <span className="flex items-center gap-0.5 shrink-0">
+                <kbd className="font-mono text-[10px] leading-none px-1 py-0.5 bg-sidebar-foreground/10 border border-sidebar-border/60 text-sidebar-foreground/30 group-hover:text-sidebar-foreground/50 group-hover:border-sidebar-border transition-colors">
+                  ⌘K
+                </kbd>
+              </span>
+            </button>
           </div>
 
           {/* Theme toggle */}
