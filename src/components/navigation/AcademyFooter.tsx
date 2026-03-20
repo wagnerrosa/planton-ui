@@ -24,7 +24,7 @@ export function AcademyFooter({ variant = 'default' }: AcademyFooterProps) {
   if (isOverlay) {
     return (
       <footer className="fixed bottom-0 left-0 w-full z-10 flex flex-col items-center gap-4 pt-16 pb-6 pointer-events-none bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-        <div className="flex  items-center gap-8 font-sans text-[12px] text-white/60 pointer-events-auto">
+        <div className="flex  items-center gap-6 font-sans text-[12px] text-white/60 pointer-events-auto">
           {LINKS.map(({ label, href, external }, i) => (
             <span key={label} className="flex items-center gap-1">
               {i > 0 && <span className="text-white/20">·</span>}
