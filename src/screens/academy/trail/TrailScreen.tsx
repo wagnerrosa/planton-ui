@@ -59,7 +59,7 @@ function MuxPlayer({ playbackId, title }: { playbackId: string; title: string })
 
 function ArticleView({ content }: { content: ContentItem }) {
   return (
-    <div className="w-full max-w-[760px] px-6 py-8 flex flex-col gap-6">
+    <div className="w-full max-w-[760px] mx-auto px-6 pt-12 pb-16 flex flex-col gap-6">
       <Heading as="h1" size="heading-xl">{content.title}</Heading>
       <div className="prose prose-invert max-w-none">
         <p className="text-foreground/80 leading-relaxed">{content.description}</p>
@@ -76,35 +76,15 @@ function ArticleView({ content }: { content: ContentItem }) {
   )
 }
 
-function PodcastView({ content }: { content: ContentItem }) {
+function PodcastView() {
   return (
-    <div className="w-full" style={{ aspectRatio: '16/9' }}>
-      <div className="w-full h-full bg-planton-accent/10 flex flex-col items-center justify-center gap-6 px-8">
-        <ContentTypeIcon type="podcast" size="lg" />
-        <Heading as="h2" size="heading-lg" className="text-center">{content.title}</Heading>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <audio
-          controls
-          className="w-full max-w-md"
-          src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-        />
-      </div>
-    </div>
-  )
-}
-
-function GuideView({ content }: { content: ContentItem }) {
-  return (
-    <div className="w-full" style={{ aspectRatio: '16/9' }}>
-      <div className="w-full h-full bg-planton-accent/10 flex flex-col items-center justify-center gap-4">
-        <ContentTypeIcon type="guia" size="lg" />
-        <Heading as="h2" size="heading-lg">{content.title}</Heading>
-        <Body muted>{content.description}</Body>
-        <Button variant="outline" className="mt-2">
-          <Download className="h-4 w-4" />
-          Abrir PDF
-        </Button>
-      </div>
+    <div className="w-full bg-planton-accent/10 flex flex-col items-center justify-center gap-6 px-8 py-16">
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio
+        controls
+        className="w-full max-w-md"
+        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+      />
     </div>
   )
 }
@@ -158,8 +138,8 @@ function QuizView({ trail }: { trail: Trail }) {
   }
 
   return (
-    <div className="w-full max-w-[760px] px-6 py-8 flex flex-col gap-6">
-      <Body size="sm" muted>Questão {currentQ + 1} de {trail.quiz.questions.length}</Body>
+    <div className="w-full max-w-[760px] mx-auto px-6 pt-12 pb-16 flex flex-col gap-6">
+      <Body size="sm" muted className="font-mono">Questão {currentQ + 1} de {trail.quiz.questions.length}</Body>
       <Heading as="h2" size="heading-lg">{question.question}</Heading>
       <RadioGroup value={selected ?? ''} onValueChange={(v) => { setSelected(v); setAnswered(true) }}>
         {question.options.map((opt, i) => (
@@ -279,7 +259,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
             <Heading as="h2" size="heading-lg">{trail.title}</Heading>
             <span className="font-mono text-xs text-planton-muted">{trail.totalItems} conteúdos · {trail.totalDuration}</span>
             <div className="flex items-center gap-3">
-              <Progress value={trail.progress} className="flex-1 h-1" />
+              <Progress value={trail.progress} className="flex-1 h-1 bg-planton-accent/10" />
               <span className="font-mono text-sm font-medium text-foreground">{trail.progress}%</span>
             </div>
           </div>
@@ -292,7 +272,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                 const isActive = active.kind === 'content' && active.index === i
                 return (
                   <SidebarItem key={item.id} isActive={isActive} onClick={() => setActive({ kind: 'content', index: i })}>
-                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-white/80' : 'text-planton-muted'}`}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <StatusIcon status={item.status} />
@@ -301,8 +281,8 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                         {item.title}
                       </span>
                       <div className="flex items-center gap-2">
-                        <ContentTypeIcon type={item.type} showLabel className={isActive ? 'text-white/60' : ''} />
-                        <span className={`font-mono text-xs ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>{item.duration}</span>
+                        <ContentTypeIcon type={item.type} showLabel className={isActive ? 'text-white/80' : ''} />
+                        <span className={`font-mono text-xs ${isActive ? 'text-white/80' : 'text-planton-muted'}`}>{item.duration}</span>
                       </div>
                     </div>
                   </SidebarItem>
@@ -315,7 +295,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                   isActive={active.kind === 'quiz'}
                   onClick={() => setActive({ kind: 'quiz' })}
                 >
-                  <span className={`font-mono text-xs w-5 shrink-0 text-right ${active.kind === 'quiz' ? 'text-white/60' : 'text-planton-muted'}`}>
+                  <span className={`font-mono text-xs w-5 shrink-0 text-right ${active.kind === 'quiz' ? 'text-white/80' : 'text-planton-muted'}`}>
                     {String(trail.contents.length + 1).padStart(2, '0')}
                   </span>
                   {trail.quiz.status === 'concluido' ? (
@@ -329,7 +309,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                     <span className={`text-sm truncate ${active.kind === 'quiz' ? 'text-planton-accent font-medium' : trail.quiz.status === 'bloqueado' ? 'text-planton-muted/50' : 'text-foreground'}`}>
                       Quiz
                     </span>
-                    <span className="text-xs text-planton-muted capitalize">
+                    <span className={`text-xs capitalize ${active.kind === 'quiz' ? 'text-white/80' : 'text-planton-muted'}`}>
                       {trail.quiz.status === 'bloqueado' ? 'Bloqueado' : trail.quiz.status === 'disponivel' ? 'Disponível' : 'Concluído'}
                     </span>
                   </div>
@@ -341,7 +321,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                     isActive={active.kind === 'certificate'}
                     onClick={() => setActive({ kind: 'certificate' })}
                   >
-                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${active.kind === 'certificate' ? 'text-white/60' : 'text-planton-muted'}`}>
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${active.kind === 'certificate' ? 'text-white/80' : 'text-planton-muted'}`}>
                       {String(trail.contents.length + 2).padStart(2, '0')}
                     </span>
                     {trail.certificate.status === 'disponivel' ? (
@@ -353,7 +333,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                       <span className={`text-sm truncate ${active.kind === 'certificate' ? 'text-planton-accent font-medium' : trail.certificate.status === 'bloqueado' ? 'text-planton-muted/50' : 'text-foreground'}`}>
                         Certificado
                       </span>
-                      <span className="text-xs text-planton-muted">
+                      <span className={`text-xs ${active.kind === 'certificate' ? 'text-white/80' : 'text-planton-muted'}`}>
                         {trail.certificate.status === 'disponivel' ? 'Disponível' : 'Bloqueado'}
                       </span>
                     </div>
@@ -365,7 +345,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
         </aside>
 
         {/* ---- Player / Content area ---- */}
-        <div className="flex-1 flex flex-col overflow-auto">
+        <div className="flex-1 flex flex-col overflow-auto pb-16">
           {/* Dynamic content */}
           {active.kind === 'quiz' ? (
             <QuizView trail={trail} />
@@ -380,21 +360,23 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                 <ArticleView content={activeContent} />
               )}
               {activeContent.type === 'podcast' && (
-                <PodcastView content={activeContent} />
+                <PodcastView />
               )}
-              {activeContent.type === 'guia' && (
-                <GuideView content={activeContent} />
-              )}
-
               {/* Content info — only for media types (not article which renders inline) */}
               {activeContent.type !== 'artigo' && (
-                <div className="max-w-[900px] px-6 py-6 flex flex-col gap-3">
+                <div className="max-w-[900px] px-6 pt-6 pb-16 flex flex-col gap-3">
                   <div className="flex items-center gap-3">
                     <ContentTypeIcon type={activeContent.type} showLabel />
                     <span className="font-mono text-xs text-planton-muted">{activeContent.duration}</span>
                   </div>
                   <Heading as="h1" size="heading-xl">{activeContent.title}</Heading>
                   <Body muted>{activeContent.description}</Body>
+                  {activeContent.type === 'guia' && (
+                    <Button variant="outline" className="self-start mt-2">
+                      <Download className="h-4 w-4" />
+                      Abrir PDF
+                    </Button>
+                  )}
                 </div>
               )}
             </>
@@ -419,14 +401,14 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                       isActive ? 'bg-sidebar-accent' : 'hover:bg-card/80'
                     }`}
                   >
-                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>
+                    <span className={`font-mono text-xs w-5 shrink-0 text-right ${isActive ? 'text-white/80' : 'text-planton-muted'}`}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <StatusIcon status={item.status} />
                     <span className={`text-sm truncate flex-1 ${isActive ? 'text-planton-accent font-medium' : 'text-foreground'}`}>
                       {item.title}
                     </span>
-                    <span className={`font-mono text-xs shrink-0 ${isActive ? 'text-white/60' : 'text-planton-muted'}`}>{item.duration}</span>
+                    <span className={`font-mono text-xs shrink-0 ${isActive ? 'text-white/80' : 'text-planton-muted'}`}>{item.duration}</span>
                   </button>
                 )
               })}

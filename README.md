@@ -237,17 +237,33 @@ Dados mockados em `mock-data.ts` — nenhuma API é chamada.
 
 ### Trilha (`academy/trail/`)
 
-Tela de detalhe de uma trilha: header com metadados e lista de conteúdos.
+Tela de trilha com sidebar lateral (340px) e área de conteúdo.
+
+- **Sidebar:** lista numerada de conteúdos com ícone de status (`concluido` / `visualizado` / pendente), Quiz e Certificado. Item ativo destacado com borda esquerda `planton-accent`.
+- **Tipos de conteúdo:** `video` (MuxPlayer, aspect-ratio 16/9), `artigo` (texto centralizado), `podcast` (player de áudio em fundo colorido), `guia` (botão Abrir PDF no bloco de metadados)
+- **Quiz:** navegação por questões com RadioGroup, progresso em `font-mono`, estado bloqueado/disponível/concluído
+- **Certificado:** bloqueado até aprovação no quiz; ações de download PDF e compartilhar no LinkedIn
+- **Progress bar:** usa `bg-planton-accent/10` no track para visibilidade em 0%
 
 Acesse: `http://localhost:3000/design-system/screens/academy/trail/[id]`
 
-IDs disponíveis nos mocks: `solo`, `irrigacao`, `pragas`
+IDs disponíveis nos mocks: `gestao-emissoes`, `fatores-emissao`, `relatorio-gee`
 
 ---
 
 ### Conteúdo (`academy/content/`)
 
-Player de conteúdo com suporte a vídeo (Mux), podcast, artigo e guia. Exibe título, tipo, duração, trilha e progresso.
+Página standalone de conteúdo individual com comportamento por tipo:
+
+| Tipo | Layout |
+|---|---|
+| `video` | MuxPlayer em cima + metadados abaixo |
+| `podcast` | Player de áudio em fundo `planton-accent/10` + metadados abaixo |
+| `artigo` | Metadados + corpo do artigo em sequência |
+| `guia` | Metadados + botões "Abrir PDF" e "Continuar trilha" lado a lado |
+
+- **TrailBadges:** usa `badgeVariants({ variant: 'outline' })` do design system, renderizado como `<Link>`
+- **Fonte mono:** badges em Geist Mono (definido globalmente em `badgeVariants`)
 
 Acesse: `http://localhost:3000/design-system/screens/academy/content/[id]`
 
@@ -376,7 +392,7 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 | Voucher | `PLANTON-2026-EXPIRADO` | Código expirado |
 | Código OTP | `123456` | Verificação concluída |
 
-> **Em construção:** novos padrões serão adicionados conforme o desenvolvimento do Planton Academy V2, incluindo quiz, emissão de certificado, painel do Gestor Master e painel do Super Admin.
+> **Em construção:** novos padrões serão adicionados conforme o desenvolvimento do Planton Academy V2, incluindo painel do Gestor Master e painel do Super Admin.
 
 ---
 

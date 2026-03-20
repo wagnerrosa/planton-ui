@@ -38,7 +38,7 @@ export function HeroContent({ content }: HeroContentProps) {
           {/* Trail label */}
           {content.trail && (
             <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-planton-accent/80">
-              {content.trail.name}
+              trilha: {content.trail.name}
             </span>
           )}
 

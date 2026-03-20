@@ -5,6 +5,7 @@ import { Download } from 'lucide-react'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
+import { badgeVariants } from '@/components/shadcn/badge'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { ContentTypeIcon } from '../home/components/ContentTypeIcon'
@@ -36,7 +37,7 @@ function TrailBadges({ trails }: { trails: { id: string; name: string }[] }) {
         <Link
           key={trail.id}
           href={`/academy/trail/${trail.id}`}
-          className="inline-flex items-center px-3 py-1 rounded-full border border-border text-sm text-foreground hover:bg-muted transition-colors"
+          className={badgeVariants({ variant: 'outline' })}
         >
           {trail.name}
         </Link>
@@ -48,11 +49,9 @@ function TrailBadges({ trails }: { trails: { id: string; name: string }[] }) {
 function ContentMeta({
   content,
   trails,
-  firstTrail,
 }: {
   content: ContentItem
   trails: { id: string; name: string }[]
-  firstTrail: { id: string; name: string } | undefined
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -67,14 +66,6 @@ function ContentMeta({
       </div>
 
       <Body muted>{content.description}</Body>
-
-      {firstTrail && (
-        <div>
-          <Button variant="primary" href={`/academy/trail/${firstTrail.id}`}>
-            Continuar trilha →
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
@@ -109,8 +100,13 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
       <div className="flex-1 flex flex-col">
         {/* Artigo: sem player — conteúdo ocupa a área principal */}
         {content.type === 'artigo' && (
-          <div className="max-w-[900px] mx-auto w-full px-6 py-8 flex flex-col gap-8">
-            <ContentMeta content={content} trails={trails} firstTrail={firstTrail} />
+          <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-8">
+            <ContentMeta content={content} trails={trails} />
+            {firstTrail && (
+              <Button variant="primary" href={`/academy/trail/${firstTrail.id}`} className="self-start">
+                Continuar trilha →
+              </Button>
+            )}
             <div className="prose prose-invert max-w-none border-t border-border pt-6">
               <p className="text-foreground/80 leading-relaxed">{content.description}</p>
               <p className="text-foreground/60 leading-relaxed mt-4">
@@ -131,8 +127,13 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
         {content.type === 'video' && (
           <>
             <MuxPlayer playbackId={content.muxPlaybackId} title={content.title} />
-            <div className="max-w-[900px] mx-auto w-full px-6 py-8">
-              <ContentMeta content={content} trails={trails} firstTrail={firstTrail} />
+            <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-6">
+              <ContentMeta content={content} trails={trails} />
+              {firstTrail && (
+                <Button variant="primary" href={`/academy/trail/${firstTrail.id}`} className="self-start">
+                  Continuar trilha →
+                </Button>
+              )}
             </div>
           </>
         )}
@@ -141,8 +142,6 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
         {content.type === 'podcast' && (
           <>
             <div className="w-full bg-planton-accent/10 flex flex-col items-center justify-center gap-6 px-8 py-16">
-              <ContentTypeIcon type="podcast" size="lg" />
-              <Heading as="h2" size="heading-lg" className="text-center">{content.title}</Heading>
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <audio
                 controls
@@ -150,28 +149,33 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
                 src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
               />
             </div>
-            <div className="max-w-[900px] mx-auto w-full px-6 py-8">
-              <ContentMeta content={content} trails={trails} firstTrail={firstTrail} />
+            <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-6">
+              <ContentMeta content={content} trails={trails} />
+              {firstTrail && (
+                <Button variant="primary" href={`/academy/trail/${firstTrail.id}`} className="self-start">
+                  Continuar trilha →
+                </Button>
+              )}
             </div>
           </>
         )}
 
-        {/* Guia: CTA de download em cima, info abaixo */}
+        {/* Guia: info + download */}
         {content.type === 'guia' && (
-          <>
-            <div className="w-full bg-planton-accent/10 flex flex-col items-center justify-center gap-4 py-16">
-              <ContentTypeIcon type="guia" size="lg" />
-              <Heading as="h2" size="heading-lg">{content.title}</Heading>
-              <Body muted>{content.description}</Body>
-              <Button variant="outline" className="mt-2">
+          <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-6">
+            <ContentMeta content={content} trails={trails} />
+            <div className="flex items-center gap-3">
+              <Button variant="outline">
                 <Download className="h-4 w-4" />
                 Abrir PDF
               </Button>
+              {firstTrail && (
+                <Button variant="primary" href={`/academy/trail/${firstTrail.id}`}>
+                  Continuar trilha →
+                </Button>
+              )}
             </div>
-            <div className="max-w-[900px] mx-auto w-full px-6 py-8">
-              <ContentMeta content={content} trails={trails} firstTrail={firstTrail} />
-            </div>
-          </>
+          </div>
         )}
       </div>
 
