@@ -16,7 +16,7 @@ function shuffled(arr: string[]): string[] {
   return [...arr].sort(() => Math.random() - 0.5)
 }
 
-function useBgSlideshow(intervalMs = 20000) {
+function useBgSlideshow(intervalMs = 10000) {
   const queue = useRef<string[]>([])
   const [current, setCurrent] = useState<string | null>(null)
   const [next, setNext] = useState<string | null>(null)
