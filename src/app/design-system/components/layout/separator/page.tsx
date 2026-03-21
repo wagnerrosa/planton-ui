@@ -49,12 +49,12 @@ export default function SeparatorPage() {
         </div>
       </section>
 
-      {/* Borda de seção — padrão Planton */}
+      {/* Borda de seção , padrão Planton */}
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Borda de seção — padrão Planton</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Borda de seção , padrão Planton</h2>
         <p className="text-sm text-muted-foreground">
           Borda <code className="font-mono bg-muted px-1">border-t border-border</code> aplicada fora do container <code className="font-mono bg-muted px-1">max-w</code>, ocupando a largura total da tela.
-          É o padrão visual da marca Planton para separar seções de página — usado no footer, entre carousels da Home e em divisões de layout.
+          É o padrão visual da marca Planton para separar seções de página , usado no footer, entre carousels da Home e em divisões de layout.
         </p>
 
         {/* Simulação visual */}

@@ -76,7 +76,7 @@ export function HomeScreen() {
           />
         )}
 
-        {/* 4. Trilhas — uma row por trilha */}
+        {/* 4. Trilhas , uma row por trilha */}
         {trailsComConteudo.map((trail) => (
           <ContentRow
             key={trail.id}

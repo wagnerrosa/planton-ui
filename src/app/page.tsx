@@ -28,7 +28,7 @@ const sections = [
 const gettingStarted = [
   'Use tokens em vez de valores hardcoded (cores, espaçamento, tipografia)',
   'Prefira primitivos existentes antes de criar novos componentes',
-  'Reutilize componentes sempre que possível — evite duplicação',
+  'Reutilize componentes sempre que possível , evite duplicação',
   'Siga as convenções de nomenclatura e estrutura do projeto',
 ]
 

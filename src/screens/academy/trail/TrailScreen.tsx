@@ -444,7 +444,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
               {activeContent.type === 'podcast' && (
                 <PodcastView />
               )}
-              {/* Content info — only for media types (not article which renders inline) */}
+              {/* Content info , only for media types (not article which renders inline) */}
               {activeContent.type !== 'artigo' && (
                 <div className="w-full max-w-[760px] mx-auto px-6 pt-6 pb-16 flex flex-col gap-3">
                   <div className="flex items-center gap-3">

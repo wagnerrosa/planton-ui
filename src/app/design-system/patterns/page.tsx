@@ -10,7 +10,7 @@ export default function PatternsPage() {
         <Eyebrow>Patterns</Eyebrow>
         <Heading as="h1" size="heading-xl">Padrões de Tela</Heading>
         <Body muted className="max-w-2xl">
-          Os padrões de tela foram promovidos para <strong>Screens</strong> — telas reais dos produtos Planton.
+          Os padrões de tela foram promovidos para <strong>Screens</strong> , telas reais dos produtos Planton.
           Navegue pela seção Screens no menu lateral para visualizar cada tela.
         </Body>
       </div>
@@ -23,7 +23,7 @@ export default function PatternsPage() {
             className="group border-r border-b border-border p-6 flex flex-col gap-2 hover:bg-card transition-colors"
           >
             <span className="font-sans text-base font-medium text-foreground group-hover:text-planton-accent transition-colors">
-              Academy — Login
+              Academy , Login
             </span>
             <span className="text-sm text-planton-muted leading-[1.65]">Tela de autenticação</span>
           </Link>
@@ -32,7 +32,7 @@ export default function PatternsPage() {
             className="group border-r border-b border-border p-6 flex flex-col gap-2 hover:bg-card transition-colors"
           >
             <span className="font-sans text-base font-medium text-foreground group-hover:text-planton-accent transition-colors">
-              Academy — Home
+              Academy , Home
             </span>
             <span className="text-sm text-planton-muted leading-[1.65]">Listagem de trilhas e cursos</span>
           </Link>

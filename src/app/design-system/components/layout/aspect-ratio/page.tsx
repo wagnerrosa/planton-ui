@@ -16,7 +16,7 @@ export default function AspectRatioPage() {
       filePath={meta.filePath}
     >
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">16:9 — Player de vídeo</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">16:9 , Player de vídeo</h2>
         <div className="w-96">
           <AspectRatio ratio={16 / 9}>
             <div className="flex items-center justify-center w-full h-full bg-card border border-border">
@@ -27,7 +27,7 @@ export default function AspectRatioPage() {
       </section>
 
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">4:3 — Imagem</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">4:3 , Imagem</h2>
         <div className="w-72">
           <AspectRatio ratio={4 / 3}>
             <div className="flex items-center justify-center w-full h-full bg-card border border-border">
@@ -38,7 +38,7 @@ export default function AspectRatioPage() {
       </section>
 
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">1:1 — Quadrado</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">1:1 , Quadrado</h2>
         <div className="w-48">
           <AspectRatio ratio={1}>
             <div className="flex items-center justify-center w-full h-full bg-card border border-border">

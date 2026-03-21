@@ -6,7 +6,7 @@
  * Componente "invisível" (retorna null) usado pelas telas filhas para injetar
  * breadcrumbs na navbar sem prop drilling.
  *
- * Como usar — dentro de qualquer tela do academy:
+ * Como usar , dentro de qualquer tela do academy:
  *
  *   <AcademyNavbarSync breadcrumbs={[
  *     { label: 'Trilhas', href: '/academy/trails' },

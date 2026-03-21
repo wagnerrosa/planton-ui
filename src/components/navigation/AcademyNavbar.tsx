@@ -41,7 +41,7 @@ export interface AcademyNavbarProps {
    * - Fechar com Escape ou clique fora
    * - Atalho de teclado ⌘K (ou Ctrl+K) deve também disparar este callback
    *
-   * Por ora, este callback não recebe query — apenas sinaliza a intenção de abrir.
+   * Por ora, este callback não recebe query , apenas sinaliza a intenção de abrir.
    * Quando o modal for implementado, a assinatura pode evoluir para
    * `onSearchOpen?: () => void` e a query será gerenciada internamente no modal.
    */
@@ -154,7 +154,7 @@ export function AcademyNavbar({
             </Link>
           </div>
 
-          {/* Breadcrumb — desktop: full trail, mobile: back + current page */}
+          {/* Breadcrumb , desktop: full trail, mobile: back + current page */}
           {breadcrumbs.length > 0 && (
             <>
               {/* Desktop breadcrumb */}
@@ -210,7 +210,7 @@ export function AcademyNavbar({
 
         {/* ---- Right ---- */}
         <div className="flex items-stretch gap-0 shrink-0 self-stretch">
-          {/* Search trigger — desktop: full field, mobile: icon only */}
+          {/* Search trigger , desktop: full field, mobile: icon only */}
           <div className="hidden md:flex items-center px-4 border-l border-sidebar-border">
             <button
               onClick={() => onSearch?.()}
@@ -238,12 +238,12 @@ export function AcademyNavbar({
             </button>
           </div>
 
-          {/* Theme toggle — desktop only (mobile: inside sidebar) */}
+          {/* Theme toggle , desktop only (mobile: inside sidebar) */}
           <div className="hidden md:flex items-center px-4 border-l border-sidebar-border hover:bg-sidebar-accent transition-colors">
             <ThemeToggleButton />
           </div>
 
-          {/* User dropdown — desktop only (mobile: inside sidebar) */}
+          {/* User dropdown , desktop only (mobile: inside sidebar) */}
           <div className="hidden md:flex">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

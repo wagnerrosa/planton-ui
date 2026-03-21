@@ -98,7 +98,7 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
       />
 
       <div className="flex-1 flex flex-col">
-        {/* Artigo: sem player — conteúdo ocupa a área principal */}
+        {/* Artigo: sem player , conteúdo ocupa a área principal */}
         {content.type === 'artigo' && (
           <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-8">
             <ContentMeta content={content} trails={trails} />

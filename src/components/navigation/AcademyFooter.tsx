@@ -14,10 +14,10 @@ import { Button } from '@/components/primitives/Button'
 
 type AcademyFooterProps = {
   /**
-   * 'default' — footer fixo na base do conteúdo, fundo branco, borda superior.
+   * 'default' , footer fixo na base do conteúdo, fundo branco, borda superior.
    *             Usado no layout do Academy.
    *
-   * 'overlay' — footer fixo sobre imagem/background (ex: tela de Login).
+   * 'overlay' , footer fixo sobre imagem/background (ex: tela de Login).
    *             Transparente, texto branco, sem borda.
    */
   variant?: 'default' | 'overlay'

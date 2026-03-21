@@ -78,19 +78,19 @@
      CORES SEMÂNTICAS DE SISTEMA
      ============================================ */
 
-  /* Success — verde esmeralda médio */
+  /* Success , verde esmeralda médio */
   --success:            oklch(0.57 0.12 155);
   --success-foreground: oklch(0.98 0 0);
   --success-surface:    oklch(0.96 0.02 155);
   --success-border:     oklch(0.80 0.07 155);
 
-  /* Warning — âmbar/mel */
+  /* Warning , âmbar/mel */
   --warning:            oklch(0.52 0.14 75);
   --warning-foreground: oklch(0.98 0 0);
   --warning-surface:    oklch(0.97 0.03 75);
   --warning-border:     oklch(0.82 0.08 75);
 
-  /* Info — ciano Planton */
+  /* Info , ciano Planton */
   --info:            oklch(0.52 0.10 213);
   --info-foreground: oklch(0.98 0 0);
   --info-surface:    oklch(0.96 0.02 213);

@@ -22,7 +22,7 @@ Navbar principal do Planton Academy. Aparece no topo de todas as páginas autent
 
 Theme toggle, avatar e ações do usuário ficam na **sidebar mobile** (`AcademySidebar`).
 
-### Elementos — Esquerda
+### Elementos , Esquerda
 
 | Elemento | Desktop | Mobile |
 |---|---|---|
@@ -30,7 +30,7 @@ Theme toggle, avatar e ações do usuário ficam na **sidebar mobile** (`Academy
 | Logo Academy | Troca entre forest (light) e branco (dark) | Idem |
 | Breadcrumb | Trail completo com links clicáveis | Último item como título + botão voltar |
 
-### Elementos — Direita
+### Elementos , Direita
 
 | Elemento | Desktop | Mobile |
 |---|---|---|
@@ -65,7 +65,7 @@ O componente também exporta `ThemeToggleButton` e `UserAvatar`, reutilizados pe
 
 ---
 
-## Breadcrumb — Regras
+## Breadcrumb , Regras
 
 O breadcrumb reflete a localização atual do usuário dentro do produto.
 O item ativo (último) é sempre renderizado como texto puro, sem link.
@@ -85,7 +85,7 @@ Home / Trilhas / [Nome da Trilha] / [Conteúdo]
 ### Casos mapeados
 
 #### 1. Página inicial (Home)
-Nenhum breadcrumb adicional — apenas o logo é exibido, sem separador.
+Nenhum breadcrumb adicional , apenas o logo é exibido, sem separador.
 
 ```tsx
 <AcademyNavbar breadcrumbs={[]} />
@@ -169,7 +169,7 @@ A implementação dinâmica deve ser feita quando o roteamento real do Academy e
 **Implementação atual:** via `AcademyNavbarContext` + `AcademyNavbarSync`. Cada tela chama `<AcademyNavbarSync breadcrumbs={[...]} />` e o layout lê do Context.
 
 **Estratégia futura:**
-- Usar `generateBreadcrumbs(pathname)` — função utilitária que mapeia segmentos de URL para labels legíveis.
+- Usar `generateBreadcrumbs(pathname)` , função utilitária que mapeia segmentos de URL para labels legíveis.
 - Registrar o mapa de rotas em `src/lib/breadcrumbs-map.ts`.
 
 ---

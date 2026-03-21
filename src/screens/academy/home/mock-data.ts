@@ -5,7 +5,7 @@
 export type ContentType = 'video' | 'podcast' | 'artigo' | 'guia'
 export type ContentStatus = 'nao-iniciado' | 'visualizado' | 'concluido'
 
-/** Unidade principal de conteúdo — centrada em MUX */
+/** Unidade principal de conteúdo , centrada em MUX */
 export type ContentItem = {
   id: string
   title: string
@@ -71,7 +71,7 @@ function muxUrls(playbackId: string) {
 }
 
 // ---------------------------------------------------------------------------
-// Content items (shared pool — used both as standalone and inside trails)
+// Content items (shared pool , used both as standalone and inside trails)
 // ---------------------------------------------------------------------------
 
 export const CONTENT_ITEMS: ContentItem[] = [
@@ -163,7 +163,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
   {
     id: 'c8',
     title: 'Frameworks de Reporte',
-    description: 'GRI, SASB, TCFD e ISSB — entenda cada framework e quando aplicar cada um.',
+    description: 'GRI, SASB, TCFD e ISSB , entenda cada framework e quando aplicar cada um.',
     type: 'artigo',
     duration: '15min',
     ...muxUrls(MUX_ID),
@@ -379,7 +379,7 @@ export const MOCK_TRAILS: Trail[] = [
   {
     id: 'trail-4',
     title: 'Normas ISO de Sustentabilidade',
-    description: 'ISO 14001, 14064 e 14067 — estrutura, requisitos e aplicação nas empresas.',
+    description: 'ISO 14001, 14064 e 14067 , estrutura, requisitos e aplicação nas empresas.',
     totalItems: 3,
     totalDuration: '1h10min',
     progress: 45,
@@ -460,7 +460,7 @@ export const MOCK_TRAILS: Trail[] = [
 // Curated lists for Home sections
 // ---------------------------------------------------------------------------
 
-/** Conteúdos hero (destaque principal) — apenas vídeos, máx 3 */
+/** Conteúdos hero (destaque principal) , apenas vídeos, máx 3 */
 export const HERO_CONTENT = CONTENT_ITEMS[3] // c4: Calculando Emissões na Prática (backwards compat)
 export const HERO_CONTENTS = CONTENT_ITEMS.filter((c) => c.type === 'video').slice(0, 3)
 
@@ -472,7 +472,7 @@ export const CONTINUE_WATCHING_ITEMS = CONTENT_ITEMS.filter(
 /** Conteúdos marcados como novos */
 export const NEW_CONTENT_ITEMS = CONTENT_ITEMS.filter((c) => c.isNew)
 
-// Backwards compat — TrailScreen still uses this shape
+// Backwards compat , TrailScreen still uses this shape
 export const CONTINUE_WATCHING = {
   trailId: 'trail-1',
   trailTitle: 'Gestão de Emissões de GEE',

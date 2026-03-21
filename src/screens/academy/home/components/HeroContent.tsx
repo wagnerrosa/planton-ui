@@ -49,7 +49,7 @@ export function HeroContent({ contents }: HeroContentProps) {
 
   return (
     <div className="relative w-full overflow-hidden bg-black h-[60vh] min-h-[420px] max-h-[720px]">
-      {/* Background thumbnails — pre-render all, toggle opacity */}
+      {/* Background thumbnails , pre-render all, toggle opacity */}
       {contents.map((item, i) => (
         // eslint-disable-next-line @next/next/no-img-element
         <img

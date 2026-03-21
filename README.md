@@ -167,9 +167,9 @@ Escala de `Heading` com line-height por tamanho (definido em `src/tokens/typogra
 | `display-lg` | 48–70px | 1.0 |
 | `heading-xl` | 40–56px | 1.05 |
 | `heading-lg` | 28–36px | 1.15 |
-| Body | — | 1.65 |
+| Body | , | 1.65 |
 
-> Cada tamanho tem seu próprio `leading` — não use `leading-*` customizado em cima de `<Heading>`, pois o valor já está calibrado por tamanho.
+> Cada tamanho tem seu próprio `leading` , não use `leading-*` customizado em cima de `<Heading>`, pois o valor já está calibrado por tamanho.
 
 ### UI (`src/components/ui/`)
 
@@ -238,7 +238,7 @@ Tela principal do Academy. Composta por hero, seção de retomada de conteúdo, 
 
 Acesse: `http://localhost:3000/design-system/screens/academy/home`
 
-Dados mockados em `mock-data.ts` — nenhuma API é chamada.
+Dados mockados em `mock-data.ts` , nenhuma API é chamada.
 
 #### Seções e lógica condicional
 
@@ -253,7 +253,7 @@ Dados mockados em `mock-data.ts` — nenhuma API é chamada.
 
 #### Layout da seção de retomada (2 variantes)
 
-**Variante A — usuário com trilhas em andamento:**
+**Variante A , usuário com trilhas em andamento:**
 Layout de duas colunas separadas por divisor vertical. Esquerda (2/3): carousel "Continue assistindo". Direita (1/3): `ContinueTrailsCard` com progress bars das trilhas.
 
 ```
@@ -265,7 +265,7 @@ Layout de duas colunas separadas por divisor vertical. Esquerda (2/3): carousel 
 └─────────────────────────────┴────────────────────┘
 ```
 
-**Variante B — usuário sem trilhas em andamento:**
+**Variante B , usuário sem trilhas em andamento:**
 `ContentRow` ocupa 100% da largura, sem divisor e sem `ContinueTrailsCard`.
 
 #### ContinueTrailsCard
@@ -338,20 +338,20 @@ O onboarding (vídeo de boas-vindas) foi movido para um Dialog na Home (`Onboard
 
 Acesse: `http://localhost:3000/design-system/screens/academy/login`
 
-Todos os dados são simulados no frontend — nenhuma API é chamada.
+Todos os dados são simulados no frontend , nenhuma API é chamada.
 
 ---
 
-#### Fluxo 1 — Login com credenciais inválidas
+#### Fluxo 1 , Login com credenciais inválidas
 
 1. Digite qualquer texto que contenha a palavra `erro` no campo e-mail (ex: `erro@test.com`)
 2. Digite qualquer senha
 3. Clique em **Entrar**
-4. ✅ Alert vermelho inline: *"E-mail ou senha incorretos"* — permanece na tela de login
+4. ✅ Alert vermelho inline: *"E-mail ou senha incorretos"* , permanece na tela de login
 
 ---
 
-#### Fluxo 2 — Login sem acesso autorizado
+#### Fluxo 2 , Login sem acesso autorizado
 
 1. Digite qualquer texto que contenha a palavra `semacesso` no campo e-mail (ex: `semacesso@test.com`)
 2. Digite qualquer senha
@@ -360,7 +360,7 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 
 ---
 
-#### Fluxo 3 — Login bem-sucedido
+#### Fluxo 3 , Login bem-sucedido
 
 1. Digite qualquer e-mail que não contenha `erro` nem `semacesso` (ex: `usuario@planton.com`)
 2. Digite qualquer senha
@@ -369,9 +369,9 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 
 ---
 
-#### Fluxo 4 — Cadastro: Cenário A (domínio ativo)
+#### Fluxo 4 , Cadastro: Cenário A (domínio ativo)
 
-1. Clique em **Criar novo cadastro** — abre o Dialog
+1. Clique em **Criar novo cadastro** , abre o Dialog
 2. Digite um e-mail terminando em `@empresa.com` (ex: `joao@empresa.com`)
 3. Clique em **Verificar**
 4. ✅ Navega para **Empresa encontrada** → redireciona automaticamente para o formulário de perfil
@@ -382,9 +382,9 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 
 ---
 
-#### Fluxo 5 — Cadastro: Cenário B (domínio inativo + voucher)
+#### Fluxo 5 , Cadastro: Cenário B (domínio inativo + voucher)
 
-1. Clique em **Criar novo cadastro** — abre o Dialog
+1. Clique em **Criar novo cadastro** , abre o Dialog
 2. Digite um e-mail terminando em `@inativo.com` (ex: `maria@inativo.com`)
 3. Clique em **Verificar**
 4. ✅ Navega para **Ativar acesso** (empresa inativa)
@@ -394,24 +394,24 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 
 ---
 
-#### Fluxo 6 — Cadastro: Cenário C (domínio desconhecido)
+#### Fluxo 6 , Cadastro: Cenário C (domínio desconhecido)
 
-1. Clique em **Criar novo cadastro** — abre o Dialog
+1. Clique em **Criar novo cadastro** , abre o Dialog
 2. Digite qualquer e-mail corporativo que não termine em `@empresa.com` ou `@inativo.com` (ex: `nome@outraempresa.com`)
 3. Clique em **Verificar**
 4. ✅ Navega para **Empresa não encontrada** (dead end) com link externo para o site
 
 ---
 
-#### Fluxo 7 — Domínio genérico bloqueado
+#### Fluxo 7 , Domínio genérico bloqueado
 
-1. Clique em **Criar novo cadastro** — abre o Dialog
+1. Clique em **Criar novo cadastro** , abre o Dialog
 2. Digite um e-mail de provedor pessoal (ex: `usuario@gmail.com`, `contato@hotmail.com`)
-3. ✅ Alert: *"Acesso exclusivo com e-mail corporativo"* — formulário não avança
+3. ✅ Alert: *"Acesso exclusivo com e-mail corporativo"* , formulário não avança
 
 ---
 
-#### Fluxo 8 — Recuperação de senha
+#### Fluxo 8 , Recuperação de senha
 
 1. Clique em **Esqueci minha senha**
 2. Digite qualquer e-mail → **Enviar link**
@@ -427,9 +427,9 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 | E-mail login | `erro@...` | Erro de credenciais |
 | E-mail login | `semacesso@...` | Acesso negado |
 | E-mail login | qualquer outro | Login direto (success) |
-| E-mail cadastro | `@empresa.com` | Cenário A — domínio ativo |
-| E-mail cadastro | `@inativo.com` | Cenário B — domínio inativo |
-| E-mail cadastro | outro corporativo | Cenário C — domínio desconhecido |
+| E-mail cadastro | `@empresa.com` | Cenário A , domínio ativo |
+| E-mail cadastro | `@inativo.com` | Cenário B , domínio inativo |
+| E-mail cadastro | outro corporativo | Cenário C , domínio desconhecido |
 | Voucher | `PLANTON-2026-ATIVO` | Ativa o acesso |
 | Voucher | `PLANTON-2026-EXPIRADO` | Código expirado |
 | Código OTP | `123456` | Verificação concluída → acesso liberado |

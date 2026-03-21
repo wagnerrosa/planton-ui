@@ -94,7 +94,7 @@ export default function TypographyPage() {
 
       {/* Line Height */}
       <section className="flex flex-col gap-8">
-        <Label>Line Height — Headings</Label>
+        <Label>Line Height , Headings</Label>
         <div className="flex flex-col gap-0 border-t border-border">
           {(
             [

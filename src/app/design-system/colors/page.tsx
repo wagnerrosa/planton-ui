@@ -113,7 +113,7 @@ export default function ColorsPage() {
             previewDark: 'oklch(0.73 0.14 75)',
           },
           {
-            label: 'Info — ciano Planton',
+            label: 'Info , ciano Planton',
             tokens: [
               { token: '--info',            light: 'oklch(0.64 0.10 213)', dark: 'oklch(0.72 0.10 213)' },
               { token: '--info-foreground',  light: 'oklch(0.15 0 0)',      dark: 'oklch(0.15 0 0)' },
