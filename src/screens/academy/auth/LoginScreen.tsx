@@ -9,7 +9,7 @@ export function LoginScreen() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-default p-6">
       <div className="w-full max-w-sm border border-border p-10 flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col items-center gap-2">
           <Eyebrow>Planton</Eyebrow>
           <Heading as="h1" size="heading-lg">Entrar na plataforma</Heading>
         </div>

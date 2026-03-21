@@ -5,6 +5,7 @@ import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { HeroContent } from './components/HeroContent'
 import { ContentRow } from './components/ContentRow'
 import { ContinueTrailsCard } from './components/ContinueTrailsCard'
+import { OnboardingDialog } from './components/OnboardingDialog'
 import {
   HERO_CONTENTS,
   CONTINUE_WATCHING_ITEMS,
@@ -94,6 +95,8 @@ export function HomeScreen() {
       </div>
 
       <AcademyFooter />
+
+      <OnboardingDialog />
     </div>
   )
 }

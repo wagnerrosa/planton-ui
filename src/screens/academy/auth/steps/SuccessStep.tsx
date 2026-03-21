@@ -10,7 +10,7 @@ import { CheckCircle } from 'lucide-react'
 export function SuccessStep() {
   return (
     <AuthCard>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col items-center gap-6">
         <AcademyLogo />
         <Heading as="h1" size="heading-lg">Acesso liberado!</Heading>
       </div>

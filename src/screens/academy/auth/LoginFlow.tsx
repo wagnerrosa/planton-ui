@@ -64,7 +64,6 @@ import { DomainUnknownStep } from './steps/DomainUnknownStep'
 import { ProfileFormStep } from './steps/ProfileFormStep'
 import { SetPasswordStep } from './steps/SetPasswordStep'
 import { OTPVerificationStep } from './steps/OTPVerificationStep'
-import { OnboardingStep } from './steps/OnboardingStep'
 import { SuccessStep } from './steps/SuccessStep'
 
 export type AuthStep =
@@ -79,7 +78,6 @@ export type AuthStep =
   | 'profile-form'
   | 'set-password'
   | 'otp-verification'
-  | 'onboarding'
   | 'success'
 
 export type AuthContext = {
@@ -150,7 +148,6 @@ export function LoginFlow() {
         {step === 'otp-verification' && (
           <OTPVerificationStep email={context.email} onNavigate={setStep} />
         )}
-        {step === 'onboarding' && <OnboardingStep onNavigate={setStep} />}
         {step === 'success' && <SuccessStep />}
       </div>
 
