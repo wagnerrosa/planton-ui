@@ -38,6 +38,8 @@ Theme toggle, avatar e ações do usuário ficam na **sidebar mobile** (`Academy
 | Theme toggle | Visível | Movido para sidebar mobile |
 | Avatar + nome | Dropdown com Perfil e Sair | Movido para sidebar mobile |
 
+> **Perfil:** ao clicar em "Perfil" (desktop dropdown ou sidebar mobile), abre o `ProfileSheet` — um Sheet lateral direito com formulário de edição de perfil e upload de avatar. O estado `profileOpen` é compartilhado via `AcademyNavbarContext`.
+
 ---
 
 ## Props
@@ -50,7 +52,6 @@ interface AcademyNavbarProps {
   onMenuToggle?: () => void        // callback do hamburger
   onSearch?: () => void            // callback do botão de busca (trigger ⌘K)
   onLogout?: () => void
-  onProfile?: () => void           // se ausente, item "Perfil" não aparece
 }
 
 interface BreadcrumbItem {

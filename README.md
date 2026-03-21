@@ -60,7 +60,8 @@ src/
 │   │   ├── AcademyNavbarContext.tsx    # Context para breadcrumbs dinâmicos
 │   │   ├── AcademyNavbarSync.tsx       # Componente invisível para injetar breadcrumbs
 │   │   ├── AcademySidebar.tsx          # Sidebar do Academy (push desktop / overlay mobile)
-│   │   └── AcademyFooter.tsx           # Footer do Academy (default + overlay variants)
+│   │   ├── AcademyFooter.tsx           # Footer do Academy (default + overlay variants)
+│   │   └── ProfileSheet.tsx            # Sheet lateral de edição de perfil (avatar upload + form)
 │   ├── primitives/                     # Componentes próprios base
 │   │   ├── Button.tsx
 │   │   ├── Heading.tsx
@@ -167,6 +168,7 @@ Escala de `Heading` com line-height por tamanho (definido em `src/tokens/typogra
 | `display-lg` | 48–70px | 1.0 |
 | `heading-xl` | 40–56px | 1.05 |
 | `heading-lg` | 28–36px | 1.15 |
+| `heading-md` | 20–24px | 1.2 |
 | Body | , | 1.65 |
 
 > Cada tamanho tem seu próprio `leading` , não use `leading-*` customizado em cima de `<Heading>`, pois o valor já está calibrado por tamanho.
