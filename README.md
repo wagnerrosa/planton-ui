@@ -213,16 +213,16 @@ Escala de `Heading` com line-height por tamanho (definido em `src/tokens/typogra
 
 ### shadcn (`src/components/shadcn/`)
 
-29 componentes organizados em 6 categorias no design system:
+35 componentes organizados em 6 categorias no design system:
 
 | Categoria | Componentes |
 |---|---|
-| Inputs & Forms | Input, Textarea, Select, Checkbox, RadioGroup, Switch, Form, InputOTP, Slider |
-| Data Display | Card, Table, Avatar, Badge, Progress |
+| Inputs & Forms | Input, Textarea, Select, Checkbox, RadioGroup, Switch, Form, InputOTP, Slider, Label |
+| Data Display | Card, Table, Avatar, Badge, Progress, ContentCard, Skeleton |
 | Feedback | Alert, AlertDialog, Sonner |
 | Navigation | Tabs, Breadcrumb, Pagination, Command |
-| Overlays | DropdownMenu, Popover, HoverCard, Calendar |
-| Layout & Structure | Accordion, Collapsible, ScrollArea |
+| Overlays | DropdownMenu, Popover, HoverCard, Calendar, Dialog, Sheet, Tooltip |
+| Layout & Structure | Separator, Accordion, Collapsible, ScrollArea, AspectRatio, Carousel, ContentRow, Sidebar |
 
 Cada componente tem sua própria página com exemplos visuais, descrição e **file path** no codebase. O registro centralizado está em `src/lib/components-registry.ts`.
 
@@ -459,12 +459,12 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system/logo` | Logo da marca, variações, produtos e download |
 | `/design-system/components` | Índice de componentes por categoria |
 | `/design-system/components/button` | Button (standalone) |
-| `/design-system/components/inputs/*` | Input, Textarea, Select, Checkbox, etc. |
-| `/design-system/components/data-display/*` | Card, Table, Avatar, Badge, Progress |
+| `/design-system/components/inputs/*` | Input, Textarea, Select, Checkbox, Label, etc. |
+| `/design-system/components/data-display/*` | Card, Table, Avatar, Badge, Progress, ContentCard, Skeleton |
 | `/design-system/components/feedback/*` | Alert, AlertDialog, Sonner |
 | `/design-system/components/navigation/*` | Tabs, Breadcrumb, Pagination, Command |
-| `/design-system/components/overlays/*` | DropdownMenu, Popover, HoverCard, Calendar |
-| `/design-system/components/layout/*` | Accordion, Collapsible, ScrollArea |
+| `/design-system/components/overlays/*` | DropdownMenu, Popover, HoverCard, Calendar, Dialog, Sheet, Tooltip |
+| `/design-system/components/layout/*` | Separator, Accordion, Collapsible, ScrollArea, AspectRatio, Carousel, ContentRow, Sidebar |
 | `/design-system/screens` | Índice de telas |
 | `/design-system/screens/academy/login` | Fluxo de autenticação multi-step |
 | `/design-system/screens/academy/home` | Home do Academy (hero + trilhas + conteúdos) |

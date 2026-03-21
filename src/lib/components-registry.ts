@@ -38,6 +38,7 @@ export const componentCategories: ComponentCategory[] = [
       { slug: 'form', name: 'Form', description: 'Formulário com validação via react-hook-form + zod.', filePath: 'src/components/shadcn/form.tsx' },
       { slug: 'input-otp', name: 'Input OTP', description: 'Entrada de código de verificação.', filePath: 'src/components/shadcn/input-otp.tsx' },
       { slug: 'slider', name: 'Slider', description: 'Controle deslizante para seleção de valores.', filePath: 'src/components/shadcn/slider.tsx' },
+      { slug: 'label', name: 'Label', description: 'Rótulo acessível para campos de formulário.', filePath: 'src/components/shadcn/label.tsx' },
     ],
   },
   {
@@ -51,6 +52,7 @@ export const componentCategories: ComponentCategory[] = [
       { slug: 'badge', name: 'Badge', description: 'Etiqueta de status ou categoria.', filePath: 'src/components/shadcn/badge.tsx' },
       { slug: 'progress', name: 'Progress', description: 'Barra de progresso para indicar conclusão.', filePath: 'src/components/shadcn/progress.tsx' },
       { slug: 'content-card', name: 'ContentCard', description: 'Card de conteúdo com thumbnail, título, tipo e progresso. Usado na Home e trilhas do Planton Academy.', filePath: 'src/screens/academy/home/components/ContentCard.tsx' },
+      { slug: 'skeleton', name: 'Skeleton', description: 'Placeholder animado para indicar carregamento de conteúdo.', filePath: 'src/components/shadcn/skeleton.tsx' },
     ],
   },
   {
@@ -83,6 +85,9 @@ export const componentCategories: ComponentCategory[] = [
       { slug: 'popover', name: 'Popover', description: 'Painel flutuante para conteúdo contextual.', filePath: 'src/components/shadcn/popover.tsx' },
       { slug: 'hover-card', name: 'Hover Card', description: 'Card exibido ao passar o mouse sobre um elemento.', filePath: 'src/components/shadcn/hover-card.tsx' },
       { slug: 'calendar', name: 'Calendar', description: 'Seletor de data em formato de calendário.', filePath: 'src/components/shadcn/calendar.tsx' },
+      { slug: 'dialog', name: 'Dialog', description: 'Janela modal para conteúdo contextual ou formulários.', filePath: 'src/components/shadcn/dialog.tsx' },
+      { slug: 'sheet', name: 'Sheet', description: 'Painel lateral deslizante para conteúdo secundário.', filePath: 'src/components/shadcn/sheet.tsx' },
+      { slug: 'tooltip', name: 'Tooltip', description: 'Dica flutuante exibida ao passar o mouse sobre um elemento.', filePath: 'src/components/shadcn/tooltip.tsx' },
     ],
   },
   {
@@ -97,6 +102,7 @@ export const componentCategories: ComponentCategory[] = [
       { slug: 'aspect-ratio', name: 'Aspect Ratio', description: 'Container que mantém uma proporção fixa (ex: 16/9).', filePath: 'src/components/shadcn/aspect-ratio.tsx' },
       { slug: 'carousel', name: 'Carousel', description: 'Carrossel horizontal com navegação e snap.', filePath: 'src/components/shadcn/carousel.tsx' },
       { slug: 'content-row', name: 'ContentRow', description: 'Linha de carrossel com título e link de trilha. Usado na Home do Planton Academy para exibir coleções de conteúdo.', filePath: 'src/screens/academy/home/components/ContentRow.tsx' },
+      { slug: 'sidebar', name: 'Sidebar', description: 'Componente estrutural de sidebar com suporte a mobile (sheet) e estados expandido/colapsado.', filePath: 'src/components/shadcn/sidebar.tsx' },
     ],
   },
 ]

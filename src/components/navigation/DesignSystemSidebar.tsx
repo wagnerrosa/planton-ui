@@ -47,9 +47,12 @@ export function DesignSystemSidebar() {
       <div className="px-5 py-5 border-b border-sidebar-border shrink-0 flex items-center justify-between">
         <Link href="/" className="flex flex-col gap-2">
           <Image src="/Logo_Planton_01.svg" alt="Planton" width={120} height={26} priority />
-          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40">
-            Design System
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40">
+              Design System
+            </span>
+            <span className="font-mono text-[0.6rem] text-sidebar-foreground/30">v0.2.0</span>
+          </div>
         </Link>
         <button
           onClick={toggleSidebar}

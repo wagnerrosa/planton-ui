@@ -1,5 +1,10 @@
+import { Suspense } from 'react'
 import { LoginFlow } from '@/screens/academy/auth/LoginFlow'
 
 export default function LoginScreenPage() {
-  return <LoginFlow />
+  return (
+    <Suspense>
+      <LoginFlow />
+    </Suspense>
+  )
 }
