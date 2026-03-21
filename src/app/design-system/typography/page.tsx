@@ -32,6 +32,7 @@ export default function TypographyPage() {
               ['display-lg', 'Display LG - 48–70px'],
               ['heading-xl', 'Heading XL - 40–56px'],
               ['heading-lg', 'Heading LG - 28–36px'],
+              ['heading-md', 'Heading MD - 20–24px'],
             ] as const
           ).map(([size, label]) => (
             <div key={size} className="flex flex-col gap-1 border-b border-border/50 pb-6">
@@ -102,6 +103,7 @@ export default function TypographyPage() {
               ['display-lg', 'Display LG', '1.0'],
               ['heading-xl', 'Heading XL', '1.05'],
               ['heading-lg', 'Heading LG', '1.15'],
+              ['heading-md', 'Heading MD', '1.2'],
             ] as const
           ).map(([size, label, lh]) => (
             <div key={size} className="flex items-baseline justify-between border-b border-border/50 py-5">

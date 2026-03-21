@@ -31,7 +31,7 @@ export function HomeScreen() {
       {/* 1. Hero */}
       <HeroContent contents={HERO_CONTENTS} />
 
-      <div className="max-w-[1400px] mx-auto px-6 py-10 flex flex-col gap-12">
+      <div className="max-w-[1920px] mx-auto px-6 py-10 flex flex-col gap-12">
 
         {/* 2. Continue assistindo + Trilhas em andamento */}
         {hasContinueWatching && !hasTrailsInProgress && (
@@ -65,7 +65,7 @@ export function HomeScreen() {
         <div className="border-t border-border" />
       )}
 
-      <div className="max-w-[1400px] mx-auto px-6 py-10 flex flex-col gap-12">
+      <div className="max-w-[1920px] mx-auto px-6 py-10 flex flex-col gap-12">
 
         {/* 3. Novos conteúdos */}
         {NEW_CONTENT_ITEMS.length > 0 && (

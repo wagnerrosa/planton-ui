@@ -75,7 +75,7 @@ export function AcademyFooter({ variant = 'default' }: AcademyFooterProps) {
   return (
     <>
       <footer className="border-t border-border bg-background">
-        <div className="max-w-[1400px] mx-auto px-4 py-4 md:py-0 md:h-[67px] flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
+        <div className="max-w-[1920px] mx-auto px-4 py-4 md:py-0 md:h-[67px] flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
           {/* Logo */}
           <Link href="/design-system/screens">
             <Image

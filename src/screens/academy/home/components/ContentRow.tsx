@@ -1,8 +1,7 @@
 'use client'
 
+import Link from 'next/link'
 import { Heading } from '@/components/primitives/Heading'
-import { Button } from '@/components/primitives/Button'
-import { ArrowRight } from 'lucide-react'
 import {
   Carousel,
   CarouselContent,
@@ -48,14 +47,14 @@ export function ContentRow({
   return (
     <section className="flex flex-col gap-3">
       {/* Row header */}
-      <div className="flex items-baseline gap-3">
-        <Heading as="h2" size="heading-lg">{title}</Heading>
-        {trailHref && (
-          <Button variant="icon" href={trailHref}>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
+      {trailHref ? (
+        <Link href={trailHref} className="group inline-flex items-baseline gap-2 self-start transition-colors hover:text-planton-accent">
+          <Heading as="h2" size="heading-md" className="group-hover:!text-planton-accent transition-colors">{title}</Heading>
+          <span className="text-lg leading-none group-hover:translate-x-0.5 transition-all">→</span>
+        </Link>
+      ) : (
+        <Heading as="h2" size="heading-md">{title}</Heading>
+      )}
 
       {/* Carousel */}
       <Carousel opts={{ align: 'start', loop }}>

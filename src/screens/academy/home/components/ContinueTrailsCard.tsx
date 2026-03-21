@@ -17,7 +17,7 @@ export function ContinueTrailsCard({ trails }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
-      <Heading as="h2" size="heading-lg">Trilhas em andamento</Heading>
+      <Heading as="h2" size="heading-md">Trilhas em andamento</Heading>
 
       <div className="flex flex-col gap-[14px] overflow-y-auto pr-1" style={{ maxHeight: '210px' }}>
         {active.map((trail) => (

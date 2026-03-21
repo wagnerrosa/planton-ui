@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 
-type HeadingSize = 'display-xl' | 'display-lg' | 'heading-xl' | 'heading-lg'
+type HeadingSize = 'display-xl' | 'display-lg' | 'heading-xl' | 'heading-lg' | 'heading-md'
 type HeadingSurface = 'light' | 'dark'
 
 type HeadingProps = {
@@ -16,6 +16,7 @@ const sizeClasses: Record<HeadingSize, string> = {
   'display-lg': 'text-[clamp(3rem,4.375vw,4.375rem)] tracking-[-0.05em] leading-[1.0]',
   'heading-xl': 'text-[clamp(2.5rem,3.5vw,3.5rem)] tracking-[-0.04em] leading-[1.05]',
   'heading-lg': 'text-[clamp(1.75rem,2.25vw,2.25rem)] tracking-[-0.02em] leading-[1.15]',
+  'heading-md': 'text-[clamp(1.25rem,1.5vw,1.5rem)] tracking-[-0.015em] leading-[1.2]',
 }
 
 export function Heading({
