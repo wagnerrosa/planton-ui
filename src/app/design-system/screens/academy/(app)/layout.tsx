@@ -35,7 +35,7 @@ function AcademyLayoutInner({ children }: { children: React.ReactNode }) {
   }, [pathname])
 
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
         {/* Navbar — full width, acima do flex sidebar+main */}
         <AcademyNavbar userName={userName} breadcrumbs={breadcrumbs} />

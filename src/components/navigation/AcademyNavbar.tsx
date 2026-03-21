@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Menu, Search, ChevronRight, LogOut, User } from 'lucide-react'
+import { Menu, Search, ChevronRight, ChevronLeft, LogOut, User } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
 import {
@@ -56,7 +56,7 @@ export interface AcademyNavbarProps {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function ThemeToggleButton() {
+export function ThemeToggleButton() {
   const { theme, setTheme } = useTheme()
   return (
     <button
@@ -70,7 +70,7 @@ function ThemeToggleButton() {
   )
 }
 
-function UserAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string }) {
+export function UserAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string }) {
   const initials = name
     .split(' ')
     .slice(0, 2)
@@ -119,7 +119,7 @@ export function AcademyNavbar({
         <div className="flex items-stretch self-stretch flex-1 min-w-0">
           {/* Hamburger */}
           <div
-            className="flex items-center px-4 border-r border-sidebar-border hover:bg-sidebar-accent transition-colors cursor-pointer"
+            className="flex items-center px-2 md:px-4 border-r border-sidebar-border hover:bg-sidebar-accent transition-colors cursor-pointer"
             onClick={() => { toggleSidebar(); onMenuToggle?.() }}
           >
             <button
@@ -131,7 +131,7 @@ export function AcademyNavbar({
           </div>
 
           {/* Logo */}
-          <div className="flex items-center px-5 shrink-0 border-r border-sidebar-border">
+          <div className="flex items-center px-3 md:px-5 shrink-0 border-r border-sidebar-border">
             <Link href="/design-system/screens/academy/home" className="flex items-center">
               <Image
                 src="/logos_produtos/planton_academy_forest.svg"
@@ -140,6 +140,7 @@ export function AcademyNavbar({
                 height={33}
                 priority
                 className="dark:hidden"
+                style={{ width: 164, height: 'auto' }}
               />
               <Image
                 src="/logos_produtos/planton_academy_branco.svg"
@@ -148,49 +149,69 @@ export function AcademyNavbar({
                 height={33}
                 priority
                 className="hidden dark:block"
+                style={{ width: 164, height: 'auto' }}
               />
             </Link>
           </div>
 
-          {/* Breadcrumb */}
+          {/* Breadcrumb — desktop: full trail, mobile: back + current page */}
           {breadcrumbs.length > 0 && (
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1 px-5 border-r border-sidebar-border min-w-0 overflow-hidden">
-              {breadcrumbs.map((item, index) => {
-                const isLast = index === breadcrumbs.length - 1
-                return (
-                  <span key={index} className="flex items-center gap-1 min-w-0">
-                    {index > 0 && (
-                      <ChevronRight size={12} className="shrink-0 text-sidebar-foreground/30" />
-                    )}
-                    {isLast || !item.href ? (
-                      <span
-                        className={`font-sans text-[13px] truncate ${
-                          isLast
-                            ? 'text-sidebar-foreground font-medium'
-                            : 'text-sidebar-foreground/50'
-                        }`}
-                      >
-                        {item.label}
-                      </span>
-                    ) : (
-                      <a
-                        href={item.href}
-                        className="font-sans text-[13px] text-sidebar-foreground/50 hover:text-sidebar-foreground truncate transition-colors"
-                      >
-                        {item.label}
-                      </a>
-                    )}
-                  </span>
-                )
-              })}
-            </nav>
+            <>
+              {/* Desktop breadcrumb */}
+              <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-1 px-5 border-r border-sidebar-border min-w-0 overflow-hidden">
+                {breadcrumbs.map((item, index) => {
+                  const isLast = index === breadcrumbs.length - 1
+                  return (
+                    <span key={index} className="flex items-center gap-1 min-w-0">
+                      {index > 0 && (
+                        <ChevronRight size={12} className="shrink-0 text-sidebar-foreground/30" />
+                      )}
+                      {isLast || !item.href ? (
+                        <span
+                          className={`font-sans text-[13px] truncate ${
+                            isLast
+                              ? 'text-sidebar-foreground font-medium'
+                              : 'text-sidebar-foreground/50'
+                          }`}
+                        >
+                          {item.label}
+                        </span>
+                      ) : (
+                        <a
+                          href={item.href}
+                          className="font-sans text-[13px] text-sidebar-foreground/50 hover:text-sidebar-foreground truncate transition-colors"
+                        >
+                          {item.label}
+                        </a>
+                      )}
+                    </span>
+                  )
+                })}
+              </nav>
+
+              {/* Mobile: back button + current page title */}
+              <div className="flex md:hidden items-center gap-1 px-3 min-w-0 overflow-hidden">
+                {breadcrumbs.length > 1 && breadcrumbs[breadcrumbs.length - 2]?.href && (
+                  <a
+                    href={breadcrumbs[breadcrumbs.length - 2].href}
+                    className="flex items-center justify-center w-7 h-7 shrink-0 text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
+                    aria-label="Voltar"
+                  >
+                    <ChevronLeft size={16} />
+                  </a>
+                )}
+                <span className="font-sans text-[13px] text-sidebar-foreground font-medium truncate">
+                  {breadcrumbs[breadcrumbs.length - 1].label}
+                </span>
+              </div>
+            </>
           )}
         </div>
 
         {/* ---- Right ---- */}
         <div className="flex items-stretch gap-0 shrink-0 self-stretch">
-          {/* Search trigger */}
-          <div className="hidden sm:flex items-center px-4 border-l border-sidebar-border">
+          {/* Search trigger — desktop: full field, mobile: icon only */}
+          <div className="hidden md:flex items-center px-4 border-l border-sidebar-border">
             <button
               onClick={() => onSearch?.()}
               className="flex items-center gap-2.5 h-8 w-52 px-3 bg-sidebar-accent/20 border border-sidebar-border/60 text-sidebar-foreground/40 hover:bg-sidebar-accent/40 hover:border-sidebar-border hover:text-sidebar-foreground/60 transition-all group"
@@ -207,47 +228,58 @@ export function AcademyNavbar({
               </span>
             </button>
           </div>
+          <div className="flex md:hidden items-center px-3 border-l border-sidebar-border">
+            <button
+              onClick={() => onSearch?.()}
+              className="flex items-center justify-center w-8 h-8 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
+              aria-label="Buscar"
+            >
+              <Search size={16} />
+            </button>
+          </div>
 
-          {/* Theme toggle */}
-          <div className="flex items-center px-4 border-l border-sidebar-border hover:bg-sidebar-accent transition-colors">
+          {/* Theme toggle — desktop only (mobile: inside sidebar) */}
+          <div className="hidden md:flex items-center px-4 border-l border-sidebar-border hover:bg-sidebar-accent transition-colors">
             <ThemeToggleButton />
           </div>
 
-          {/* User dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className="flex items-center gap-2 px-4 border-l border-sidebar-border self-stretch hover:bg-sidebar-accent transition-colors"
-                aria-label="Menu do usuário"
-              >
-                <UserAvatar name={userName} avatarUrl={userAvatarUrl} />
-                <span className="hidden sm:block font-sans text-[13px] text-sidebar-foreground/80 max-w-[100px] truncate">
-                  {userName}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44 rounded-none">
-              {onProfile && (
-                <>
-                  <DropdownMenuItem
-                    onClick={onProfile}
-                    className="font-sans text-[13px] gap-2 cursor-pointer"
-                  >
-                    <User size={14} />
-                    Perfil
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                </>
-              )}
-              <DropdownMenuItem
-                onClick={onLogout}
-                className="font-sans text-[13px] gap-2 cursor-pointer text-destructive focus:text-destructive"
-              >
-                <LogOut size={14} />
-                Sair
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* User dropdown — desktop only (mobile: inside sidebar) */}
+          <div className="hidden md:flex">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex items-center gap-2 px-4 border-l border-sidebar-border self-stretch hover:bg-sidebar-accent transition-colors"
+                  aria-label="Menu do usuário"
+                >
+                  <UserAvatar name={userName} avatarUrl={userAvatarUrl} />
+                  <span className="font-sans text-[13px] text-sidebar-foreground/80 max-w-[100px] truncate">
+                    {userName}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44 rounded-none">
+                {onProfile && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={onProfile}
+                      className="font-sans text-[13px] gap-2 cursor-pointer"
+                    >
+                      <User size={14} />
+                      Perfil
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuItem
+                  onClick={onLogout}
+                  className="font-sans text-[13px] gap-2 cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut size={14} />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
       </div>

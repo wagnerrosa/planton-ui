@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/shadcn/dialog'
 import { AlertCircle } from 'lucide-react'
 import type { AuthStep, AuthContext } from '../LoginFlow'
@@ -87,11 +88,12 @@ export function EmailEntryStep({
           <DialogTitle className="font-heading text-[clamp(1.75rem,2.25vw,2.25rem)] tracking-[-0.02em] leading-[1.05] text-planton-forest">
             Criar cadastro
           </DialogTitle>
+          <DialogDescription asChild>
+            <Body size="sm" muted>
+              Informe seu e-mail corporativo para verificar o acesso.
+            </Body>
+          </DialogDescription>
         </DialogHeader>
-
-        <Body size="sm" muted>
-          Informe seu e-mail corporativo para verificar o acesso.
-        </Body>
 
         {error && (
           <Alert variant="destructive">

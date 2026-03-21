@@ -53,8 +53,8 @@ export function AcademyFooter({ variant = 'default' }: AcademyFooterProps) {
   }
 
   return (
-    <footer className="border-t border-border bg-white">
-      <div className="max-w-[1400px] mx-auto px-4 h-[67px] flex items-center justify-between">
+    <footer className="border-t border-border bg-background">
+      <div className="max-w-[1400px] mx-auto px-4 py-4 md:py-0 md:h-[67px] flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
         {/* Logo */}
         <Link href="/design-system/screens">
           <Image
@@ -63,6 +63,7 @@ export function AcademyFooter({ variant = 'default' }: AcademyFooterProps) {
             width={115}
             height={28}
             priority={false}
+            style={{ width: 115, height: 'auto' }}
           />
         </Link>
 

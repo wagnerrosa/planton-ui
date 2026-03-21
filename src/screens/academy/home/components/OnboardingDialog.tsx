@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  DialogDescription,
 } from '@/components/shadcn/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
@@ -19,6 +20,7 @@ export function OnboardingDialog() {
       <DialogContent className="max-w-3xl p-8 gap-6">
         <VisuallyHidden>
           <DialogTitle>Bem-vindo ao Planton Academy</DialogTitle>
+          <DialogDescription>Vídeo de boas-vindas ao Planton Academy</DialogDescription>
         </VisuallyHidden>
 
         <div className="flex flex-col items-center gap-2 text-center">
