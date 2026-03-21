@@ -33,9 +33,12 @@ const gettingStarted = [
 ]
 
 const changelog = [
-  { date: '21 mar 2026, 14:00', entry: 'Adicionado fluxo de Login' },
-  { date: '20 mar 2026, 11:30', entry: 'Adicionada navegação por Sidebar' },
-  { date: '19 mar 2026, 09:15', entry: 'Estilos do Button atualizados' },
+  { date: '21 mar 2026', entry: 'Adicionada página de Imagens nos Foundations com os 5 biomas brasileiros e download' },
+  { date: '21 mar 2026', entry: 'Política de Privacidade e Termos de Uso com dialog no footer do Academy' },
+  { date: '21 mar 2026', entry: 'Home do Design System agora acessível direto em design.planton.eco.br' },
+  { date: '21 mar 2026', entry: 'Adicionado fluxo de Login' },
+  { date: '20 mar 2026', entry: 'Adicionada navegação por Sidebar' },
+  { date: '19 mar 2026', entry: 'Estilos do Button atualizados' },
 ]
 
 export default function Home() {
@@ -57,7 +60,7 @@ export default function Home() {
                 Referência de tokens, componentes e padrões para todos os produtos Planton.
               </p>
               <div className="flex items-center gap-3 mt-2">
-                <span className="font-mono text-xs text-planton-muted/60">v0.2.0</span>
+                <span className="font-mono text-xs text-planton-muted/60">v0.3.0</span>
                 <span className="w-px h-3 bg-border" />
                 <span className="font-mono text-xs text-planton-muted/60">Atualizado em março de 2026</span>
               </div>

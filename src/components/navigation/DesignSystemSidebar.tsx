@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Palette, Type, MousePointer, Component, ImageIcon, Monitor, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Palette, Type, MousePointer, Component, ImageIcon, Monitor, ChevronLeft, ChevronRight, Images } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { componentCategories } from '@/lib/components-registry'
@@ -12,6 +12,7 @@ const foundations = [
   { href: '/design-system/colors',     label: 'Cores',      icon: Palette },
   { href: '/design-system/typography', label: 'Tipografia', icon: Type },
   { href: '/design-system/logo',       label: 'Logo',       icon: ImageIcon },
+  { href: '/design-system/images',     label: 'Imagens',    icon: Images },
 ]
 
 const itemClass = (active: boolean) =>
@@ -51,7 +52,7 @@ export function DesignSystemSidebar() {
             <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40">
               Design System
             </span>
-            <span className="font-mono text-[0.6rem] text-sidebar-foreground/30">v0.2.0</span>
+            <span className="font-mono text-[0.6rem] text-sidebar-foreground/30">v0.3.0</span>
           </div>
         </Link>
         <button
