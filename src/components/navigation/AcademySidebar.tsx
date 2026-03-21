@@ -82,7 +82,7 @@ function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
 }
 
 function SidebarFooter({ onClose }: { onClose: () => void }) {
-  const { userName } = useAcademyNavbar()
+  const { userName, setProfileOpen } = useAcademyNavbar()
 
   return (
     <div className="mt-auto border-t border-sidebar-border px-3 py-3 flex flex-col gap-2">
@@ -96,14 +96,14 @@ function SidebarFooter({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Actions */}
-      <Link
-        href="#"
-        onClick={onClose}
-        className="flex items-center gap-2.5 px-2 py-2 text-sm font-sans text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+      <button
+        type="button"
+        onClick={() => { onClose(); setProfileOpen(true) }}
+        className="flex items-center gap-2.5 px-2 py-2 text-sm font-sans text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors w-full"
       >
         <User size={15} />
         Perfil
-      </Link>
+      </button>
 
       <button
         type="button"

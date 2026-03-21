@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/shadcn/dropdown-menu'
 import { useSidebar } from '@/components/shadcn/sidebar'
+import { useAcademyNavbar } from './AcademyNavbarContext'
+import { ProfileSheet } from './ProfileSheet'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -48,8 +50,6 @@ export interface AcademyNavbarProps {
   onSearch?: () => void
   /** Callback de logout. */
   onLogout?: () => void
-  /** Callback de perfil. */
-  onProfile?: () => void
 }
 
 // ---------------------------------------------------------------------------
@@ -107,9 +107,9 @@ export function AcademyNavbar({
   onMenuToggle,
   onSearch,
   onLogout,
-  onProfile,
 }: AcademyNavbarProps) {
   const { toggleSidebar } = useSidebar()
+  const { profileOpen, setProfileOpen } = useAcademyNavbar()
 
   return (
     <nav className="sticky top-0 z-[60] border-b border-sidebar-border bg-sidebar">
@@ -258,18 +258,14 @@ export function AcademyNavbar({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44 rounded-none">
-                {onProfile && (
-                  <>
-                    <DropdownMenuItem
-                      onClick={onProfile}
-                      className="font-sans text-[13px] gap-2 cursor-pointer"
-                    >
-                      <User size={14} />
-                      Perfil
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                )}
+                <DropdownMenuItem
+                  onClick={() => setProfileOpen(true)}
+                  className="font-sans text-[13px] gap-2 cursor-pointer"
+                >
+                  <User size={14} />
+                  Perfil
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={onLogout}
                   className="font-sans text-[13px] gap-2 cursor-pointer text-destructive focus:text-destructive"
@@ -283,6 +279,13 @@ export function AcademyNavbar({
         </div>
 
       </div>
+
+      <ProfileSheet
+        open={profileOpen}
+        onOpenChange={setProfileOpen}
+        userName={userName}
+        userAvatarUrl={userAvatarUrl}
+      />
     </nav>
   )
 }

@@ -18,23 +18,28 @@ import type { BreadcrumbItem } from './AcademyNavbar'
 type NavbarState = {
   breadcrumbs: BreadcrumbItem[]
   userName: string
+  profileOpen: boolean
   setBreadcrumbs: (items: BreadcrumbItem[]) => void
   setUserName: (name: string) => void
+  setProfileOpen: (open: boolean) => void
 }
 
 const AcademyNavbarContext = createContext<NavbarState>({
   breadcrumbs: [],
   userName: 'Usuário',
+  profileOpen: false,
   setBreadcrumbs: () => {},
   setUserName: () => {},
+  setProfileOpen: () => {},
 })
 
 export function AcademyNavbarProvider({ children }: { children: React.ReactNode }) {
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([])
   const [userName, setUserName] = useState('Wagner Rosa')
+  const [profileOpen, setProfileOpen] = useState(false)
 
   return (
-    <AcademyNavbarContext.Provider value={{ breadcrumbs, userName, setBreadcrumbs, setUserName }}>
+    <AcademyNavbarContext.Provider value={{ breadcrumbs, userName, profileOpen, setBreadcrumbs, setUserName, setProfileOpen }}>
       {children}
     </AcademyNavbarContext.Provider>
   )
