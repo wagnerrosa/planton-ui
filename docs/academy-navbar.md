@@ -8,24 +8,35 @@ Navbar principal do Planton Academy. Aparece no topo de todas as páginas autent
 
 ## Anatomia
 
+### Desktop (≥ 768px)
+
 ```
-[ ☰  Logo Academy  |  Breadcrumb ]          [ 🔍  ☀  Avatar ▾ ]
+[ ☰  Logo Academy  |  Breadcrumb ]          [ 🔍 campo  ☀  Avatar ▾ ]
 ```
 
-### Esquerda
-| Elemento | Descrição |
-|---|---|
-| Hamburger (`Menu`) | Toggle do sidebar lateral |
-| Logo Academy | Troca entre versão forest (light) e branco (dark) |
-| Separador `\|` | Aparece apenas quando há breadcrumbs |
-| Breadcrumb | Navegação hierárquica dinâmica (ver seção abaixo) |
+### Mobile (< 768px)
 
-### Direita
-| Elemento | Descrição |
-|---|---|
-| Campo de busca | Busca global — oculto em mobile (`hidden sm:flex`) |
-| Theme toggle | Alterna entre light/dark via `next-themes` |
-| Avatar + nome | Abre dropdown com Perfil (opcional) e Sair |
+```
+[ ☰  Logo Academy ]                         [ 🔍 ]
+```
+
+Theme toggle, avatar e ações do usuário ficam na **sidebar mobile** (`AcademySidebar`).
+
+### Elementos — Esquerda
+
+| Elemento | Desktop | Mobile |
+|---|---|---|
+| Hamburger (`Menu`) | Toggle do sidebar (push) | Toggle do sidebar (overlay Sheet) |
+| Logo Academy | Troca entre forest (light) e branco (dark) | Idem |
+| Breadcrumb | Trail completo com links clicáveis | Último item como título + botão voltar |
+
+### Elementos — Direita
+
+| Elemento | Desktop | Mobile |
+|---|---|---|
+| Campo de busca | Input expandido com atalho ⌘K | Ícone de lupa apenas |
+| Theme toggle | Visível | Movido para sidebar mobile |
+| Avatar + nome | Dropdown com Perfil e Sair | Movido para sidebar mobile |
 
 ---
 
@@ -37,7 +48,7 @@ interface AcademyNavbarProps {
   userName?: string                // nome exibido no avatar e dropdown
   userAvatarUrl?: string           // URL da foto; fallback para iniciais
   onMenuToggle?: () => void        // callback do hamburger
-  onSearch?: (query: string) => void
+  onSearch?: () => void            // callback do botão de busca (trigger ⌘K)
   onLogout?: () => void
   onProfile?: () => void           // se ausente, item "Perfil" não aparece
 }
@@ -48,6 +59,10 @@ interface BreadcrumbItem {
 }
 ```
 
+### Exports auxiliares
+
+O componente também exporta `ThemeToggleButton` e `UserAvatar`, reutilizados pela sidebar mobile.
+
 ---
 
 ## Breadcrumb — Regras
@@ -55,6 +70,11 @@ interface BreadcrumbItem {
 O breadcrumb reflete a localização atual do usuário dentro do produto.
 O item ativo (último) é sempre renderizado como texto puro, sem link.
 Itens intermediários recebem `href` e são clicáveis.
+
+### Comportamento responsivo
+
+- **Desktop:** trail completo com chevrons entre itens
+- **Mobile:** exibe apenas o último item como título. Se houver um item anterior com `href`, mostra um botão de voltar (ChevronLeft)
 
 ### Estrutura base
 
@@ -96,6 +116,8 @@ Trilhas / Gestão de Emissões / Aula 3
   { label: 'Aula 3' },
 ]} />
 ```
+
+Mobile: mostra `← Aula 3` (voltar leva para Gestão de Emissões)
 
 #### 4. Conteúdo isolado (não pertence a uma trilha)
 
@@ -144,14 +166,25 @@ Certificados / Gestão de Emissões
 O breadcrumb atualmente é passado via props de forma estática em cada página.
 A implementação dinâmica deve ser feita quando o roteamento real do Academy estiver definido.
 
-**Estratégia sugerida:**
-1. Criar um `BreadcrumbProvider` (Context) que qualquer página/layout pode atualizar via `useBreadcrumb()`.
-2. O `AcademyNavbar` lê do contexto em vez de receber via props.
-3. Cada página chama `setBreadcrumbs([...])` no seu `useEffect` ou diretamente no layout de rota.
+**Implementação atual:** via `AcademyNavbarContext` + `AcademyNavbarSync`. Cada tela chama `<AcademyNavbarSync breadcrumbs={[...]} />` e o layout lê do Context.
 
-**Alternativa com Next.js App Router:**
+**Estratégia futura:**
 - Usar `generateBreadcrumbs(pathname)` — função utilitária que mapeia segmentos de URL para labels legíveis.
 - Registrar o mapa de rotas em `src/lib/breadcrumbs-map.ts`.
+
+---
+
+## Sidebar mobile
+
+A `AcademySidebar` em mobile (< 768px) renderiza como Sheet overlay com:
+
+- Navegação (Home, Trilhas com sub-itens)
+- Footer fixo na parte inferior com:
+  - Avatar + nome do usuário + theme toggle (mesma linha)
+  - Link para Perfil
+  - Botão Sair (vermelho)
+
+Fecha automaticamente ao clicar em qualquer link ou fora do sheet.
 
 ---
 
@@ -162,9 +195,9 @@ O navbar usa os mesmos tokens do `DesignSystemSidebar` para manter coerência vi
 | Token | Uso |
 |---|---|
 | `bg-sidebar` | Background do navbar |
-| `border-sidebar-border` | Linha inferior |
+| `border-sidebar-border` | Linha inferior e separadores |
 | `text-sidebar-foreground` | Textos e ícones |
 | `bg-sidebar-accent` | Hover de botões e input de busca |
-| `text-planton-accent` | Estados ativos (futuro: item ativo no breadcrumb) |
+| `text-planton-accent` | Estados ativos |
 
-Isso garante que navbar e sidebar "conversem" — mesma paleta, mesma densidade visual.
+Breakpoint responsivo: `md` (768px), consistente com `useIsMobile` hook.

@@ -54,8 +54,13 @@ src/
 │   └── layout.tsx                      # ThemeProvider + Toaster
 │
 ├── components/
-│   ├── navigation/                     # Componentes de navegação do design system
-│   │   └── DesignSystemSidebar.tsx
+│   ├── navigation/                     # Componentes de navegação
+│   │   ├── DesignSystemSidebar.tsx     # Sidebar do design system
+│   │   ├── AcademyNavbar.tsx           # Navbar responsiva do Academy (exports: ThemeToggleButton, UserAvatar)
+│   │   ├── AcademyNavbarContext.tsx    # Context para breadcrumbs dinâmicos
+│   │   ├── AcademyNavbarSync.tsx       # Componente invisível para injetar breadcrumbs
+│   │   ├── AcademySidebar.tsx          # Sidebar do Academy (push desktop / overlay mobile)
+│   │   └── AcademyFooter.tsx           # Footer do Academy (default + overlay variants)
 │   ├── primitives/                     # Componentes próprios base
 │   │   ├── Button.tsx
 │   │   ├── Heading.tsx
@@ -82,16 +87,17 @@ src/
 │       ├── auth/
 │       │   ├── LoginFlow.tsx           # Fluxo de autenticação multi-step
 │       │   ├── LoginScreen.tsx         # Tela de login estática (legado)
-│       │   └── steps/                  # 13 step components do fluxo
+│       │   └── steps/                  # 12 step components do fluxo (onboarding movido para Home)
 │       ├── home/
-│       │   ├── HomeScreen.tsx          # Home do Academy (hero + content rows)
+│       │   ├── HomeScreen.tsx          # Home do Academy (hero + content rows + onboarding dialog)
 │       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos)
 │       │   └── components/
 │       │       ├── HeroContent.tsx         # Banner hero com conteúdo em destaque
 │       │       ├── ContentRow.tsx          # Row horizontal de cards de conteúdo (loop opcional)
 │       │       ├── ContentCard.tsx         # Card de conteúdo (vídeo, podcast, artigo)
 │       │       ├── ContentTypeIcon.tsx     # Ícone por tipo de conteúdo
-│       │       └── ContinueTrailsCard.tsx  # Lista de trilhas em andamento com progress bars
+│       │       ├── ContinueTrailsCard.tsx  # Lista de trilhas em andamento com progress bars
+│       │       └── OnboardingDialog.tsx    # Dialog de boas-vindas com vídeo (abre ao entrar na Home)
 │       ├── trail/
 │       │   └── TrailScreen.tsx         # Tela de trilha (lista de conteúdos)
 │       └── content/
@@ -310,7 +316,8 @@ IDs disponíveis: qualquer `id` dos `CONTENT_ITEMS` em `mock-data.ts`
 
 ### Fluxo de Autenticação (`academy/auth/`)
 
-Fluxo multi-step completo com 13 steps gerenciados por `useState<AuthStep>` em `LoginFlow.tsx`.
+Fluxo multi-step completo com 12 steps gerenciados por `useState<AuthStep>` em `LoginFlow.tsx`.
+O onboarding (vídeo de boas-vindas) foi movido para um Dialog na Home (`OnboardingDialog`).
 
 | Step | Arquivo | Descrição |
 |---|---|---|
@@ -325,7 +332,6 @@ Fluxo multi-step completo com 13 steps gerenciados por `useState<AuthStep>` em `
 | profile-form | `ProfileFormStep.tsx` | Formulário de perfil (react-hook-form + zod) |
 | set-password | `SetPasswordStep.tsx` | Definição de senha (react-hook-form + zod) |
 | otp-verification | `OTPVerificationStep.tsx` | Código de 6 dígitos (InputOTP) |
-| onboarding | `OnboardingStep.tsx` | Vídeo introdutório |
 | success | `SuccessStep.tsx` | Acesso liberado |
 
 **Como testar o fluxo (sem backend)**
@@ -372,8 +378,7 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 5. Preencha nome completo e cargo (obrigatórios) → **Continuar**
 6. Defina uma senha (mín. 8 caracteres) e confirme → **Continuar**
 7. Digite o código OTP `123456` → **Verificar**
-8. ✅ Navega para **Onboarding** → clique em **Começar** ou **Pular**
-9. ✅ Navega para **Acesso liberado**
+8. ✅ Navega para **Acesso liberado**
 
 ---
 
@@ -427,7 +432,7 @@ Todos os dados são simulados no frontend — nenhuma API é chamada.
 | E-mail cadastro | outro corporativo | Cenário C — domínio desconhecido |
 | Voucher | `PLANTON-2026-ATIVO` | Ativa o acesso |
 | Voucher | `PLANTON-2026-EXPIRADO` | Código expirado |
-| Código OTP | `123456` | Verificação concluída |
+| Código OTP | `123456` | Verificação concluída → acesso liberado |
 
 > **Em construção:** novos padrões serão adicionados conforme o desenvolvimento do Planton Academy V2, incluindo painel do Gestor Master e painel do Super Admin.
 
