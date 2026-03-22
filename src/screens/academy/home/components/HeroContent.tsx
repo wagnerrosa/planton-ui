@@ -100,7 +100,7 @@ export function HeroContent({ contents }: HeroContentProps) {
   const badge = getContentBadge(content)
 
   return (
-    <div className="relative w-full overflow-hidden bg-black h-[60vh] min-h-[420px] max-h-[720px]">
+    <div className="relative w-full overflow-hidden bg-black h-[75vh] min-h-[520px]">
       {/* Background thumbnail — fades out when video starts */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
