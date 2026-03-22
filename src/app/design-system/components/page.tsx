@@ -9,15 +9,15 @@ export default function ComponentsIndexPage() {
     <main className="min-h-screen bg-surface-default max-w-[1400px] mx-auto px-6 py-16 flex flex-col gap-12">
       <div className="flex flex-col gap-2">
         <Eyebrow>Catalog</Eyebrow>
-        <Heading as="h1" size="heading-xl">Componentes</Heading>
+        <Heading as="h1" size="heading-xl">Components</Heading>
         <Body muted className="max-w-2xl">
-          Todos os componentes do design system organizados por categoria. Clique para ver exemplos, variantes e o path do arquivo.
+          All design system components organized by category. Click to see examples, variants and the file path.
         </Body>
       </div>
 
       {/* Button - standalone */}
       <section className="flex flex-col gap-4">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Destaque</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Featured</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 overflow-hidden border-t border-l border-border">
           <Link
             href="/design-system/components/button"

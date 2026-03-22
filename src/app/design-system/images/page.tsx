@@ -5,27 +5,27 @@ const images = [
   {
     slug: 'CAATINGA-BG',
     label: 'Caatinga',
-    description: 'Vegetação seca e resistente do semiárido nordestino, com cactos, bromélias e solo rachado sob o sol intenso.',
+    description: 'Dry, resilient vegetation of the northeastern semi-arid region, with cacti, bromeliads and cracked soil under intense sunlight.',
   },
   {
     slug: 'MATA-ATLANTICA-BG',
     label: 'Mata Atlântica',
-    description: 'Uma das florestas mais biodiversas do planeta, com densa vegetação tropical, rios e fauna exuberante.',
+    description: 'One of the most biodiverse forests on the planet, with dense tropical vegetation, rivers and lush wildlife.',
   },
   {
     slug: 'PAMPA-BG',
     label: 'Pampa',
-    description: 'Campos abertos do sul do Brasil, com gramíneas nativas, céu amplo e a paisagem característica dos pampas gaúchos.',
+    description: 'Open grasslands of southern Brazil, with native grasses, wide skies and the characteristic landscape of the gaucho pampas.',
   },
   {
     slug: 'PANTANAL-BG',
     label: 'Pantanal',
-    description: 'A maior planície alagável do mundo, rica em vida selvagem, águas espelhadas e vegetação de transição.',
+    description: 'The largest tropical wetland in the world, rich in wildlife, mirrored waters and transitional vegetation.',
   },
   {
     slug: 'SERRA-SUL-BG',
     label: 'Serra do Sul',
-    description: 'Montanhas com mata de araucária, névoa entre os picos e o frio característico do planalto meridional brasileiro.',
+    description: 'Mountains with araucaria forests, mist between the peaks and the characteristic cold of the Brazilian southern highlands.',
   },
 ]
 
@@ -36,13 +36,13 @@ export default function ImagesPage() {
       <div className="flex flex-col gap-2 mb-4">
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Foundations</span>
         <h1 className="font-heading text-[clamp(2.5rem,3.5vw,3.5rem)] leading-[1.05] tracking-[-0.04em] text-planton-forest">
-          Imagens
+          Images
         </h1>
       </div>
 
       <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl mb-12">
-        Cenários dos biomas brasileiros criados especialmente para a Planton com tecnologia de IA generativa.
-        Disponíveis para uso nos produtos da plataforma.
+        Sceneries of Brazilian biomes created exclusively for Planton with generative AI technology.
+        Available for use across platform products.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-t border-l border-border">

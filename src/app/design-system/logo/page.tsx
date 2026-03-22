@@ -18,19 +18,19 @@ type LogoAsset = {
 const brandLogos: { group: string; description: string; items: LogoAsset[] }[] = [
   {
     group: 'Horizontal',
-    description: 'Versão principal. Use como padrão sempre que houver espaço horizontal suficiente.',
+    description: 'Primary version. Use as the default whenever there is enough horizontal space.',
     items: [
       {
         name: 'Horizontal - Forest',
-        description: 'Logo horizontal em verde forest. Para fundos claros.',
-        usage: 'Fundos claros (white, card)',
+        description: 'Horizontal logo in forest green. For light backgrounds.',
+        usage: 'Light backgrounds (white, card)',
         file: 'public/Logo_Planton_01.svg',
         bg: 'light',
       },
       {
         name: 'Horizontal - Accent',
-        description: 'Logo horizontal em verde accent (lima). Para fundos escuros.',
-        usage: 'Fundos escuros (forest, dark)',
+        description: 'Horizontal logo in accent green (lime). For dark backgrounds.',
+        usage: 'Dark backgrounds (forest, dark)',
         file: 'public/logos_planton/planton_horizontal_aberto_accent.svg',
         bg: 'dark',
       },
@@ -38,45 +38,45 @@ const brandLogos: { group: string; description: string; items: LogoAsset[] }[] =
   },
   {
     group: 'Vertical',
-    description: 'Use quando o espaço horizontal for limitado (ex.: mobile, sidebars estreitas).',
+    description: 'Use when horizontal space is limited (e.g. mobile, narrow sidebars).',
     items: [
       {
         name: 'Vertical',
-        description: 'Ícone + nome empilhados verticalmente.',
-        usage: 'Espaço horizontal limitado',
+        description: 'Icon + name stacked vertically.',
+        usage: 'Limited horizontal space',
         file: 'public/logos_planton/planton_vertical.svg',
         bg: 'light',
       },
     ],
   },
   {
-    group: 'Com Tagline',
-    description: 'Use somente em contextos de branding específicos (apresentações, materiais de marketing). Não use na UI do produto.',
+    group: 'With Tagline',
+    description: 'Use only in specific branding contexts (presentations, marketing materials). Do not use in product UI.',
     items: [
       {
-        name: 'Vertical com Tagline',
-        description: 'Versão completa com tagline. Uso restrito a materiais de marca.',
-        usage: 'Materiais de marketing e branding',
+        name: 'Vertical with Tagline',
+        description: 'Full version with tagline. Restricted to brand materials.',
+        usage: 'Marketing and branding materials',
         file: 'public/logos_planton/planton_vertical_tagline.svg',
         bg: 'dark',
       },
     ],
   },
   {
-    group: 'Ícone',
-    description: 'Símbolo isolado. Use em favicons, avatares e espaços muito reduzidos.',
+    group: 'Icon',
+    description: 'Standalone symbol. Use in favicons, avatars and very small spaces.',
     items: [
       {
         name: 'Square',
-        description: 'Ícone quadrado sem texto.',
-        usage: 'Favicon, avatar, espaços compactos',
+        description: 'Square icon without text.',
+        usage: 'Favicon, avatar, compact spaces',
         file: 'public/logos_planton/planton_square.svg',
         bg: 'light',
       },
       {
         name: 'Square Inside',
-        description: 'Variação do ícone com detalhe interno.',
-        usage: 'Variação alternativa do ícone',
+        description: 'Icon variation with inner detail.',
+        usage: 'Alternative icon variation',
         file: 'public/logos_planton/planton_square_inside.svg',
         bg: 'light',
       },
@@ -90,15 +90,15 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
     items: [
       {
         name: 'Academy - Forest',
-        description: 'Logo Academy em verde forest.',
-        usage: 'Fundos claros',
+        description: 'Academy logo in forest green.',
+        usage: 'Light backgrounds',
         file: 'public/logos_produtos/planton_academy_forest.svg',
         bg: 'light',
       },
       {
-        name: 'Academy - Branco',
-        description: 'Logo Academy em branco.',
-        usage: 'Fundos escuros',
+        name: 'Academy - White',
+        description: 'Academy logo in white.',
+        usage: 'Dark backgrounds',
         file: 'public/logos_produtos/planton_academy_branco.svg',
         bg: 'dark',
       },
@@ -109,15 +109,15 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
     items: [
       {
         name: 'Genius - Forest',
-        description: 'Logo Genius em verde forest.',
-        usage: 'Fundos claros',
+        description: 'Genius logo in forest green.',
+        usage: 'Light backgrounds',
         file: 'public/logos_produtos/planton_genius_forest.svg',
         bg: 'light',
       },
       {
-        name: 'Genius - Branco',
-        description: 'Logo Genius em branco.',
-        usage: 'Fundos escuros',
+        name: 'Genius - White',
+        description: 'Genius logo in white.',
+        usage: 'Dark backgrounds',
         file: 'public/logos_produtos/planton_genius_branco.svg',
         bg: 'dark',
       },
@@ -192,15 +192,15 @@ export default function LogoPage() {
         <Eyebrow>Foundations</Eyebrow>
         <Heading as="h1" size="heading-xl">Logo</Heading>
         <Body muted className="max-w-2xl">
-          Uso correto da marca Planton e suas variações.
+          Correct usage of the Planton brand and its variations.
         </Body>
       </div>
 
       {/* Usage Rules */}
       <section className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Regras de uso</span>
-          <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Cor do logo por contexto</h2>
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Usage rules</span>
+          <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Logo color by context</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px border border-border overflow-hidden">
@@ -209,7 +209,7 @@ export default function LogoPage() {
             <div className="bg-white flex items-center justify-center h-40 px-12">
               <Image
                 src="/Logo_Planton_01.svg"
-                alt="Planton - fundo claro"
+                alt="Planton - light background"
                 width={200}
                 height={50}
                 className="object-contain"
@@ -217,8 +217,8 @@ export default function LogoPage() {
               />
             </div>
             <div className="p-4 bg-surface-card border-t border-border flex flex-col gap-1">
-              <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.08em]">Fundo claro</span>
-              <span className="font-sans text-sm text-foreground">Use o logo em <strong>Planton Forest</strong> (verde escuro)</span>
+              <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.08em]">Light background</span>
+              <span className="font-sans text-sm text-foreground">Use the logo in <strong>Planton Forest</strong> (dark green)</span>
               <span className="font-mono text-xs text-planton-muted/70 mt-1">bg-white · bg-card · bg-surface-default</span>
             </div>
           </div>
@@ -228,7 +228,7 @@ export default function LogoPage() {
             <div className="bg-planton-forest flex items-center justify-center h-40 px-12">
               <Image
                 src="/logos_planton/planton_horizontal_aberto_accent.svg"
-                alt="Planton - fundo escuro"
+                alt="Planton - dark background"
                 width={200}
                 height={50}
                 className="object-contain"
@@ -236,8 +236,8 @@ export default function LogoPage() {
               />
             </div>
             <div className="p-4 bg-surface-card border-t border-border flex flex-col gap-1">
-              <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.08em]">Fundo escuro</span>
-              <span className="font-sans text-sm text-foreground">Use o logo em <strong>Planton Accent</strong> (verde lima)</span>
+              <span className="font-mono text-xs text-planton-accent uppercase tracking-[0.08em]">Dark background</span>
+              <span className="font-sans text-sm text-foreground">Use the logo in <strong>Planton Accent</strong> (lime green)</span>
               <span className="font-mono text-xs text-planton-muted/70 mt-1">bg-planton-forest · bg-planton-dark · bg-surface-dark</span>
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function LogoPage() {
       {brandLogos.map((group) => (
         <section key={group.group} className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">
-            <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Variações da marca</span>
+            <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Brand variations</span>
             <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">{group.group}</h2>
             <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">{group.description}</p>
           </div>
@@ -263,10 +263,10 @@ export default function LogoPage() {
       {/* Product Logos */}
       <section className="flex flex-col gap-10">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Logos de produto</span>
-          <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Produtos Planton</h2>
+          <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Product logos</span>
+          <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Planton Products</h2>
           <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
-            Cada produto tem versões para fundos claros (forest) e escuros (branco). Nunca misture - use sempre a versão correta para o contexto.
+            Each product has versions for light (forest) and dark (white) backgrounds. Never mix them — always use the correct version for the context.
           </p>
         </div>
 

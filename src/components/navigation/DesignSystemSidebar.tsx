@@ -9,10 +9,10 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { componentCategories } from '@/lib/components-registry'
 
 const foundations = [
-  { href: '/design-system/colors',     label: 'Cores',      icon: Palette },
-  { href: '/design-system/typography', label: 'Tipografia', icon: Type },
+  { href: '/design-system/colors',     label: 'Colors',     icon: Palette },
+  { href: '/design-system/typography', label: 'Typography', icon: Type },
   { href: '/design-system/logo',       label: 'Logo',       icon: ImageIcon },
-  { href: '/design-system/images',     label: 'Imagens',    icon: Images },
+  { href: '/design-system/images',     label: 'Images',     icon: Images },
 ]
 
 const itemClass = (active: boolean) =>
@@ -37,7 +37,7 @@ export function DesignSystemSidebar() {
 
   return (
     <>
-      {/* Overlay para fechar no mobile ao tocar fora */}
+      {/* Overlay to close on mobile when tapping outside */}
       <div
         className="fixed inset-0 z-30 bg-black/40 md:hidden"
         onClick={toggleSidebar}
@@ -58,7 +58,7 @@ export function DesignSystemSidebar() {
         <button
           onClick={toggleSidebar}
           className="flex items-center justify-center w-11 h-11 -mr-2 rounded-full text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors self-start -mt-2"
-          aria-label="Colapsar menu"
+          aria-label="Collapse menu"
         >
           <ChevronLeft size={12} />
         </button>
@@ -91,7 +91,7 @@ export function DesignSystemSidebar() {
             className={itemClass(pathname === '/design-system/components')}
           >
             <Component size={15} />
-            Componentes
+            Components
           </Link>
 
           <Link
@@ -168,7 +168,7 @@ export function SidebarCollapseButton() {
     <button
       onClick={toggleSidebar}
       className="fixed top-[10px] left-1 z-50 flex items-center justify-center w-11 h-11 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-      aria-label="Expandir menu"
+      aria-label="Expand menu"
     >
       <ChevronRight size={12} />
     </button>

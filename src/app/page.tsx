@@ -5,40 +5,40 @@ import { Card } from '@/components/ui/Card'
 const sections = [
   {
     href: '/design-system/colors',
-    label: 'Cores',
-    description: 'Paleta de brand, tokens semânticos de cor e exemplos de uso correto',
+    label: 'Colors',
+    description: 'Brand palette, semantic color tokens and correct usage examples',
   },
   {
     href: '/design-system/typography',
-    label: 'Tipografia',
-    description: 'Escalas de fonte, line-height, tracking e hierarquia visual',
+    label: 'Typography',
+    description: 'Font scales, line-height, tracking and visual hierarchy',
   },
   {
     href: '/design-system/components',
-    label: 'Componentes',
-    description: 'Primitivos reutilizáveis: Button, Card, Input, Dialog, Tabs, Badge e mais',
+    label: 'Components',
+    description: 'Reusable primitives: Button, Card, Input, Dialog, Tabs, Badge and more',
   },
   {
     href: '/design-system/screens',
     label: 'Screens',
-    description: 'Telas reais dos produtos Planton com layout e comportamento documentados',
+    description: 'Real Planton product screens with documented layout and behavior',
   },
 ]
 
 const gettingStarted = [
-  'Use tokens em vez de valores hardcoded (cores, espaçamento, tipografia)',
-  'Prefira primitivos existentes antes de criar novos componentes',
-  'Reutilize componentes sempre que possível , evite duplicação',
-  'Siga as convenções de nomenclatura e estrutura do projeto',
+  'Use tokens instead of hardcoded values (colors, spacing, typography)',
+  'Prefer existing primitives before creating new components',
+  'Reuse components whenever possible — avoid duplication',
+  'Follow the project naming and structure conventions',
 ]
 
 const changelog = [
-  { date: '21 mar 2026', entry: 'Adicionada página de Imagens nos Foundations com os 5 biomas brasileiros e download' },
-  { date: '21 mar 2026', entry: 'Política de Privacidade e Termos de Uso com dialog no footer do Academy' },
-  { date: '21 mar 2026', entry: 'Home do Design System agora acessível direto em design.planton.eco.br' },
-  { date: '21 mar 2026', entry: 'Adicionado fluxo de Login' },
-  { date: '20 mar 2026', entry: 'Adicionada navegação por Sidebar' },
-  { date: '19 mar 2026', entry: 'Estilos do Button atualizados' },
+  { date: '21 mar 2026', entry: 'Added Images page to Foundations with 5 Brazilian biomes and download' },
+  { date: '21 mar 2026', entry: 'Privacy Policy and Terms of Use with dialog in Academy footer' },
+  { date: '21 mar 2026', entry: 'Design System home now accessible directly at design.planton.eco.br' },
+  { date: '21 mar 2026', entry: 'Added Login flow' },
+  { date: '20 mar 2026', entry: 'Added Sidebar navigation' },
+  { date: '19 mar 2026', entry: 'Button styles updated' },
 ]
 
 export default function Home() {
@@ -57,12 +57,12 @@ export default function Home() {
                 Design System
               </h1>
               <p className="font-sans text-base leading-[1.65] text-planton-muted max-w-xl">
-                Referência de tokens, componentes e padrões para todos os produtos Planton.
+                Token, component and pattern reference for all Planton products.
               </p>
               <div className="flex items-center gap-3 mt-2">
                 <span className="font-mono text-xs text-planton-muted/60">v0.3.0</span>
                 <span className="w-px h-3 bg-border" />
-                <span className="font-mono text-xs text-planton-muted/60">Atualizado em março de 2026</span>
+                <span className="font-mono text-xs text-planton-muted/60">Updated March 2026</span>
               </div>
             </div>
 
@@ -83,7 +83,7 @@ export default function Home() {
             {/* Category Cards */}
             <section className="mb-16">
               <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-muted/60 mb-4">
-                Explorar
+                Explore
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 overflow-hidden border-t border-l border-border">
                 {sections.map((s) => (
@@ -92,7 +92,7 @@ export default function Home() {
                     cardHref={s.href}
                     headline={s.label}
                     description={s.description}
-                    ctaLabel="Ver"
+                    ctaLabel="View"
                   />
                 ))}
               </div>

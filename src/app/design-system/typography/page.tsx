@@ -9,7 +9,7 @@ export default function TypographyPage() {
     <main className="min-h-screen bg-surface-default max-w-[1400px] mx-auto px-6 py-16 flex flex-col gap-20">
       <div className="flex flex-col gap-2">
         <Eyebrow>Foundations</Eyebrow>
-        <Heading as="h1" size="heading-xl">Tipografia</Heading>
+        <Heading as="h1" size="heading-xl">Typography</Heading>
       </div>
 
       {/* Headings */}
@@ -61,7 +61,7 @@ export default function TypographyPage() {
             <div key={size} className="flex flex-col gap-1 border-b border-border/50 pb-6">
               <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">body {size}</span>
               <Body size={size}>
-                Planton conecta produtores rurais com os melhores serviços do agronegócio. Nossa plataforma foi construída para ser clara, eficiente e confiável.
+                Planton connects rural producers with the best agribusiness services. Our platform was built to be clear, efficient and reliable.
               </Body>
             </div>
           ))}
@@ -84,11 +84,11 @@ export default function TypographyPage() {
         <div className="flex flex-col gap-6 border-t border-border pt-8">
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Eyebrow - 11px · 0.12em · uppercase</span>
-            <Eyebrow>Categoria do conteúdo</Eyebrow>
+            <Eyebrow>Content category</Eyebrow>
           </div>
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[0.6875rem] text-planton-muted uppercase tracking-[0.12em]">Label - 12px · 0.05em · uppercase</span>
-            <Label>Status · Indicador · Índice</Label>
+            <Label>Status · Indicator · Index</Label>
           </div>
         </div>
       </section>
@@ -124,12 +124,12 @@ export default function TypographyPage() {
 
       {/* On dark */}
       <section className="flex flex-col gap-4">
-        <Label>Em superfície escura</Label>
+        <Label>On dark surface</Label>
         <div className="bg-planton-dark p-12 flex flex-col gap-6">
-          <Eyebrow>Categoria</Eyebrow>
-          <Heading size="heading-xl" surface="dark">Título em fundo escuro</Heading>
-          <Body surface="dark">Texto corrido em superfície escura com opacidade total.</Body>
-          <Body surface="dark" muted>Texto secundário com 80% de opacidade.</Body>
+          <Eyebrow>Category</Eyebrow>
+          <Heading size="heading-xl" surface="dark">Heading on dark background</Heading>
+          <Body surface="dark">Body text on dark surface with full opacity.</Body>
+          <Body surface="dark" muted>Secondary text with 80% opacity.</Body>
         </div>
       </section>
     </main>
