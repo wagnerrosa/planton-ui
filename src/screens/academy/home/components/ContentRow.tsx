@@ -33,8 +33,6 @@ export function ContentRow({
 }: ContentRowProps) {
   if (items.length === 0) return null
 
-  // Texto agora vive dentro da thumbnail — o card é 100% thumbnail,
-  // então o centro do carousel já é o centro do card.
   const btnStyle = { top: '50%' }
 
   return (
@@ -53,8 +51,17 @@ export function ContentRow({
       <Carousel opts={{ align: 'start', loop }}>
         <CarouselContent className="-ml-3">
           {items.map((item) => (
-            <CarouselItem key={item.id} className="pl-3 basis-[160px] sm:basis-[180px] md:basis-[200px] lg:basis-[220px]">
-              <ContentCard content={item} showProgress={showProgress} showTrail={showTrail} linkToTrail={!!trailHref} />
+            <CarouselItem
+              key={item.id}
+              className="pl-3 basis-[160px] sm:basis-[180px] md:basis-[200px] lg:basis-[220px]"
+            >
+              <ContentCard
+                content={item}
+                showProgress={showProgress}
+                showTrail={showTrail}
+                linkToTrail={!!trailHref}
+
+              />
             </CarouselItem>
           ))}
         </CarouselContent>
