@@ -33,16 +33,9 @@ export function ContentRow({
 }: ContentRowProps) {
   if (items.length === 0) return null
 
-  // Centro da thumbnail = 50% do carousel (thumb+info) menos metade do info abaixo.
-  // Info padrão (gap-2 + título 2l + gap-1 + duração) ≈ 66px
-  // Info com trilha adiciona "Da trilha: X" (~20px) ≈ 86px
-  // O carousel base já aplica -translate-y-1/2 (desloca -50% da altura do botão).
-  // Só precisamos ajustar o top para o centro da thumbnail em vez do centro do card completo.
-  // Centro da thumb = 50% do carousel total - metade da área de info abaixo da thumb.
-  // Info padrão (gap-2 + título 2l + gap-1 + duração) ≈ 66px → metade = 33px
-  // Info com trilha adiciona "Da trilha: X" (~20px) ≈ 86px → metade = 43px
-  const infoHalf = showTrail ? 29 : 22
-  const btnStyle = { top: `calc(50% - ${infoHalf}px)` }
+  // Texto agora vive dentro da thumbnail — o card é 100% thumbnail,
+  // então o centro do carousel já é o centro do card.
+  const btnStyle = { top: '50%' }
 
   return (
     <section className="flex flex-col gap-3">
@@ -60,7 +53,7 @@ export function ContentRow({
       <Carousel opts={{ align: 'start', loop }}>
         <CarouselContent className="-ml-3">
           {items.map((item) => (
-            <CarouselItem key={item.id} className="pl-3 basis-auto">
+            <CarouselItem key={item.id} className="pl-3 basis-[160px] sm:basis-[180px] md:basis-[200px] lg:basis-[220px]">
               <ContentCard content={item} showProgress={showProgress} showTrail={showTrail} linkToTrail={!!trailHref} />
             </CarouselItem>
           ))}

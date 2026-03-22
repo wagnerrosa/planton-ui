@@ -35,12 +35,13 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
   return (
     <Link
       href={href}
-      className="flex flex-col gap-2 group/card focus:outline-none w-[200px] sm:w-[220px] md:w-[240px] lg:w-[260px] flex-shrink-0"
+      className="group/card focus:outline-none w-full flex-shrink-0"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Thumbnail */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16/9' }}>
+      <div className="relative w-full overflow-hidden rounded-lg" style={{ aspectRatio: '4/5' }}>
+        {/* 1. Image (base layer) */}
         {isVideo ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -55,33 +56,36 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
           </div>
         )}
 
-        {/* Progress bar overlay (bottom of thumbnail) */}
+        {/* 2. Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+        {/* 3. Text content */}
+        <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col gap-1">
+          <span className="text-white text-sm font-medium leading-tight line-clamp-2">
+            {content.title}
+          </span>
+
+          {showTrail && content.trail && (
+            <span className="text-white/60 text-xs">
+              Da trilha: {content.trail.name}
+            </span>
+          )}
+
+          <div className="flex items-center gap-2 text-white text-xs">
+            <ContentTypeIcon type={content.type} className="text-white" />
+            <span>{content.duration}</span>
+          </div>
+        </div>
+
+        {/* 4. Progress bar (top layer) */}
         {showProgress && content.progress > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-black/40">
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/40 z-10">
             <div
               className="h-full bg-planton-accent"
               style={{ width: `${content.progress}%` }}
             />
           </div>
         )}
-      </div>
-
-      {/* Info */}
-      <div className="flex flex-col gap-1">
-        <span className="font-sans text-sm font-medium text-foreground leading-snug group-hover/card:text-planton-accent transition-colors line-clamp-2">
-          {content.title}
-        </span>
-
-        {showTrail && content.trail && (
-          <span className="font-sans text-xs text-planton-muted">
-            Da trilha: {content.trail.name}
-          </span>
-        )}
-
-        <div className="flex items-center gap-2">
-          <ContentTypeIcon type={content.type} />
-          <span className="font-mono text-xs text-planton-muted">{content.duration}</span>
-        </div>
       </div>
     </Link>
   )
