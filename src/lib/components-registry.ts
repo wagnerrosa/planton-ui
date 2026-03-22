@@ -63,6 +63,7 @@ export const componentCategories: ComponentCategory[] = [
       { slug: 'alert', name: 'Alert', description: 'Mensagem de aviso ou informação contextual.', filePath: 'src/components/shadcn/alert.tsx' },
       { slug: 'alert-dialog', name: 'Alert Dialog', description: 'Diálogo de confirmação para ações destrutivas.', filePath: 'src/components/shadcn/alert-dialog.tsx' },
       { slug: 'sonner', name: 'Sonner', description: 'Notificações toast efêmeras.', filePath: 'src/components/shadcn/sonner.tsx' },
+      { slug: 'top-notification-bar', name: 'TopNotificationBar', description: 'Banner sticky no topo da página para trial, billing e mensagens de sistema. Variantes: default, warning, danger, success, accent.', filePath: 'src/components/ui/TopNotificationBar.tsx' },
     ],
   },
   {

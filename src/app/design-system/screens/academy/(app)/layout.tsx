@@ -24,6 +24,9 @@ import { SidebarProvider } from '@/components/shadcn/sidebar'
 import { AcademySidebar } from '@/components/navigation/AcademySidebar'
 import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
 import { AcademyNavbarProvider, useAcademyNavbar } from '@/components/navigation/AcademyNavbarContext'
+import { TopNotificationBar } from '@/components/ui/TopNotificationBar'
+
+const TRIAL_DAYS_REMAINING = 7
 
 function AcademyLayoutInner({ children }: { children: React.ReactNode }) {
   const { breadcrumbs, userName } = useAcademyNavbar()
@@ -37,6 +40,15 @@ function AcademyLayoutInner({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
+        {/* Trial banner , acima da navbar */}
+        <TopNotificationBar
+          message={`Seu período de trial termina em ${TRIAL_DAYS_REMAINING} dias.`}
+          variant="accent"
+          ctaLabel="Fazer upgrade"
+          onCtaClick={() => console.log('upgrade clicked')}
+          dismissible
+        />
+
         {/* Navbar , full width, acima do flex sidebar+main */}
         <AcademyNavbar userName={userName} breadcrumbs={breadcrumbs} />
 
