@@ -94,8 +94,8 @@ src/
 │       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos)
 │       │   └── components/
 │       │       ├── HeroContent.tsx         # Banner hero com conteúdo em destaque
-│       │       ├── ContentRow.tsx          # Row horizontal de cards de conteúdo (loop opcional)
-│       │       ├── ContentCard.tsx         # Card de conteúdo (vídeo, podcast, artigo)
+│       │       ├── ContentRow.tsx          # Row horizontal (Embla Carousel) com cards de conteúdo
+│       │       ├── ContentCard.tsx         # Card streaming-style (4:5, overlay, hover scale, badges)
 │       │       ├── ContentTypeIcon.tsx     # Ícone por tipo de conteúdo
 │       │       ├── ContinueTrailsCard.tsx  # Lista de trilhas em andamento com progress bars
 │       │       └── OnboardingDialog.tsx    # Dialog de boas-vindas com vídeo (abre ao entrar na Home)
@@ -277,6 +277,42 @@ Layout de duas colunas separadas por divisor vertical. Esquerda (2/3): carousel 
 - Scroll interno limitado a ~5 itens visíveis; demais ficam ocultos
 - Cada item: nome clicável com seta inline → navega para a trilha
 - Progress bar usa `bg-planton-accent/10` no track (padrão do design system)
+
+#### ContentCard (streaming-style)
+
+Cards com visual inspirado em plataformas de streaming (Netflix / Apple TV):
+
+- **Aspect ratio:** 4:5 (portrait) — todas as informações dentro do thumbnail
+- **Gradient overlay:** `from-black/70 via-black/10 to-transparent` para legibilidade do texto
+- **Max width:** 220px (auto-contido, não depende do container)
+- **Hover:** scale 1.04 + shadow-2xl + zoom 1.05 na imagem
+- **GIF preview:** vídeos alternam thumbnail/GIF animado (MUX) no hover
+- **Non-video cards:** usam imagens de biomas (`public/assets/`) como fallback, com brand tint (`bg-planton-accent/20 mix-blend-multiply`) e filtros visuais por tipo (podcast mais escuro, artigo dessaturado, guia com contraste)
+- **Fallback sem repetição:** `getFallbackImage(type, id)` usa o `id` do conteúdo para alternar entre imagens do mesmo tipo
+
+**Badges contextuais:**
+
+| Badge | Posição | Condição |
+|---|---|---|
+| `Novo` | top-left | `content.isNew === true` |
+| `X%` | top-right | `showProgress && progress > 0` |
+| `Concluído` | top-right | `content.status === 'concluido'` |
+
+**Props:**
+
+| Prop | Tipo | Descrição |
+|---|---|---|
+| `content` | `ContentItem` | Dados do conteúdo |
+| `showProgress` | `boolean` | Barra de progresso + badge % |
+| `showTrail` | `boolean` | Label "Da trilha: X" |
+| `linkToTrail` | `boolean` | Navega para trilha em vez de conteúdo |
+
+#### ContentRow
+
+- Usa Embla Carousel (`shadcn/carousel`) com `align: 'start'` e loop opcional
+- Largura dos cards: `basis-[160px]` a `basis-[220px]` (responsivo)
+- Header com título clicável (seta → trilha) quando `trailHref` é passado
+- Botões prev/next visíveis a partir de `md`
 
 ---
 

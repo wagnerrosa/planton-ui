@@ -18,6 +18,9 @@ export default function ContentCardPage() {
       {/* Padrão */}
       <section className="flex flex-col gap-6">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Padrão</h2>
+        <p className="font-sans text-sm text-planton-muted -mt-3">
+          Cards com aspect ratio 4:5, texto overlay com gradient e hover scale + shadow. Vídeos mostram GIF preview no hover. Non-video usam imagens de biomas como fallback.
+        </p>
         <div className="flex gap-4 flex-wrap">
           {CONTENT_ITEMS.slice(0, 4).map((item) => (
             <ContentCard key={item.id} content={item} />
@@ -29,11 +32,33 @@ export default function ContentCardPage() {
       <section className="flex flex-col gap-6">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Continue assistindo</h2>
         <p className="font-sans text-sm text-planton-muted -mt-3">
-          Exibe barra de progresso na thumbnail e label da trilha abaixo do título. Usado na seção "Continue assistindo" da Home.
+          Exibe barra de progresso, badge de porcentagem e label da trilha dentro do card. Usado na seção &quot;Continue assistindo&quot; da Home.
         </p>
         <div className="flex gap-4 flex-wrap">
           {CONTINUE_WATCHING_ITEMS.slice(0, 4).map((item) => (
             <ContentCard key={item.id} content={item} showProgress showTrail />
+          ))}
+        </div>
+      </section>
+
+      {/* Badges */}
+      <section className="flex flex-col gap-6">
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Badges</h2>
+        <p className="font-sans text-sm text-planton-muted -mt-3">
+          Badges contextuais: &quot;Novo&quot; (top-left), porcentagem de progresso (top-right) e &quot;Concluído&quot; (top-right). Renderizados automaticamente com base nos dados do conteúdo.
+        </p>
+        <div className="flex gap-4 flex-wrap">
+          {/* Novo */}
+          {CONTENT_ITEMS.filter((i) => i.isNew).slice(0, 1).map((item) => (
+            <ContentCard key={item.id} content={item} />
+          ))}
+          {/* Progresso */}
+          {CONTINUE_WATCHING_ITEMS.slice(0, 1).map((item) => (
+            <ContentCard key={item.id} content={item} showProgress />
+          ))}
+          {/* Concluído */}
+          {CONTENT_ITEMS.filter((i) => i.status === 'concluido').slice(0, 1).map((item) => (
+            <ContentCard key={item.id} content={item} />
           ))}
         </div>
       </section>
