@@ -13,8 +13,6 @@ type ContentCardProps = {
   showTrail?: boolean
   /** Se true, o clique abre a página da trilha em vez do conteúdo avulso */
   linkToTrail?: boolean
-  /** Primeiro card da row — destaque visual */
-  featured?: boolean
 }
 
 // start aleatório para variar o frame inicial do GIF (mock duration 392s)
@@ -24,7 +22,19 @@ function getGifStart(id: string): number {
   return hash % 392
 }
 
-export function ContentCard({ content, showProgress = false, showTrail = false, linkToTrail = false, featured = false }: ContentCardProps) {
+const fallbackImages: Record<string, string[]> = {
+  artigo: ['/assets/MATA-ATLANTICA-BG.jpg', '/assets/SERRA-SUL-BG.jpg'],
+  guia: ['/assets/PANTANAL-BG.jpg', '/assets/MATA-ATLANTICA-BG.jpg'],
+  podcast: ['/assets/CAATINGA-BG.jpg', '/assets/SERRA-SUL-BG.jpg'],
+}
+
+function getFallbackImage(type: string, id: string): string {
+  const list = fallbackImages[type] || fallbackImages.artigo
+  const index = id.charCodeAt(0) % list.length
+  return list[index]
+}
+
+export function ContentCard({ content, showProgress = false, showTrail = false, linkToTrail = false }: ContentCardProps) {
   const [hovered, setHovered] = useState(false)
 
   const href = linkToTrail && content.trail
@@ -33,6 +43,15 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
 
   const gifUrl = `${content.previewUrl}?start=${getGifStart(content.id)}`
   const isVideo = content.type === 'video'
+
+  const imageFilterClass =
+    content.type === 'podcast'
+      ? 'brightness-[0.75] contrast-110'
+      : content.type === 'artigo'
+        ? 'brightness-[0.95] saturate-75'
+        : content.type === 'guia'
+          ? 'contrast-110'
+          : ''
 
   return (
     <Link
@@ -56,14 +75,27 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
             draggable={false}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-planton-accent to-planton-accent/80 flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,white,transparent_40%)]" />
-            <ContentTypeIcon type={content.type} size="lg" className="text-white/90" />
-          </div>
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={getFallbackImage(content.type, content.id)}
+            alt={content.title}
+            className={`w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105 ${imageFilterClass}`}
+            draggable={false}
+          />
         )}
 
-        {/* 2. Gradient overlay */}
-        <div className={`absolute inset-0 bg-gradient-to-t ${featured ? 'from-black/80 via-black/20' : 'from-black/70 via-black/10'} to-transparent transition-colors duration-300 group-hover/card:from-black/80`} />
+        {/* 2. Brand tint (non-video) */}
+        {!isVideo && (
+          <div className="absolute inset-0 bg-planton-accent/20 mix-blend-multiply" />
+        )}
+
+        {/* 2b. Extra overlay for podcast */}
+        {content.type === 'podcast' && (
+          <div className="absolute inset-0 bg-black/20" />
+        )}
+
+        {/* 3. Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent transition-colors duration-300 group-hover/card:from-black/80" />
 
         {/* Badges (top) */}
         {content.isNew && (
@@ -85,9 +117,9 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
           </div>
         )}
 
-        {/* 3. Text content */}
+        {/* 4. Text content */}
         <div className="absolute bottom-0 left-0 right-0 p-3 flex flex-col gap-1">
-          <span className={`text-white font-medium leading-tight line-clamp-2 ${featured ? 'text-base' : 'text-sm'}`}>
+          <span className="text-white text-sm font-medium leading-tight line-clamp-2">
             {content.title}
           </span>
 
@@ -103,7 +135,7 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
           </div>
         </div>
 
-        {/* 4. Progress bar (top layer) */}
+        {/* 5. Progress bar (top layer) */}
         {showProgress && content.progress > 0 && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/40 z-10">
             <div

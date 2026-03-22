@@ -60,7 +60,6 @@ export function ContentRow({
                 showProgress={showProgress}
                 showTrail={showTrail}
                 linkToTrail={!!trailHref}
-
               />
             </CarouselItem>
           ))}
