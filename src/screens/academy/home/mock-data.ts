@@ -5,7 +5,7 @@
 export type ContentType = 'video' | 'podcast' | 'artigo' | 'guia' | 'trilha'
 export type ContentStatus = 'nao-iniciado' | 'visualizado' | 'concluido'
 
-export type ContentTag = 'ESG' | 'Emissões' | 'ISO' | 'Sustentabilidade'
+export type ContentTag = 'ESG' | 'Emissões' | 'ISO' | 'Sustentabilidade' | 'Carbono' | 'Clima'
 
 /** Unidade principal de conteúdo , centrada em MUX */
 export type ContentItem = {

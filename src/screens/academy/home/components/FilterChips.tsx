@@ -26,6 +26,8 @@ const TAG_OPTIONS: { value: ContentTag; label: string }[] = [
   { value: 'Emissões', label: 'Emissões' },
   { value: 'ISO', label: 'ISO' },
   { value: 'Sustentabilidade', label: 'Sustentabilidade' },
+  { value: 'Carbono', label: 'Carbono' },
+  { value: 'Clima', label: 'Clima' },
 ]
 
 const STATUS_OPTIONS: { value: ContentStatus; label: string }[] = [
@@ -50,8 +52,8 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
   }
 
   return (
-    <div className="flex flex-col gap-3 w-full max-w-2xl">
-      <FilterGroup label="Tipo">
+    <div className="flex items-start gap-4 w-full max-w-5xl flex-wrap">
+      <FilterRow label="Tipo">
         {TYPE_OPTIONS.map((opt) => (
           <Chip
             key={opt.value}
@@ -60,9 +62,11 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
             onClick={() => toggleType(opt.value)}
           />
         ))}
-      </FilterGroup>
+      </FilterRow>
 
-      <FilterGroup label="Tema">
+      <span className="w-px bg-border self-stretch" />
+
+      <FilterRow label="Tema" className="flex-1 min-w-[200px]">
         {TAG_OPTIONS.map((opt) => (
           <Chip
             key={opt.value}
@@ -71,9 +75,11 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
             onClick={() => toggleTag(opt.value)}
           />
         ))}
-      </FilterGroup>
+      </FilterRow>
 
-      <FilterGroup label="Status">
+      <span className="w-px bg-border self-stretch" />
+
+      <FilterRow label="Status">
         {STATUS_OPTIONS.map((opt) => (
           <Chip
             key={opt.value}
@@ -82,15 +88,15 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
             onClick={() => toggleStatus(opt.value)}
           />
         ))}
-      </FilterGroup>
+      </FilterRow>
     </div>
   )
 }
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+function FilterRow({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="flex items-center gap-3 flex-wrap">
-      <span className="font-mono text-[10px] uppercase tracking-widest text-planton-muted w-12 shrink-0">
+    <div className={`flex flex-col gap-2 ${className ?? ''}`}>
+      <span className="font-mono text-[10px] uppercase tracking-widest text-planton-muted">
         {label}
       </span>
       <div className="flex flex-wrap gap-1.5">
@@ -116,7 +122,7 @@ function Chip({
       className={`px-3 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-planton-accent/60 focus-visible:ring-offset-1 ${
         active
           ? 'bg-planton-accent text-planton-ink'
-          : 'bg-secondary text-foreground/70 hover:bg-secondary/60 hover:text-foreground'
+          : 'bg-planton-accent/10 text-foreground/80 hover:bg-planton-accent/20 hover:text-foreground'
       }`}
     >
       {label}

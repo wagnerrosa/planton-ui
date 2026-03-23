@@ -12,6 +12,7 @@ import { CertificationBanner } from './components/CertificationBanner'
 import { SearchBar } from './components/SearchBar'
 import { FilterChips, type FilterState } from './components/FilterChips'
 import { ContentGrid } from './components/ContentGrid'
+import { TrailGrid } from './components/TrailGrid'
 import { OnboardingDialog } from './components/OnboardingDialog'
 import {
   HERO_CONTENTS,
@@ -35,25 +36,9 @@ export function HomeScreen() {
     filters.tag !== null ||
     filters.status !== null
 
-  // Filtered results — trilha filter shows MOCK_TRAILS mapped to a compatible shape
+  // Filtered results
   const filteredItems = useMemo(() => {
-    if (!hasActiveFilters) return []
-
-    if (filters.type === 'trilha') {
-      return MOCK_TRAILS.map((t) => ({
-        id: t.id,
-        title: t.title,
-        description: t.description,
-        type: 'trilha' as const,
-        duration: t.totalDuration,
-        muxPlaybackId: '',
-        thumbnailUrl: '',
-        previewUrl: '',
-        status: 'nao-iniciado' as const,
-        progress: t.progress,
-        tags: [],
-      }))
-    }
+    if (!hasActiveFilters || filters.type === 'trilha') return []
 
     let items = CONTENT_ITEMS
 
@@ -150,13 +135,8 @@ export function HomeScreen() {
 
       {/* 3. Search Hub */}
       <div className="bg-surface-elevated border-b border-border">
-        <div className="max-w-[1920px] mx-auto px-6 py-12 flex flex-col gap-6 items-center">
-          <div className="w-full max-w-2xl flex flex-col gap-1.5">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-planton-muted">
-              Buscar conteúdos
-            </span>
-            <SearchBar value={search} onChange={setSearch} />
-          </div>
+        <div className="max-w-[1920px] mx-auto px-6 py-12 flex flex-col gap-8 items-center">
+          <SearchBar value={search} onChange={setSearch} />
           <FilterChips filters={filters} onChange={setFilters} />
         </div>
       </div>
@@ -176,7 +156,9 @@ export function HomeScreen() {
               </Button>
             </div>
 
-            {filteredItems.length > 0 ? (
+            {filters.type === 'trilha' ? (
+              <TrailGrid trails={MOCK_TRAILS} />
+            ) : filteredItems.length > 0 ? (
               <ContentGrid title="" items={filteredItems} initialCount={12} />
             ) : (
               <div className="py-16 text-center">

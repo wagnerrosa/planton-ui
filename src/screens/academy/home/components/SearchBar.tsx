@@ -50,7 +50,7 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
           onFocus={() => setFocused(true)}
           onBlur={() => setTimeout(() => setFocused(false), 200)}
           placeholder="Buscar por temas, conteúdos ou palavras-chave (ex: Escopo 3, GHG Protocol)"
-          className="w-full h-14 pl-13 pr-10 rounded-lg border-2 border-border bg-card text-sm text-foreground placeholder:text-planton-muted focus:outline-none focus:ring-0 focus:border-planton-accent transition-colors duration-150"
+          className="w-full h-14 pl-12 pr-10 rounded-lg border border-border bg-card text-sm text-foreground placeholder:text-planton-muted focus:outline-none focus:border-planton-accent transition-colors duration-150"
         />
         {value && (
           <button

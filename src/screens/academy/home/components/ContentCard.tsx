@@ -59,13 +59,13 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
   return (
     <Link
       href={href}
-      className="group/card relative w-full max-w-[220px] flex-shrink-0 transition-all duration-300 ease-out hover:scale-[1.04] hover:z-10 focus:outline-none"
+      className="group/card relative w-full max-w-[220px] flex-shrink-0 hover:z-10 focus:outline-none"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Thumbnail */}
       <div
-        className="relative w-full overflow-hidden rounded-lg transition-shadow duration-300 group-hover/card:shadow-2xl"
+        className="relative w-full overflow-hidden rounded-lg"
         style={{ aspectRatio: '4/5' }}
       >
         {/* 1. Image (base layer) */}

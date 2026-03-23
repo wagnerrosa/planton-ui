@@ -1,0 +1,74 @@
+import Link from 'next/link'
+import { ArrowRight } from 'lucide-react'
+
+type Trail = {
+  id: string
+  title: string
+  description?: string
+  contentsCount: number
+  duration: string
+  progress?: number
+  category?: string
+  href: string
+}
+
+type TrailCardProps = {
+  trail: Trail
+}
+
+export function TrailCard({ trail }: TrailCardProps) {
+  const { title, description, contentsCount, duration, progress, category, href } = trail
+
+  return (
+    <Link
+      href={href}
+      className="group relative flex flex-col gap-5 border border-border p-6 bg-card hover:bg-secondary/30 transition-colors duration-150 cursor-pointer overflow-hidden min-h-[180px]"
+    >
+      {/* Indicator bar */}
+      <span className="absolute left-0 inset-y-0 w-0.5 bg-planton-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+
+      {/* Eyebrow */}
+      <span className="font-mono text-[10px] uppercase tracking-widest text-planton-accent">
+        {category ?? 'Trilha'}
+      </span>
+
+      {/* Title + Description */}
+      <div className="flex flex-col gap-2 flex-1">
+        <h3 className="font-heading text-xl font-semibold leading-snug text-foreground line-clamp-2">
+          {title}
+        </h3>
+        {description && (
+          <p className="font-sans text-sm leading-relaxed text-planton-muted line-clamp-2">
+            {description}
+          </p>
+        )}
+      </div>
+
+      {/* Metadata */}
+      <p className="font-mono text-xs text-planton-muted">
+        {contentsCount} conteúdo{contentsCount !== 1 ? 's' : ''} • {duration}
+      </p>
+
+      {/* Progress bar */}
+      {progress !== undefined && progress > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <div className="h-px w-full bg-planton-accent/15">
+            <div
+              className="h-full bg-planton-accent transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <span className="font-mono text-[10px] text-planton-muted">
+            {progress}% concluído
+          </span>
+        </div>
+      )}
+
+      {/* CTA */}
+      <span className="inline-flex items-center gap-1 font-mono text-xs text-planton-accent group-hover:gap-2 transition-all duration-150">
+        Ver trilha
+        <ArrowRight className="h-3 w-3" />
+      </span>
+    </Link>
+  )
+}
