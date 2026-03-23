@@ -14,7 +14,7 @@ export function CertificationBanner({ onExploreTrails }: CertificationBannerProp
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.09] transition-opacity duration-300 group-hover:opacity-[0.18]"
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.15] transition-opacity duration-300 group-hover:opacity-[0.18]"
         style={{
           backgroundImage: "url('/patterns/Textura_cinza.jpg')",
           backgroundRepeat: 'repeat',
