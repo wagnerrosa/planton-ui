@@ -14,7 +14,6 @@ import { ContentTypeIcon } from '../home/components/ContentTypeIcon'
 import {
   CheckCircle,
   Circle,
-  CircleDot,
   AlertCircle,
   XCircle,
   GraduationCap,
@@ -44,7 +43,6 @@ type ActiveItem =
 
 function StatusIcon({ status }: { status: ContentItem['status'] }) {
   if (status === 'concluido') return <CheckCircle className="h-4 w-4 text-planton-accent shrink-0" />
-  if (status === 'visualizado') return <CircleDot className="h-4 w-4 text-planton-muted shrink-0" />
   return <Circle className="h-4 w-4 text-planton-muted/50 shrink-0" />
 }
 
@@ -339,11 +337,8 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
               Voltar para trilhas
             </Button>
             <Heading as="h2" size="heading-lg">{trail.title}</Heading>
-            <span className="font-mono text-xs text-planton-muted">{trail.totalItems} conteúdos · {trail.totalDuration}</span>
-            <div className="flex items-center gap-3">
-              <Progress value={trail.progress} className="flex-1 h-1 bg-planton-accent/10" />
-              <span className="font-mono text-sm font-medium text-foreground">{trail.progress}%</span>
-            </div>
+            <span className="font-mono text-xs text-planton-muted">{trail.totalItems} conteúdos · {trail.totalDuration} · {trail.progress}%</span>
+            <Progress value={trail.progress} className="h-1" />
           </div>
 
           {/* Content list */}
