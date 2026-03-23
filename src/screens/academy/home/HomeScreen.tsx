@@ -108,35 +108,52 @@ export function HomeScreen() {
       {/* 1. Hero */}
       <HeroContent contents={HERO_CONTENTS} />
 
-      {/* 2. Continue assistindo + Banner de certificação */}
-      <div className="max-w-[1920px] mx-auto px-6 py-10 flex flex-col gap-12">
+      <div className="relative">
         {hasContinueWatching && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
-            <div className="lg:col-span-2 pr-0 lg:pr-8">
-              <ContentRow
-                title="Continue assistindo"
-                items={CONTINUE_WATCHING_ITEMS}
-                showProgress
-                showTrail
-              />
-            </div>
-            <div className="pt-8 lg:pt-0 lg:pl-8 lg:border-l border-border flex flex-col justify-center">
-              <CertificationBanner onExploreTrails={handleExploreTrails} />
+          <div className="pointer-events-none absolute inset-y-0 hidden lg:block w-full" aria-hidden>
+            <div className="max-w-[1920px] mx-auto h-full px-6">
+              <div className="relative h-full">
+                <span className="absolute top-0 bottom-0 left-[66.6667%] w-px -translate-x-1/2 bg-border" />
+              </div>
             </div>
           </div>
         )}
 
-        {!hasContinueWatching && (
-          <CertificationBanner onExploreTrails={handleExploreTrails} />
-        )}
+        {/* 2. Continue assistindo + Banner de certificação */}
+        <div className="max-w-[1920px] mx-auto px-6 py-10 flex flex-col gap-12">
+          {hasContinueWatching && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:items-stretch">
+              <div className="lg:col-span-2 pr-0 lg:pr-8">
+                <ContentRow
+                  title="Continue assistindo"
+                  items={CONTINUE_WATCHING_ITEMS}
+                  showProgress
+                  showTrail
+                />
+              </div>
+              <div className="pt-8 lg:pt-0 lg:pl-8 flex flex-col h-full">
+                <CertificationBanner onExploreTrails={handleExploreTrails} />
+              </div>
+            </div>
+          )}
+
+          {!hasContinueWatching && (
+            <CertificationBanner onExploreTrails={handleExploreTrails} />
+          )}
+        </div>
+
+        <div className="border-t border-border" />
+
+        {/* 3. Search Hub */}
+        <div className="bg-surface-elevated">
+          <div className="max-w-[1920px] mx-auto px-6 pt-12 flex justify-center">
+            <SearchBar value={search} onChange={setSearch} />
+          </div>
+        </div>
       </div>
 
-      <div className="border-t border-border" />
-
-      {/* 3. Search Hub */}
       <div className="bg-surface-elevated border-b border-border">
-        <div className="max-w-[1920px] mx-auto px-6 py-12 flex flex-col gap-8 items-center">
-          <SearchBar value={search} onChange={setSearch} />
+        <div className="max-w-[1920px] mx-auto px-6 pt-8 pb-12 flex justify-center">
           <FilterChips filters={filters} onChange={setFilters} />
         </div>
       </div>
