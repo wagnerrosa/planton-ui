@@ -21,7 +21,7 @@ import {
   MOCK_TRAILS,
 } from './mock-data'
 
-const EMPTY_FILTERS: FilterState = { type: null, tag: null, status: null }
+const EMPTY_FILTERS: FilterState = { types: [], tags: [], statuses: [] }
 
 export function HomeScreen() {
   const [search, setSearch] = useState('')
@@ -32,13 +32,19 @@ export function HomeScreen() {
 
   const hasActiveFilters =
     search.trim().length > 0 ||
-    filters.type !== null ||
-    filters.tag !== null ||
-    filters.status !== null
+    filters.types.length > 0 ||
+    filters.tags.length > 0 ||
+    filters.statuses.length > 0
+
+  const showTrails = filters.types.includes('trilha')
+  // Content types without trilha for item filtering
+  const contentTypes = filters.types.filter((t) => t !== 'trilha')
 
   // Filtered results
   const filteredItems = useMemo(() => {
-    if (!hasActiveFilters || filters.type === 'trilha') return []
+    if (!hasActiveFilters) return []
+    // If only trilha is selected, no content items
+    if (filters.types.length > 0 && contentTypes.length === 0) return []
 
     let items = CONTENT_ITEMS
 
@@ -52,20 +58,20 @@ export function HomeScreen() {
       )
     }
 
-    if (filters.type) {
-      items = items.filter((c) => c.type === filters.type)
+    if (contentTypes.length > 0) {
+      items = items.filter((c) => (contentTypes as string[]).includes(c.type))
     }
 
-    if (filters.tag) {
-      items = items.filter((c) => c.tags?.includes(filters.tag!))
+    if (filters.tags.length > 0) {
+      items = items.filter((c) => c.tags?.some((t) => filters.tags.includes(t)))
     }
 
-    if (filters.status) {
-      items = items.filter((c) => c.status === filters.status)
+    if (filters.statuses.length > 0) {
+      items = items.filter((c) => filters.statuses.includes(c.status))
     }
 
     return items
-  }, [search, filters, hasActiveFilters])
+  }, [search, filters, hasActiveFilters, contentTypes])
 
   // Content by type (when no search/filter active)
   const videoItems = CONTENT_ITEMS.filter((c) => c.type === 'video')
@@ -79,7 +85,7 @@ export function HomeScreen() {
   }
 
   function handleExploreTrails() {
-    setFilters({ ...EMPTY_FILTERS, type: 'trilha' })
+    setFilters({ ...EMPTY_FILTERS, types: ['trilha'] })
     setTimeout(() => {
       contentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 50)
@@ -89,15 +95,11 @@ export function HomeScreen() {
   function getActiveLabel(): string {
     const parts: string[] = []
     if (search.trim()) parts.push(`"${search.trim()}"`)
-    if (filters.type) {
-      const labels: Record<string, string> = { video: 'Vídeo', artigo: 'Artigo', podcast: 'Podcast', guia: 'Guia', trilha: 'Trilhas' }
-      parts.push(labels[filters.type])
-    }
-    if (filters.tag) parts.push(filters.tag)
-    if (filters.status) {
-      const labels: Record<string, string> = { 'nao-iniciado': 'Não iniciado', visualizado: 'Em andamento', concluido: 'Concluído' }
-      parts.push(labels[filters.status])
-    }
+    const typeLabels: Record<string, string> = { video: 'Vídeo', artigo: 'Artigo', podcast: 'Podcast', guia: 'Guia', trilha: 'Trilhas' }
+    if (filters.types.length > 0) parts.push(filters.types.map((t) => typeLabels[t]).join(', '))
+    if (filters.tags.length > 0) parts.push(filters.tags.join(', '))
+    const statusLabels: Record<string, string> = { 'nao-iniciado': 'Não iniciado', visualizado: 'Em andamento', concluido: 'Concluído' }
+    if (filters.statuses.length > 0) parts.push(filters.statuses.map((s) => statusLabels[s]).join(', '))
     return parts.join(' + ')
   }
 
@@ -159,9 +161,9 @@ export function HomeScreen() {
       </div>
 
       {/* 4. Conteúdos */}
-      <div ref={contentsSectionRef} className="max-w-[1920px] mx-auto px-6 pt-8 pb-16 flex flex-col gap-12">
+      <div ref={contentsSectionRef} className="max-w-[1920px] mx-auto px-6 pt-8 pb-16">
         {hasActiveFilters ? (
-          <>
+          <div className="flex flex-col gap-12">
             {/* Filtered results header */}
             <div className="flex items-center gap-3 flex-wrap">
               <Body size="sm" muted>
@@ -173,24 +175,37 @@ export function HomeScreen() {
               </Button>
             </div>
 
-            {filters.type === 'trilha' ? (
-              <TrailGrid trails={MOCK_TRAILS} />
-            ) : filteredItems.length > 0 ? (
+            {showTrails && <TrailGrid trails={MOCK_TRAILS} />}
+
+            {filteredItems.length > 0 && (
               <ContentGrid title="" items={filteredItems} initialCount={12} />
-            ) : (
+            )}
+
+            {!showTrails && filteredItems.length === 0 && (
               <div className="py-16 text-center">
                 <Body muted>Nenhum conteúdo encontrado para os filtros selecionados.</Body>
               </div>
             )}
-          </>
+          </div>
         ) : (
-          <>
-            {/* Content by type */}
-            <ContentGrid title="Vídeos" items={videoItems} />
-            <ContentGrid title="Artigos" items={artigoItems} />
-            <ContentGrid title="Podcasts" items={podcastItems} />
-            <ContentGrid title="Guias" items={guiaItems} />
-          </>
+          <div className="flex flex-col">
+            {/* Content by type with full-width separators */}
+            <div className="py-8">
+              <ContentGrid title="Vídeos" items={videoItems} />
+            </div>
+            <div className="border-t border-border" />
+            <div className="py-8">
+              <ContentGrid title="Artigos" items={artigoItems} />
+            </div>
+            <div className="border-t border-border" />
+            <div className="py-8">
+              <ContentGrid title="Podcasts" items={podcastItems} />
+            </div>
+            <div className="border-t border-border" />
+            <div className="py-8">
+              <ContentGrid title="Guias" items={guiaItems} />
+            </div>
+          </div>
         )}
       </div>
 

@@ -43,6 +43,15 @@ export function TrailCard({ trail }: TrailCardProps) {
   const { title, description, contentsCount, duration, progress, category, href, contents } = trail
   const thumbs = contents?.slice(0, 5) ?? []
 
+  // Build metadata line: "5 conteúdos • 1h51min • 40% concluído"
+  const metaParts = [
+    `${contentsCount} conteúdo${contentsCount !== 1 ? 's' : ''}`,
+    duration,
+  ]
+  if (progress !== undefined && progress > 0) {
+    metaParts.push(`${progress}% concluído`)
+  }
+
   return (
     <Link
       href={href}
@@ -99,23 +108,18 @@ export function TrailCard({ trail }: TrailCardProps) {
         </div>
       )}
 
-      {/* Metadata */}
+      {/* Metadata + Progress inline */}
       <p className="font-mono text-xs text-planton-muted">
-        {contentsCount} conteúdo{contentsCount !== 1 ? 's' : ''} • {duration}
+        {metaParts.join('  •  ')}
       </p>
 
       {/* Progress bar */}
       {progress !== undefined && progress > 0 && (
-        <div className="flex flex-col gap-1.5">
-          <div className="h-px w-full bg-planton-accent/15">
-            <div
-              className="h-full bg-planton-accent transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <span className="font-mono text-[10px] text-planton-muted">
-            {progress}% concluído
-          </span>
+        <div className="h-px w-full bg-planton-accent/15">
+          <div
+            className="h-full bg-planton-accent transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
         </div>
       )}
 

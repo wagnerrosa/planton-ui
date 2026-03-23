@@ -10,7 +10,7 @@ export function CertificationBanner({ onExploreTrails }: CertificationBannerProp
     <button
       type="button"
       onClick={onExploreTrails}
-      className="group relative isolate flex h-full w-full min-h-[320px] overflow-hidden bg-card text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-planton-accent/30 cursor-pointer lg:-ml-8 lg:w-[calc(100%+2rem)] rounded-none"
+      className="group relative isolate flex h-full w-full min-h-[320px] overflow-hidden bg-card text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-planton-accent/30 cursor-pointer lg:-ml-8 lg:w-[calc(100%+2rem)] rounded-none flex-1"
     >
       <span
         aria-hidden

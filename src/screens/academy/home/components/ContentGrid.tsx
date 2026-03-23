@@ -30,7 +30,7 @@ export function ContentGrid({ title, items, initialCount = ROW_SIZE }: ContentGr
 
   return (
     <section className="flex flex-col gap-4">
-      <Heading as="h2" size="heading-md">{title}</Heading>
+      {title && <Heading as="h2" size="heading-md">{title}</Heading>}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {visible.map((item) => (
@@ -40,10 +40,10 @@ export function ContentGrid({ title, items, initialCount = ROW_SIZE }: ContentGr
 
       {hasMore && (
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           onClick={showMore}
-          className="self-center text-planton-muted hover:text-foreground"
+          className="self-center mt-2"
         >
           <ChevronDown className="h-4 w-4" />
           Mostrar mais

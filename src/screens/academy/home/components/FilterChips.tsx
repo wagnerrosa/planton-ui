@@ -3,9 +3,9 @@
 import type { ContentType, ContentStatus, ContentTag } from '../mock-data'
 
 type FilterState = {
-  type: ContentType | null
-  tag: ContentTag | null
-  status: ContentStatus | null
+  types: ContentType[]
+  tags: ContentTag[]
+  statuses: ContentStatus[]
 }
 
 type FilterChipsProps = {
@@ -38,17 +38,21 @@ const STATUS_OPTIONS: { value: ContentStatus; label: string }[] = [
 
 export type { FilterState }
 
+function toggleInArray<T>(arr: T[], value: T): T[] {
+  return arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value]
+}
+
 export function FilterChips({ filters, onChange }: FilterChipsProps) {
   function toggleType(t: ContentType) {
-    onChange({ ...filters, type: filters.type === t ? null : t })
+    onChange({ ...filters, types: toggleInArray(filters.types, t) })
   }
 
   function toggleTag(t: ContentTag) {
-    onChange({ ...filters, tag: filters.tag === t ? null : t })
+    onChange({ ...filters, tags: toggleInArray(filters.tags, t) })
   }
 
   function toggleStatus(s: ContentStatus) {
-    onChange({ ...filters, status: filters.status === s ? null : s })
+    onChange({ ...filters, statuses: toggleInArray(filters.statuses, s) })
   }
 
   return (
@@ -58,7 +62,7 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
           <Chip
             key={opt.value}
             label={opt.label}
-            active={filters.type === opt.value}
+            active={filters.types.includes(opt.value)}
             onClick={() => toggleType(opt.value)}
           />
         ))}
@@ -71,7 +75,7 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
           <Chip
             key={opt.value}
             label={opt.label}
-            active={filters.tag === opt.value}
+            active={filters.tags.includes(opt.value)}
             onClick={() => toggleTag(opt.value)}
           />
         ))}
@@ -84,7 +88,7 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
           <Chip
             key={opt.value}
             label={opt.label}
-            active={filters.status === opt.value}
+            active={filters.statuses.includes(opt.value)}
             onClick={() => toggleStatus(opt.value)}
           />
         ))}
