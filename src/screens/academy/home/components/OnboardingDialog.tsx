@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
-import { Button } from '@/components/primitives/Button'
 import {
   Dialog,
   DialogContent,
@@ -38,13 +37,6 @@ export function OnboardingDialog() {
           allowFullScreen
         />
 
-        <Button
-          variant="primary"
-          className="w-full justify-center"
-          onClick={() => setOpen(false)}
-        >
-          Começar a explorar
-        </Button>
       </DialogContent>
     </Dialog>
   )

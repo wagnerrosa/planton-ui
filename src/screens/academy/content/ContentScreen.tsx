@@ -160,22 +160,30 @@ export function ContentScreen({ contentId }: ContentScreenProps) {
           </>
         )}
 
-        {/* Guia: info + download */}
+        {/* Guia: PDF embed + info + download */}
         {content.type === 'guia' && (
-          <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-6">
-            <ContentMeta content={content} trails={trails} />
-            <div className="flex items-center gap-3">
-              <Button variant="outline">
-                <Download className="h-4 w-4" />
-                Abrir PDF
-              </Button>
-              {firstTrail && (
-                <Button variant="primary" href={`/academy/trail/${firstTrail.id}`}>
-                  Continuar trilha →
+          <>
+            <iframe
+              src="https://mozilla.github.io/pdf.js/web/viewer.html"
+              className="w-full border-none"
+              style={{ aspectRatio: '16/9' }}
+              title={content.title}
+            />
+            <div className="max-w-[900px] mx-auto w-full px-6 pt-12 pb-24 flex flex-col gap-6">
+              <ContentMeta content={content} trails={trails} />
+              <div className="flex items-center gap-3">
+                <Button variant="outline">
+                  <Download className="h-4 w-4" />
+                  Baixar PDF
                 </Button>
-              )}
+                {firstTrail && (
+                  <Button variant="primary" href={`/academy/trail/${firstTrail.id}`}>
+                    Continuar trilha →
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 

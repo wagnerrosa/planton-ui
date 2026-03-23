@@ -163,7 +163,7 @@ function QuizView({ trail }: { trail: Trail }) {
           </AlertBody>
         </Alert>
         <Button variant="primary" onClick={handleRetry} className="self-start">
-          Rever conteúdos
+          Tentar novamente
         </Button>
       </div>
     )
@@ -439,6 +439,14 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
               {activeContent.type === 'podcast' && (
                 <PodcastView />
               )}
+              {activeContent.type === 'guia' && (
+                <iframe
+                  src="https://mozilla.github.io/pdf.js/web/viewer.html"
+                  className="w-full border-none"
+                  style={{ aspectRatio: '16/9' }}
+                  title={activeContent.title}
+                />
+              )}
               {/* Content info , only for media types (not article which renders inline) */}
               {activeContent.type !== 'artigo' && (
                 <div className="w-full max-w-[760px] mx-auto px-6 pt-6 pb-16 flex flex-col gap-3">
@@ -451,7 +459,7 @@ export function TrailScreen({ trailId }: TrailScreenProps) {
                   {activeContent.type === 'guia' && (
                     <Button variant="outline" className="self-start mt-2">
                       <Download className="h-4 w-4" />
-                      Abrir PDF
+                      Baixar PDF
                     </Button>
                   )}
                 </div>
