@@ -5,6 +5,8 @@
 export type ContentType = 'video' | 'podcast' | 'artigo' | 'guia'
 export type ContentStatus = 'nao-iniciado' | 'visualizado' | 'concluido'
 
+export type ContentTag = 'ESG' | 'Emissões' | 'ISO' | 'Sustentabilidade'
+
 /** Unidade principal de conteúdo , centrada em MUX */
 export type ContentItem = {
   id: string
@@ -24,6 +26,7 @@ export type ContentItem = {
   }
   trails?: { id: string; name: string }[]
   isNew?: boolean
+  tags?: ContentTag[]
 }
 
 export type QuizQuestion = {
@@ -86,6 +89,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'concluido',
     progress: 100,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
+    tags: ['Emissões', 'ESG'],
   },
   {
     id: 'c2',
@@ -97,6 +101,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'concluido',
     progress: 100,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
+    tags: ['Emissões'],
   },
   {
     id: 'c3',
@@ -108,6 +113,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'visualizado',
     progress: 60,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
+    tags: ['Emissões'],
   },
   {
     id: 'c4',
@@ -123,6 +129,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
       { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
       { id: 'trail-2', name: 'Fundamentos ESG' },
     ],
+    tags: ['Emissões', 'ESG'],
   },
   {
     id: 'c5',
@@ -134,6 +141,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'nao-iniciado',
     progress: 0,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
+    tags: ['Emissões'],
   },
   {
     id: 'c6',
@@ -145,6 +153,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'visualizado',
     progress: 80,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
+    tags: ['Emissões', 'Sustentabilidade'],
   },
 
   // Trail 2: Fundamentos ESG
@@ -159,6 +168,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     progress: 100,
     trail: { id: 'trail-2', name: 'Fundamentos ESG' },
     isNew: true,
+    tags: ['ESG'],
   },
   {
     id: 'c8',
@@ -171,6 +181,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     progress: 100,
     trail: { id: 'trail-2', name: 'Fundamentos ESG' },
     isNew: true,
+    tags: ['ESG', 'ISO'],
   },
   {
     id: 'c9',
@@ -183,6 +194,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     progress: 100,
     trail: { id: 'trail-2', name: 'Fundamentos ESG' },
     isNew: true,
+    tags: ['ESG', 'Sustentabilidade'],
   },
   {
     id: 'c10',
@@ -195,6 +207,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     progress: 100,
     trail: { id: 'trail-2', name: 'Fundamentos ESG' },
     isNew: true,
+    tags: ['ESG', 'Sustentabilidade'],
   },
 
   // Trail 3: Pegada de Carbono
@@ -209,6 +222,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     progress: 0,
     trail: { id: 'trail-1', name: 'Gestão de Emissões de GEE' },
     isNew: true,
+    tags: ['Emissões', 'Sustentabilidade'],
   },
   {
     id: 'c10c',
@@ -221,6 +235,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     progress: 0,
     trail: { id: 'trail-2', name: 'Fundamentos ESG' },
     isNew: true,
+    tags: ['ESG', 'ISO'],
   },
   {
     id: 'c11',
@@ -232,6 +247,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'visualizado',
     progress: 45,
     trail: { id: 'trail-3', name: 'Pegada de Carbono Corporativa' },
+    tags: ['Emissões', 'Sustentabilidade'],
   },
   {
     id: 'c12',
@@ -243,6 +259,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'visualizado',
     progress: 20,
     trail: { id: 'trail-3', name: 'Pegada de Carbono Corporativa' },
+    tags: ['ISO', 'Emissões'],
   },
   {
     id: 'c13',
@@ -254,6 +271,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'nao-iniciado',
     progress: 0,
     trail: { id: 'trail-3', name: 'Pegada de Carbono Corporativa' },
+    tags: ['Emissões', 'Sustentabilidade'],
   },
   {
     id: 'c14',
@@ -265,6 +283,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'nao-iniciado',
     progress: 0,
     trail: { id: 'trail-3', name: 'Pegada de Carbono Corporativa' },
+    tags: ['Sustentabilidade'],
   },
   {
     id: 'c15',
@@ -276,6 +295,7 @@ export const CONTENT_ITEMS: ContentItem[] = [
     status: 'nao-iniciado',
     progress: 0,
     trail: { id: 'trail-3', name: 'Pegada de Carbono Corporativa' },
+    tags: ['Sustentabilidade', 'Emissões'],
   },
 ]
 
@@ -459,6 +479,9 @@ export const MOCK_TRAILS: Trail[] = [
 // ---------------------------------------------------------------------------
 // Curated lists for Home sections
 // ---------------------------------------------------------------------------
+
+/** Tags disponíveis para filtro */
+export const AVAILABLE_TAGS: ContentTag[] = ['ESG', 'Emissões', 'ISO', 'Sustentabilidade']
 
 /** Conteúdos hero (destaque principal) , apenas vídeos, máx 3 */
 export const HERO_CONTENT = CONTENT_ITEMS[3] // c4: Calculando Emissões na Prática (backwards compat)
