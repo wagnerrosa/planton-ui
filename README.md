@@ -90,13 +90,19 @@ src/
 │       │   ├── LoginScreen.tsx         # Tela de login estática (legado)
 │       │   └── steps/                  # 12 step components do fluxo (onboarding movido para Home)
 │       ├── home/
-│       │   ├── HomeScreen.tsx          # Home do Academy (hero + content rows + onboarding dialog)
+│       │   ├── HomeScreen.tsx          # Home do Academy (hero + busca + filtros + conteúdos por tipo)
 │       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos)
 │       │   └── components/
 │       │       ├── HeroContent.tsx         # Banner hero com conteúdo em destaque
 │       │       ├── ContentRow.tsx          # Row horizontal (Embla Carousel) com cards de conteúdo
 │       │       ├── ContentCard.tsx         # Card streaming-style (4:5, overlay, hover scale, badges)
+│       │       ├── ContentGrid.tsx         # Grid responsivo (2-6 cols) com "mostrar mais"
 │       │       ├── ContentTypeIcon.tsx     # Ícone por tipo de conteúdo
+│       │       ├── CertificationBanner.tsx # Banner de certificação com texture pattern
+│       │       ├── SearchBar.tsx           # Barra de busca centralizada
+│       │       ├── FilterChips.tsx         # Chips de filtro (tipo, tema, status)
+│       │       ├── TrailGrid.tsx           # Grid de cards de trilha
+│       │       ├── TrailCard.tsx           # Card de trilha (miniaturas, progress, metadata)
 │       │       ├── ContinueTrailsCard.tsx  # Lista de trilhas em andamento com progress bars
 │       │       └── OnboardingDialog.tsx    # Dialog de boas-vindas com vídeo (abre ao entrar na Home)
 │       ├── trail/
@@ -236,47 +242,70 @@ Composições de tela completas - diferente de componentes, encapsulam layout e 
 
 ### Home do Academy (`academy/home/`)
 
-Tela principal do Academy. Composta por hero, seção de retomada de conteúdo, novidades e rows por trilha.
+Tela principal do Academy. Layout em seções verticais com container `max-w-[1920px]`.
 
 Acesse: `http://localhost:3000/design-system/screens/academy/home`
 
 Dados mockados em `mock-data.ts` , nenhuma API é chamada.
 
-#### Seções e lógica condicional
+#### Seções e layout
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  1. Hero (full-bleed)                                    │
+├──────────────────────────────────────────────────────────┤
+│  2. Continue assistindo (2/3)  │  CertificationBanner    │
+│     [carousel de cards]        │  (texture + CTA trilhas)│
+├──────────────────────────────────────────────────────────┤
+│  3. SearchBar + FilterChips (bg-surface-elevated)        │
+├──────────────────────────────────────────────────────────┤
+│  4a. Sem filtro: seções por tipo com divisórias          │
+│      Vídeos ── Artigos ── Podcasts ── Guias              │
+│  4b. Com filtro: resultados filtrados + TrailGrid         │
+└──────────────────────────────────────────────────────────┘
+```
 
 | Seção | Condição de exibição |
 |---|---|
 | Hero | Sempre visível |
-| Continue assistindo | `CONTINUE_WATCHING_ITEMS.length > 0` (itens com `progress > 0 && < 100`) |
-| Trilhas em andamento | `MOCK_TRAILS` com `status !== 'concluida' && progress > 0` |
-| Novos conteúdos | `NEW_CONTENT_ITEMS.length > 0` (itens com `isNew: true`) |
-| Rows por trilha | Trilhas com `status !== 'em-breve' && contents.length > 0` |
-| Todos os conteúdos | Sempre visível |
+| Continue assistindo + CertificationBanner | `CONTINUE_WATCHING_ITEMS.length > 0` (grid 3 colunas) |
+| CertificationBanner solo | `CONTINUE_WATCHING_ITEMS.length === 0` |
+| SearchBar + FilterChips | Sempre visível |
+| Conteúdos por tipo | Sem filtros ativos |
+| Resultados filtrados | Filtros ou busca ativos |
 
-#### Layout da seção de retomada (2 variantes)
+**Divisórias entre seções de conteúdo:** full-bleed (fora do `max-w` container), com espaçamento `py-10` simétrico.
 
-**Variante A , usuário com trilhas em andamento:**
-Layout de duas colunas separadas por divisor vertical. Esquerda (2/3): carousel "Continue assistindo". Direita (1/3): `ContinueTrailsCard` com progress bars das trilhas.
+#### CertificationBanner
 
-```
-┌─────────────────────────────┬────────────────────┐
-│  Continue assistindo        │ Trilhas em andamento│
-│  [card] [card] [card] →     │ Trilha A ── 65%  → │
-│                             │ Trilha B ── 55%  → │
-│                             │ Trilha C ── 45%  → │
-└─────────────────────────────┴────────────────────┘
-```
+Banner com texture pattern (`Textura_cinza.jpg`), CTA "Ver trilhas" e indicador verde no hover.
 
-**Variante B , usuário sem trilhas em andamento:**
-`ContentRow` ocupa 100% da largura, sem divisor e sem `ContinueTrailsCard`.
+- Conteúdo centralizado verticalmente (`justify-center`)
+- No grid com "Continue assistindo": preenche toda a célula com `-my-10` (vertical) e `-mr-6` (borda direita)
+- Texture: `absolute inset-0`, `opacity-[0.15]`
+- Indicador esquerdo: `w-[3px]`, animação `cubic-bezier(0.16, 1, 0.3, 1)`
 
-#### ContinueTrailsCard
+#### Busca e filtros
 
-- Filtra trilhas com `status !== 'concluida' && progress > 0`
-- Ordena por `progress DESC` (mais avançadas primeiro)
-- Scroll interno limitado a ~5 itens visíveis; demais ficam ocultos
-- Cada item: nome clicável com seta inline → navega para a trilha
-- Progress bar usa `bg-planton-accent/10` no track (padrão do design system)
+- **SearchBar:** input centralizado com ícone, fundo `bg-surface-elevated`
+- **FilterChips:** três grupos (Tipo, Tema, Status) separados por dividers verticais
+  - Tipo: Vídeo, Artigo, Podcast, Guia, Trilhas
+  - Tema: ESG, Emissões, ISO, Sustentabilidade, Carbono, Clima
+  - Status: Não iniciado, Em andamento, Concluído
+- Chip ativo: `bg-planton-accent text-planton-ink`
+- Chip inativo: `bg-planton-accent/10`, hover `bg-planton-accent/20`
+
+#### ContentGrid
+
+Grid responsivo (2-6 colunas) com botão "Mostrar mais" (incremento de 6 itens).
+
+#### TrailCard
+
+Card de trilha com miniaturas dos conteúdos, progress bar e metadata em `font-mono`.
+
+- Miniaturas: 5 thumbnails pequenos (40x40) com ícone de tipo + contador `+N`
+- Progress bar inline: `h-px`, track `bg-planton-accent/15`
+- CTA: "Ver trilha" com seta animada no hover
 
 #### ContentCard (streaming-style)
 
