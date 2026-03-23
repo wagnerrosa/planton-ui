@@ -133,7 +133,7 @@ export function HomeScreen() {
                   showTrail
                 />
               </div>
-              <div className="pt-8 lg:pt-0 lg:pl-8 flex flex-col h-full">
+              <div className="pt-8 lg:pt-0 lg:pl-8 lg:-my-10 lg:-mr-6 flex flex-col">
                 <CertificationBanner onExploreTrails={handleExploreTrails} />
               </div>
             </div>
@@ -161,9 +161,9 @@ export function HomeScreen() {
       </div>
 
       {/* 4. Conteúdos */}
-      <div ref={contentsSectionRef} className="max-w-[1920px] mx-auto px-6 pt-8 pb-16">
+      <div ref={contentsSectionRef}>
         {hasActiveFilters ? (
-          <div className="flex flex-col gap-12">
+          <div className="max-w-[1920px] mx-auto px-6 pt-8 pb-16 flex flex-col gap-12">
             {/* Filtered results header */}
             <div className="flex items-center gap-3 flex-wrap">
               <Body size="sm" muted>
@@ -189,20 +189,19 @@ export function HomeScreen() {
           </div>
         ) : (
           <div className="flex flex-col">
-            {/* Content by type with full-width separators */}
-            <div className="py-8">
+            <div className="max-w-[1920px] mx-auto px-6 pt-8 pb-10 w-full">
               <ContentGrid title="Vídeos" items={videoItems} />
             </div>
             <div className="border-t border-border" />
-            <div className="py-8">
+            <div className="max-w-[1920px] mx-auto px-6 py-10 w-full">
               <ContentGrid title="Artigos" items={artigoItems} />
             </div>
             <div className="border-t border-border" />
-            <div className="py-8">
+            <div className="max-w-[1920px] mx-auto px-6 py-10 w-full">
               <ContentGrid title="Podcasts" items={podcastItems} />
             </div>
             <div className="border-t border-border" />
-            <div className="py-8">
+            <div className="max-w-[1920px] mx-auto px-6 py-10 pb-16 w-full">
               <ContentGrid title="Guias" items={guiaItems} />
             </div>
           </div>

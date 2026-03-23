@@ -10,7 +10,7 @@ export function CertificationBanner({ onExploreTrails }: CertificationBannerProp
     <button
       type="button"
       onClick={onExploreTrails}
-      className="group relative isolate flex h-full w-full min-h-[320px] overflow-hidden bg-card text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-planton-accent/30 cursor-pointer lg:-ml-8 lg:w-[calc(100%+2rem)] rounded-none flex-1"
+      className="group relative isolate flex h-full w-full overflow-hidden bg-card text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-planton-accent/30 cursor-pointer lg:-ml-8 lg:w-[calc(100%+2rem)] rounded-none flex-1"
     >
       <span
         aria-hidden
@@ -27,8 +27,8 @@ export function CertificationBanner({ onExploreTrails }: CertificationBannerProp
         className="absolute left-0 top-0 z-10 w-[3px] h-0 bg-planton-accent transition-[height] ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:h-full"
       />
 
-      <div className="relative z-20 flex flex-1 flex-col justify-between gap-8 px-8 py-8 md:px-10 md:py-10">
-        <div className="flex max-w-[21rem] flex-col items-start gap-3">
+      <div className="relative z-20 flex flex-1 flex-col justify-center gap-4 px-8 py-8 md:px-10 md:py-10">
+        <div className="flex max-w-[21rem] flex-col items-start gap-2">
           <Heading as="h3" size="heading-lg" className="max-w-[12ch] text-planton-forest">
             Siga trilhas e conquiste seu certificado
           </Heading>
@@ -39,7 +39,7 @@ export function CertificationBanner({ onExploreTrails }: CertificationBannerProp
         </div>
 
         <div className="flex flex-col items-start">
-          <span className="inline-flex items-center gap-2 font-sans text-base font-semibold text-planton-accent transition-all duration-150 group-hover:gap-3">
+          <span className="inline-flex items-center gap-2 font-sans text-base font-normal text-planton-accent transition-all duration-150 group-hover:gap-3">
             Ver trilhas →
           </span>
         </div>
