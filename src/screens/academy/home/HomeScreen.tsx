@@ -148,10 +148,15 @@ export function HomeScreen() {
 
       <div className="border-t border-border" />
 
-      {/* 3. Busca + Filtros — seção destacada */}
+      {/* 3. Search Hub */}
       <div className="bg-surface-elevated border-b border-border">
-        <div className="max-w-[1920px] mx-auto px-6 py-10 flex flex-col gap-6 items-center">
-          <SearchBar value={search} onChange={setSearch} />
+        <div className="max-w-[1920px] mx-auto px-6 py-12 flex flex-col gap-6 items-center">
+          <div className="w-full max-w-2xl flex flex-col gap-1.5">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-planton-muted">
+              Buscar conteúdos
+            </span>
+            <SearchBar value={search} onChange={setSearch} />
+          </div>
           <FilterChips filters={filters} onChange={setFilters} />
         </div>
       </div>

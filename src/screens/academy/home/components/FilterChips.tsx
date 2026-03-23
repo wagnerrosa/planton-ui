@@ -21,7 +21,12 @@ const TYPE_OPTIONS: { value: ContentType; label: string }[] = [
   { value: 'trilha', label: 'Trilhas' },
 ]
 
-const TAG_OPTIONS: ContentTag[] = ['ESG', 'Emissões', 'ISO', 'Sustentabilidade']
+const TAG_OPTIONS: { value: ContentTag; label: string }[] = [
+  { value: 'ESG', label: 'ESG' },
+  { value: 'Emissões', label: 'Emissões' },
+  { value: 'ISO', label: 'ISO' },
+  { value: 'Sustentabilidade', label: 'Sustentabilidade' },
+]
 
 const STATUS_OPTIONS: { value: ContentStatus; label: string }[] = [
   { value: 'nao-iniciado', label: 'Não iniciado' },
@@ -45,37 +50,52 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      {TYPE_OPTIONS.map((opt) => (
-        <Chip
-          key={opt.value}
-          label={opt.label}
-          active={filters.type === opt.value}
-          onClick={() => toggleType(opt.value)}
-        />
-      ))}
+    <div className="flex flex-col gap-3 w-full max-w-2xl">
+      <FilterGroup label="Tipo">
+        {TYPE_OPTIONS.map((opt) => (
+          <Chip
+            key={opt.value}
+            label={opt.label}
+            active={filters.type === opt.value}
+            onClick={() => toggleType(opt.value)}
+          />
+        ))}
+      </FilterGroup>
 
-      <span className="w-px h-5 bg-border mx-1" />
+      <FilterGroup label="Tema">
+        {TAG_OPTIONS.map((opt) => (
+          <Chip
+            key={opt.value}
+            label={opt.label}
+            active={filters.tag === opt.value}
+            onClick={() => toggleTag(opt.value)}
+          />
+        ))}
+      </FilterGroup>
 
-      {TAG_OPTIONS.map((tag) => (
-        <Chip
-          key={tag}
-          label={tag}
-          active={filters.tag === tag}
-          onClick={() => toggleTag(tag)}
-        />
-      ))}
+      <FilterGroup label="Status">
+        {STATUS_OPTIONS.map((opt) => (
+          <Chip
+            key={opt.value}
+            label={opt.label}
+            active={filters.status === opt.value}
+            onClick={() => toggleStatus(opt.value)}
+          />
+        ))}
+      </FilterGroup>
+    </div>
+  )
+}
 
-      <span className="w-px h-5 bg-border mx-1" />
-
-      {STATUS_OPTIONS.map((opt) => (
-        <Chip
-          key={opt.value}
-          label={opt.label}
-          active={filters.status === opt.value}
-          onClick={() => toggleStatus(opt.value)}
-        />
-      ))}
+function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-3 flex-wrap">
+      <span className="font-mono text-[10px] uppercase tracking-widest text-planton-muted w-12 shrink-0">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-1.5">
+        {children}
+      </div>
     </div>
   )
 }
