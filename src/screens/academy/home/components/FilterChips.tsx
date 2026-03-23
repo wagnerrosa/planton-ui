@@ -18,6 +18,7 @@ const TYPE_OPTIONS: { value: ContentType; label: string }[] = [
   { value: 'artigo', label: 'Artigo' },
   { value: 'podcast', label: 'Podcast' },
   { value: 'guia', label: 'Guia' },
+  { value: 'trilha', label: 'Trilhas' },
 ]
 
 const TAG_OPTIONS: ContentTag[] = ['ESG', 'Emissões', 'ISO', 'Sustentabilidade']
@@ -92,10 +93,10 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
-      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+      className={`px-3 py-1.5 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-planton-accent/60 focus-visible:ring-offset-1 ${
         active
           ? 'bg-planton-accent text-planton-ink'
-          : 'bg-secondary text-foreground/70 hover:bg-secondary/80'
+          : 'bg-secondary text-foreground/70 hover:bg-secondary/60 hover:text-foreground'
       }`}
     >
       {label}

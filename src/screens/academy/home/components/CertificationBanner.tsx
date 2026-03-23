@@ -3,15 +3,24 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 
-export function CertificationBanner() {
+type CertificationBannerProps = {
+  onExploreTrails?: () => void
+}
+
+export function CertificationBanner({ onExploreTrails }: CertificationBannerProps) {
   return (
-    <div className="flex flex-col gap-4 p-6 rounded-lg border border-border bg-card">
-      <GraduationCap className="h-8 w-8 text-planton-accent" strokeWidth={1.5} />
-      <div className="flex flex-col gap-1">
-        <Heading as="h3" size="heading-md">Conclua trilhas e obtenha certificados</Heading>
-        <Body size="sm" muted>Comprove seus conhecimentos em ESG e gestão de emissões.</Body>
+    <div className="flex flex-col gap-4 p-8 rounded-xl border border-planton-forest/30 bg-planton-dark/60 backdrop-blur-sm">
+      <GraduationCap className="h-9 w-9 text-planton-accent" strokeWidth={1.5} />
+      <div className="flex flex-col gap-2">
+        <Heading as="h3" size="heading-md" className="text-white">Avance com trilhas estruturadas</Heading>
+        <Body size="sm" className="text-white/60">Complete cursos e conquiste seu certificado</Body>
       </div>
-      <Button variant="primary" size="sm" href="/design-system/screens/academy/home" className="self-start">
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={onExploreTrails}
+        className="self-start"
+      >
         Explorar trilhas
       </Button>
     </div>

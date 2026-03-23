@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { X } from 'lucide-react'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -25,6 +25,7 @@ const EMPTY_FILTERS: FilterState = { type: null, tag: null, status: null }
 export function HomeScreen() {
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
+  const contentsSectionRef = useRef<HTMLDivElement>(null)
 
   const hasContinueWatching = CONTINUE_WATCHING_ITEMS.length > 0
 
@@ -34,9 +35,25 @@ export function HomeScreen() {
     filters.tag !== null ||
     filters.status !== null
 
-  // Filtered results
+  // Filtered results — trilha filter shows MOCK_TRAILS mapped to a compatible shape
   const filteredItems = useMemo(() => {
     if (!hasActiveFilters) return []
+
+    if (filters.type === 'trilha') {
+      return MOCK_TRAILS.map((t) => ({
+        id: t.id,
+        title: t.title,
+        description: t.description,
+        type: 'trilha' as const,
+        duration: t.totalDuration,
+        muxPlaybackId: '',
+        thumbnailUrl: '',
+        previewUrl: '',
+        status: 'nao-iniciado' as const,
+        progress: t.progress,
+        tags: [],
+      }))
+    }
 
     let items = CONTENT_ITEMS
 
@@ -76,12 +93,19 @@ export function HomeScreen() {
     setFilters(EMPTY_FILTERS)
   }
 
+  function handleExploreTrails() {
+    setFilters({ ...EMPTY_FILTERS, type: 'trilha' })
+    setTimeout(() => {
+      contentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 50)
+  }
+
   // Build active filter label
   function getActiveLabel(): string {
     const parts: string[] = []
     if (search.trim()) parts.push(`"${search.trim()}"`)
     if (filters.type) {
-      const labels: Record<string, string> = { video: 'Vídeo', artigo: 'Artigo', podcast: 'Podcast', guia: 'Guia' }
+      const labels: Record<string, string> = { video: 'Vídeo', artigo: 'Artigo', podcast: 'Podcast', guia: 'Guia', trilha: 'Trilhas' }
       parts.push(labels[filters.type])
     }
     if (filters.tag) parts.push(filters.tag)
@@ -112,29 +136,31 @@ export function HomeScreen() {
               />
             </div>
             <div className="pt-8 lg:pt-0 lg:pl-8 lg:border-l border-border flex flex-col justify-center">
-              <CertificationBanner />
+              <CertificationBanner onExploreTrails={handleExploreTrails} />
             </div>
           </div>
         )}
 
         {!hasContinueWatching && (
-          <CertificationBanner />
+          <CertificationBanner onExploreTrails={handleExploreTrails} />
         )}
       </div>
 
       <div className="border-t border-border" />
 
-      {/* 3. Busca + Filtros */}
-      <div className="max-w-[1920px] mx-auto px-6 pt-10 pb-6 flex flex-col gap-5 items-center">
-        <SearchBar value={search} onChange={setSearch} />
-        <FilterChips filters={filters} onChange={setFilters} />
+      {/* 3. Busca + Filtros — seção destacada */}
+      <div className="bg-surface-elevated border-b border-border">
+        <div className="max-w-[1920px] mx-auto px-6 py-10 flex flex-col gap-6 items-center">
+          <SearchBar value={search} onChange={setSearch} />
+          <FilterChips filters={filters} onChange={setFilters} />
+        </div>
       </div>
 
       {/* 4. Conteúdos */}
-      <div className="max-w-[1920px] mx-auto px-6 pb-16 flex flex-col gap-12">
+      <div ref={contentsSectionRef} className="max-w-[1920px] mx-auto px-6 pt-8 pb-16 flex flex-col gap-12">
         {hasActiveFilters ? (
           <>
-            {/* Filtered results */}
+            {/* Filtered results header */}
             <div className="flex items-center gap-3 flex-wrap">
               <Body size="sm" muted>
                 Resultados para: {getActiveLabel()}

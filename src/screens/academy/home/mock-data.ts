@@ -2,7 +2,7 @@
 // Types
 // ---------------------------------------------------------------------------
 
-export type ContentType = 'video' | 'podcast' | 'artigo' | 'guia'
+export type ContentType = 'video' | 'podcast' | 'artigo' | 'guia' | 'trilha'
 export type ContentStatus = 'nao-iniciado' | 'visualizado' | 'concluido'
 
 export type ContentTag = 'ESG' | 'Emissões' | 'ISO' | 'Sustentabilidade'
