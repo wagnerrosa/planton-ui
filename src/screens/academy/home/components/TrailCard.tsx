@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, PlayCircle, Headphones, FileText, BookOpen } from 'lucide-react'
+import type { ContentItem } from '../mock-data'
 
 type Trail = {
   id: string
@@ -10,22 +11,48 @@ type Trail = {
   progress?: number
   category?: string
   href: string
+  contents?: ContentItem[]
 }
 
 type TrailCardProps = {
   trail: Trail
 }
 
+const typeIcon = {
+  video: PlayCircle,
+  podcast: Headphones,
+  artigo: FileText,
+  guia: BookOpen,
+  trilha: BookOpen,
+}
+
+const fallbackImages: Record<string, string[]> = {
+  artigo: ['/assets/MATA-ATLANTICA-BG.jpg', '/assets/SERRA-SUL-BG.jpg'],
+  guia: ['/assets/PANTANAL-BG.jpg', '/assets/MATA-ATLANTICA-BG.jpg'],
+  podcast: ['/assets/CAATINGA-BG.jpg', '/assets/SERRA-SUL-BG.jpg'],
+  trilha: ['/assets/PANTANAL-BG.jpg'],
+}
+
+function getThumb(item: ContentItem): string {
+  if (item.type === 'video' && item.thumbnailUrl) return item.thumbnailUrl
+  const list = fallbackImages[item.type] ?? fallbackImages.artigo
+  return list[item.id.charCodeAt(0) % list.length]
+}
+
 export function TrailCard({ trail }: TrailCardProps) {
-  const { title, description, contentsCount, duration, progress, category, href } = trail
+  const { title, description, contentsCount, duration, progress, category, href, contents } = trail
+  const thumbs = contents?.slice(0, 5) ?? []
 
   return (
     <Link
       href={href}
-      className="group relative flex flex-col gap-5 border border-border p-6 bg-card hover:bg-secondary/30 transition-colors duration-150 cursor-pointer overflow-hidden min-h-[180px]"
+      className="group relative flex flex-col gap-5 border border-border p-6 bg-card hover:bg-secondary/20 transition-colors duration-300 cursor-pointer overflow-hidden min-h-[200px]"
     >
-      {/* Indicator bar */}
-      <span className="absolute left-0 inset-y-0 w-0.5 bg-planton-accent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+      {/* Indicator bar — mesmo padrão do Card.tsx */}
+      <span
+        aria-hidden
+        className="absolute left-0 top-0 w-[3px] h-0 bg-planton-accent transition-[height] ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:h-full"
+      />
 
       {/* Eyebrow */}
       <span className="font-mono text-[10px] uppercase tracking-widest text-planton-accent">
@@ -43,6 +70,34 @@ export function TrailCard({ trail }: TrailCardProps) {
           </p>
         )}
       </div>
+
+      {/* Miniaturas dos conteúdos */}
+      {thumbs.length > 0 && (
+        <div className="flex gap-1.5">
+          {thumbs.map((item) => {
+            const Icon = typeIcon[item.type] ?? BookOpen
+            return (
+              <div key={item.id} className="relative w-10 h-10 rounded-sm overflow-hidden shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getThumb(item)}
+                  alt=""
+                  className="w-full h-full object-cover brightness-75"
+                  draggable={false}
+                />
+                <span className="absolute inset-0 flex items-center justify-center">
+                  <Icon className="h-3.5 w-3.5 text-white/90" />
+                </span>
+              </div>
+            )
+          })}
+          {contentsCount > thumbs.length && (
+            <div className="w-10 h-10 rounded-sm bg-secondary flex items-center justify-center shrink-0">
+              <span className="font-mono text-[10px] text-planton-muted">+{contentsCount - thumbs.length}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Metadata */}
       <p className="font-mono text-xs text-planton-muted">

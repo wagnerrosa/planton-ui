@@ -20,6 +20,7 @@ export function TrailGrid({ trails }: TrailGridProps) {
             contentsCount: t.totalItems,
             duration: t.totalDuration,
             progress: t.progress,
+            contents: t.contents,
             href: `/design-system/screens/academy/trail/${t.id}`,
           }}
         />
