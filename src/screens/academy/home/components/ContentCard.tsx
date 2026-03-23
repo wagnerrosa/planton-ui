@@ -26,6 +26,7 @@ const fallbackImages: Record<string, string[]> = {
   artigo: ['/assets/MATA-ATLANTICA-BG.jpg', '/assets/SERRA-SUL-BG.jpg'],
   guia: ['/assets/PANTANAL-BG.jpg', '/assets/MATA-ATLANTICA-BG.jpg'],
   podcast: ['/assets/CAATINGA-BG.jpg', '/assets/SERRA-SUL-BG.jpg'],
+  trilha: ['/assets/PANTANAL-BG.jpg', '/assets/CAATINGA-BG.jpg', '/assets/MATA-ATLANTICA-BG.jpg'],
 }
 
 function getFallbackImage(type: string, id: string): string {
@@ -37,9 +38,11 @@ function getFallbackImage(type: string, id: string): string {
 export function ContentCard({ content, showProgress = false, showTrail = false, linkToTrail = false }: ContentCardProps) {
   const [hovered, setHovered] = useState(false)
 
-  const href = linkToTrail && content.trail
-    ? `/design-system/screens/academy/trail/${content.trail.id}`
-    : `/design-system/screens/academy/content/${content.id}`
+  const href = content.type === 'trilha'
+    ? `/design-system/screens/academy/trail/${content.id}`
+    : linkToTrail && content.trail
+      ? `/design-system/screens/academy/trail/${content.trail.id}`
+      : `/design-system/screens/academy/content/${content.id}`
 
   const gifUrl = `${content.previewUrl}?start=${getGifStart(content.id)}`
   const isVideo = content.type === 'video'
@@ -56,13 +59,13 @@ export function ContentCard({ content, showProgress = false, showTrail = false, 
   return (
     <Link
       href={href}
-      className="group/card relative w-full max-w-[220px] flex-shrink-0 transition-all duration-300 ease-out hover:scale-[1.04] hover:z-10 focus:outline-none"
+      className="group/card relative w-full max-w-[220px] flex-shrink-0 hover:z-10 focus:outline-none"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Thumbnail */}
       <div
-        className="relative w-full overflow-hidden rounded-lg transition-shadow duration-300 group-hover/card:shadow-2xl"
+        className="relative w-full overflow-hidden rounded-lg"
         style={{ aspectRatio: '4/5' }}
       >
         {/* 1. Image (base layer) */}

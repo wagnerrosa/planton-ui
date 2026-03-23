@@ -1,6 +1,6 @@
 'use client'
 
-import { PlayCircle, Headphones, FileText, BookOpen } from 'lucide-react'
+import { PlayCircle, Headphones, FileText, BookOpen, Route } from 'lucide-react'
 import type { ContentType } from '../mock-data'
 
 const iconMap: Record<ContentType, { icon: typeof PlayCircle; label: string }> = {
@@ -8,6 +8,7 @@ const iconMap: Record<ContentType, { icon: typeof PlayCircle; label: string }> =
   podcast: { icon: Headphones, label: 'Podcast' },
   artigo: { icon: FileText, label: 'Artigo' },
   guia: { icon: BookOpen, label: 'Guia' },
+  trilha: { icon: Route, label: 'Trilha' },
 }
 
 export function ContentTypeIcon({
