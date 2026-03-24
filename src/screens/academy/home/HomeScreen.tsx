@@ -6,7 +6,7 @@ import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
-import { HeroContent } from './components/HeroContent'
+import { AcademyHero } from '../components/AcademyHero'
 import { ContentRow } from './components/ContentRow'
 import { CertificationBanner } from './components/CertificationBanner'
 import { SearchBar } from './components/SearchBar'
@@ -14,7 +14,7 @@ import { FilterChips, type FilterState } from './components/FilterChips'
 import { ContentGrid } from './components/ContentGrid'
 import { OnboardingDialog } from './components/OnboardingDialog'
 import {
-  HERO_CONTENTS,
+  HOME_HERO_SLIDES,
   CONTINUE_WATCHING_ITEMS,
   CONTENT_ITEMS,
 } from './mock-data'
@@ -92,7 +92,7 @@ export function HomeScreen() {
       <AcademyNavbarSync breadcrumbs={[{ label: 'Home' }]} />
 
       {/* 1. Hero */}
-      <HeroContent contents={HERO_CONTENTS} />
+      <AcademyHero slides={HOME_HERO_SLIDES} />
 
       <div className="relative">
         {/* 2. Continue assistindo + Banner de certificação */}

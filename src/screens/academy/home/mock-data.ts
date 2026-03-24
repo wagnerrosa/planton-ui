@@ -1,3 +1,5 @@
+import type { AcademyHeroSlide } from '../components/AcademyHero'
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -70,6 +72,39 @@ function muxUrls(playbackId: string) {
     muxPlaybackId: playbackId,
     thumbnailUrl: `https://image.mux.com/${playbackId}/thumbnail.png`,
     previewUrl: `https://image.mux.com/${playbackId}/animated.gif`,
+  }
+}
+
+function contentToHeroSlide(content: ContentItem): AcademyHeroSlide {
+  return {
+    id: content.id,
+    muxPlaybackId: content.muxPlaybackId,
+    thumbnailUrl: content.thumbnailUrl,
+    badge: content.isNew
+      ? 'Novo'
+      : content.progress > 0 && content.progress < 100
+        ? 'Continuar assistindo'
+        : undefined,
+    eyebrow: content.trail ? `trilha: ${content.trail.name}` : undefined,
+    title: content.title,
+    description: content.description,
+    meta: {
+      type: content.type,
+      duration: content.duration,
+    },
+    primaryAction: {
+      label: 'Assistir',
+      href: `/design-system/screens/academy/content/${content.id}`,
+      icon: 'play',
+    },
+    secondaryAction: content.trail
+      ? {
+          label: 'Ver trilha',
+          href: `/design-system/screens/academy/trail/${content.trail.id}`,
+          style: 'outline',
+          icon: 'arrow',
+        }
+      : undefined,
   }
 }
 
@@ -480,9 +515,31 @@ export const MOCK_TRAILS: Trail[] = [
 /** Tags disponíveis para filtro */
 export const AVAILABLE_TAGS: ContentTag[] = ['ESG', 'Emissões', 'ISO', 'Sustentabilidade']
 
-/** Conteúdos hero (destaque principal) , apenas vídeos, máx 3 */
+export const TRAILS_HERO_SLIDES: AcademyHeroSlide[] = [
+  {
+    id: 'trails-hero',
+    ...muxUrls('Saalk9MFlAPv1moxI00yiyJzvxdQOesW23fPVc3AL802w'),
+    eyebrow: 'Trilhas de aprendizagem',
+    title: 'Aprenda ESG com trilhas estruturadas',
+    description: 'Evolua do básico ao avançado com jornadas guiadas e conquiste seu certificado',
+    pills: ['Jornada', 'Progressão', 'Certificação'],
+    primaryAction: {
+      label: 'Explorar trilhas',
+      href: '#trilhas',
+      style: 'accent',
+      icon: 'arrow',
+    },
+  },
+]
+
+/** Conteúdos hero (destaque principal) */
 export const HERO_CONTENT = CONTENT_ITEMS[3] // c4: Calculando Emissões na Prática (backwards compat)
-export const HERO_CONTENTS = CONTENT_ITEMS.filter((c) => c.type === 'video').slice(0, 3)
+export const HOME_HERO_SLIDES: AcademyHeroSlide[] = [
+  TRAILS_HERO_SLIDES[0],
+  ...CONTENT_ITEMS.filter((c) => c.type === 'video')
+    .slice(0, 3)
+    .map(contentToHeroSlide),
+]
 
 /** Conteúdos com progresso para "Continue assistindo" */
 export const CONTINUE_WATCHING_ITEMS = CONTENT_ITEMS.filter(
