@@ -5,7 +5,7 @@ import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { HeroContent } from '../home/components/HeroContent'
-import { TrailCard } from '../home/components/TrailCard'
+import { TrailCard } from './TrailCard'
 import { HERO_CONTENTS, MOCK_TRAILS } from '../home/mock-data'
 
 export function TrailsScreen() {
@@ -24,11 +24,8 @@ export function TrailsScreen() {
       {/* 2. Intro text */}
       <div className="max-w-[1920px] mx-auto px-6 pt-12 pb-2 flex flex-col gap-3">
         <Heading as="h2" size="heading-lg">
-          Trilhas
+          Avance no seu ritmo até a certificação
         </Heading>
-        <Body muted>
-          Escolha uma jornada estruturada e avance no seu ritmo até a certificação
-        </Body>
       </div>
 
       {/* 3. Grid de trilhas — 2 colunas */}

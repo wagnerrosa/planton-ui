@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight, PlayCircle, Headphones, FileText, BookOpen } from 'lucide-react'
-import type { ContentItem } from '../mock-data'
+import type { ContentItem } from '../home/mock-data'
 
 type Trail = {
   id: string
