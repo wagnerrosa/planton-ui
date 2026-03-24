@@ -222,7 +222,8 @@ export function VouchersScreen() {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="voucher-domains">Domínio(s)</Label>
-              <Input id="voucher-domains" placeholder="empresa.com.br" />
+              <Input id="voucher-domains" placeholder="empresa.com.br, outrodominio.com.br" />
+              <Body muted className="text-xs">Separe múltiplos domínios por vírgula</Body>
             </div>
           </div>
           <DialogFooter>

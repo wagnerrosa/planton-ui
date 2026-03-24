@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
-import { Plus, MoreHorizontal, Eye, Pause, Play, Pencil, Building2 } from 'lucide-react'
+import { Plus, MoreHorizontal, Eye, Pause, Play, Pencil, Building2, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/shadcn/skeleton'
 import { CLIENTS, type ClientStatus } from '../mock-data'
 
 const BASE = '/design-system/screens/academy'
+const PER_PAGE = 10
 
 const STATUS_BADGE: Record<ClientStatus, 'success' | 'destructive'> = {
   ativo: 'success',
@@ -28,6 +29,8 @@ const STATUS_BADGE: Record<ClientStatus, 'success' | 'destructive'> = {
 
 export function ClientsScreen() {
   const [statusFilter, setStatusFilter] = useState('all')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -37,9 +40,23 @@ export function ClientsScreen() {
   }, [])
 
   const filtered = useMemo(() => {
-    if (statusFilter === 'all') return CLIENTS
-    return CLIENTS.filter((c) => c.status === statusFilter)
-  }, [statusFilter])
+    let items = CLIENTS
+    if (statusFilter !== 'all') items = items.filter((c) => c.status === statusFilter)
+    if (search.trim()) {
+      const q = search.toLowerCase().trim()
+      items = items.filter((c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.cnpj.includes(q) ||
+        c.domains.some((d) => d.toLowerCase().includes(q))
+      )
+    }
+    return items
+  }, [statusFilter, search])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
+  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
+  useEffect(() => { setPage(1) }, [statusFilter, search])
 
   return (
     <>
@@ -61,8 +78,8 @@ export function ClientsScreen() {
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="max-w-[1920px] mx-auto px-6 pb-6">
+          {/* Filters + Search */}
+          <div className="max-w-[1920px] mx-auto px-6 pb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Status" />
@@ -73,6 +90,15 @@ export function ClientsScreen() {
                 <SelectItem value="suspenso">Suspenso</SelectItem>
               </SelectContent>
             </Select>
+            <div className="relative w-full sm:w-[280px]">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-planton-muted" />
+              <Input
+                placeholder="Buscar por nome, CNPJ ou domínio..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
           </div>
 
           {/* Table */}
@@ -82,7 +108,7 @@ export function ClientsScreen() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Empresa</TableHead>
-                    <TableHead>CNPJ</TableHead>
+                    <TableHead>CNPJ / CPF</TableHead>
                     <TableHead>Domínios</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Usuários</TableHead>
@@ -103,12 +129,12 @@ export function ClientsScreen() {
                         <TableCell><Skeleton className="h-4 w-4" /></TableCell>
                       </TableRow>
                     ))
-                  ) : filtered.length === 0 ? (
+                  ) : paginated.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-16">
                         <div className="flex flex-col items-center gap-3">
                           <Building2 size={32} className="text-planton-muted" />
-                          <Body muted>Nenhum cliente cadastrado</Body>
+                          <Body muted>Nenhum cliente encontrado</Body>
                           <Button onClick={() => setDialogOpen(true)}>
                             <Plus size={15} className="mr-1.5" />
                             Novo cliente
@@ -117,7 +143,7 @@ export function ClientsScreen() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filtered.map((client) => (
+                    paginated.map((client) => (
                       <TableRow key={client.id}>
                         <TableCell className="font-medium">
                           <Link href={`${BASE}/admin/clients/${client.id}`} className="hover:text-planton-accent transition-colors">
@@ -166,6 +192,31 @@ export function ClientsScreen() {
                   )}
                 </TableBody>
               </Table>
+              {/* Pagination */}
+              {filtered.length > PER_PAGE && (
+                <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                  <Body muted className="text-sm">
+                    {filtered.length} cliente{filtered.length !== 1 ? 's' : ''}
+                  </Body>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronLeft size={16} />
+                    </Button>
+                    <Body muted className="text-sm font-mono">{page} / {totalPages}</Body>
+                    <Button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronRight size={16} />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -185,12 +236,13 @@ export function ClientsScreen() {
               <Input id="company-name" placeholder="Ex: AgroTech Solutions" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="cnpj">CNPJ</Label>
-              <Input id="cnpj" placeholder="00.000.000/0001-00" />
+              <Label htmlFor="cnpj">CNPJ / CPF</Label>
+              <Input id="cnpj" placeholder="00.000.000/0001-00 ou 000.000.000-00" />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="domain">Domínio(s)</Label>
-              <Input id="domain" placeholder="empresa.com.br" />
+              <Input id="domain" placeholder="empresa.com.br, outrodominio.com.br" />
+              <Body muted className="text-xs">Separe múltiplos domínios por vírgula</Body>
             </div>
           </div>
           <DialogFooter>

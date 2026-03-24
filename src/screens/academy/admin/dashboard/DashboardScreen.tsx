@@ -2,15 +2,17 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, ArrowRight, Building2, Award, Clock, Users, BookCheck, HelpCircle } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Building2, Award, Clock, Users, BookCheck, HelpCircle, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
+import { Button } from '@/components/primitives/Button'
 import { Alert, AlertBody, AlertDescription } from '@/components/shadcn/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
 import { Badge } from '@/components/shadcn/badge'
+import { Input } from '@/components/shadcn/input'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import { AdminStatsCard } from '../components/AdminStatsCard'
 import {
@@ -38,10 +40,14 @@ const KPI_ICONS = [
   <BookCheck key="bc" size={16} />,
 ]
 
+const SUMMARY_PER_PAGE = 5
+
 export function DashboardScreen() {
   const [clientFilter, setClientFilter] = useState('all')
   const [periodFilter, setPeriodFilter] = useState('all')
   const [loading, setLoading] = useState(true)
+  const [summarySearch, setSummarySearch] = useState('')
+  const [summaryPage, setSummaryPage] = useState(1)
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 800)
@@ -49,9 +55,19 @@ export function DashboardScreen() {
   }, [])
 
   const filteredSummary = useMemo(() => {
-    if (clientFilter === 'all') return COMPANY_SUMMARY
-    return COMPANY_SUMMARY.filter((c) => c.id === clientFilter)
-  }, [clientFilter])
+    let items = COMPANY_SUMMARY
+    if (clientFilter !== 'all') items = items.filter((c) => c.id === clientFilter)
+    if (summarySearch.trim()) {
+      const q = summarySearch.toLowerCase().trim()
+      items = items.filter((c) => c.name.toLowerCase().includes(q))
+    }
+    return items
+  }, [clientFilter, summarySearch])
+
+  const summaryTotalPages = Math.max(1, Math.ceil(filteredSummary.length / SUMMARY_PER_PAGE))
+  const paginatedSummary = filteredSummary.slice((summaryPage - 1) * SUMMARY_PER_PAGE, summaryPage * SUMMARY_PER_PAGE)
+
+  useEffect(() => { setSummaryPage(1) }, [summarySearch, clientFilter])
 
   const contentTypeLabels: Record<string, string> = {
     video: 'Vídeo',
@@ -232,8 +248,17 @@ export function DashboardScreen() {
           {/* Company Summary (Drill-down) */}
           <div className="max-w-[1920px] mx-auto px-6 pb-10">
             <div className="border border-border">
-              <div className="px-10 pt-10 pb-6 border-b border-border">
+              <div className="px-10 pt-10 pb-6 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <Heading as="h2" size="heading-md">Resumo por empresa</Heading>
+                <div className="relative w-full sm:w-[260px]">
+                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-planton-muted" />
+                  <Input
+                    placeholder="Buscar empresa..."
+                    value={summarySearch}
+                    onChange={(e) => setSummarySearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
               </div>
               <Table>
                 <TableHeader>
@@ -258,14 +283,14 @@ export function DashboardScreen() {
                         <TableCell><Skeleton className="h-4 w-4 ml-auto" /></TableCell>
                       </TableRow>
                     ))
-                  ) : filteredSummary.length === 0 ? (
+                  ) : paginatedSummary.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center py-12 text-planton-muted">
                         Nenhum dado disponível
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredSummary.map((company) => (
+                    paginatedSummary.map((company) => (
                       <TableRow key={company.id}>
                         <TableCell className="font-medium">{company.name}</TableCell>
                         <TableCell className="text-right font-mono text-sm">{company.users}</TableCell>
@@ -282,6 +307,31 @@ export function DashboardScreen() {
                   )}
                 </TableBody>
               </Table>
+              {/* Pagination */}
+              {filteredSummary.length > SUMMARY_PER_PAGE && (
+                <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                  <Body muted className="text-sm">
+                    {filteredSummary.length} empresa{filteredSummary.length !== 1 ? 's' : ''}
+                  </Body>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => setSummaryPage((p) => Math.max(1, p - 1))}
+                      disabled={summaryPage === 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronLeft size={16} />
+                    </Button>
+                    <Body muted className="text-sm font-mono">{summaryPage} / {summaryTotalPages}</Body>
+                    <Button
+                      onClick={() => setSummaryPage((p) => Math.min(summaryTotalPages, p + 1))}
+                      disabled={summaryPage === summaryTotalPages}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronRight size={16} />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

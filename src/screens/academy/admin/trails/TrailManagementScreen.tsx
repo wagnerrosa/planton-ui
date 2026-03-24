@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock, ArrowUp, ArrowDown, X, Search, Route } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock, ArrowUp, ArrowDown, X, Search, Route, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -23,13 +23,13 @@ import {
   ADMIN_TRAILS,
   CATALOG_CONTENT,
   CLIENTS,
-  MOCK_QUIZ_QUESTIONS,
   type TrailStatus,
   type TrailVisibility,
   type QuizQuestion,
 } from '../mock-data'
 
 const BASE = '/design-system/screens/academy'
+const PER_PAGE = 10
 
 const STATUS_BADGE: Record<TrailStatus, 'success' | 'default' | 'warning'> = {
   ativa: 'success',
@@ -40,15 +40,20 @@ const STATUS_BADGE: Record<TrailStatus, 'success' | 'default' | 'warning'> = {
 export function TrailManagementScreen() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [visibilityFilter, setVisibilityFilter] = useState('all')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
   // Dialog state
   const [dialogTab, setDialogTab] = useState('dados')
   const [trailVisibility, setTrailVisibility] = useState<TrailVisibility>('global')
+  const [selectedClients, setSelectedClients] = useState<string[]>([])
   const [selectedContents, setSelectedContents] = useState<string[]>([])
   const [contentSearch, setContentSearch] = useState('')
   const [quizEnabled, setQuizEnabled] = useState(false)
+  const [quizVisibility, setQuizVisibility] = useState<'all' | 'specific'>('all')
+  const [quizClients, setQuizClients] = useState<string[]>([])
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
 
   useEffect(() => {
@@ -60,8 +65,17 @@ export function TrailManagementScreen() {
     let items = ADMIN_TRAILS
     if (statusFilter !== 'all') items = items.filter((t) => t.status === statusFilter)
     if (visibilityFilter !== 'all') items = items.filter((t) => t.visibility === visibilityFilter)
+    if (search.trim()) {
+      const q = search.toLowerCase().trim()
+      items = items.filter((t) => t.title.toLowerCase().includes(q))
+    }
     return items
-  }, [statusFilter, visibilityFilter])
+  }, [statusFilter, visibilityFilter, search])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
+  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
+  useEffect(() => { setPage(1) }, [statusFilter, visibilityFilter, search])
 
   const availableContents = useMemo(() => {
     const query = contentSearch.toLowerCase().trim()
@@ -73,9 +87,12 @@ export function TrailManagementScreen() {
   const resetDialog = () => {
     setDialogTab('dados')
     setTrailVisibility('global')
+    setSelectedClients([])
     setSelectedContents([])
     setContentSearch('')
     setQuizEnabled(false)
+    setQuizVisibility('all')
+    setQuizClients([])
     setQuestions([])
   }
 
@@ -85,6 +102,18 @@ export function TrailManagementScreen() {
     if (swapIdx < 0 || swapIdx >= newList.length) return
     ;[newList[index], newList[swapIdx]] = [newList[swapIdx], newList[index]]
     setSelectedContents(newList)
+  }
+
+  const toggleClient = (clientId: string) => {
+    setSelectedClients((prev) =>
+      prev.includes(clientId) ? prev.filter((id) => id !== clientId) : [...prev, clientId]
+    )
+  }
+
+  const toggleQuizClient = (clientId: string) => {
+    setQuizClients((prev) =>
+      prev.includes(clientId) ? prev.filter((id) => id !== clientId) : [...prev, clientId]
+    )
   }
 
   const addQuestion = () => {
@@ -123,8 +152,8 @@ export function TrailManagementScreen() {
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="max-w-[1920px] mx-auto px-6 pb-6 flex items-center gap-3">
+          {/* Filters + Search */}
+          <div className="max-w-[1920px] mx-auto px-6 pb-6 flex flex-wrap items-center gap-3">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[160px]">
                 <SelectValue placeholder="Status" />
@@ -146,6 +175,15 @@ export function TrailManagementScreen() {
                 <SelectItem value="exclusiva">Exclusiva</SelectItem>
               </SelectContent>
             </Select>
+            <div className="relative w-full sm:w-[280px]">
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-planton-muted" />
+              <Input
+                placeholder="Buscar por título..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
           </div>
 
           {/* Table */}
@@ -176,12 +214,12 @@ export function TrailManagementScreen() {
                         <TableCell><Skeleton className="h-4 w-4" /></TableCell>
                       </TableRow>
                     ))
-                  ) : filtered.length === 0 ? (
+                  ) : paginated.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-16">
                         <div className="flex flex-col items-center gap-3">
                           <Route size={32} className="text-planton-muted" />
-                          <Body muted>Nenhuma trilha criada</Body>
+                          <Body muted>Nenhuma trilha encontrada</Body>
                           <Button onClick={() => { resetDialog(); setDialogOpen(true) }}>
                             <Plus size={15} className="mr-1.5" />
                             Nova trilha
@@ -190,7 +228,7 @@ export function TrailManagementScreen() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filtered.map((trail) => (
+                    paginated.map((trail) => (
                       <TableRow key={trail.id}>
                         <TableCell className="font-medium">{trail.title}</TableCell>
                         <TableCell>
@@ -236,6 +274,31 @@ export function TrailManagementScreen() {
                   )}
                 </TableBody>
               </Table>
+              {/* Pagination */}
+              {filtered.length > PER_PAGE && (
+                <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+                  <Body muted className="text-sm">
+                    {filtered.length} trilha{filtered.length !== 1 ? 's' : ''}
+                  </Body>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronLeft size={16} />
+                    </Button>
+                    <Body muted className="text-sm font-mono">{page} / {totalPages}</Body>
+                    <Button
+                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronRight size={16} />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -257,7 +320,7 @@ export function TrailManagementScreen() {
               <TabsTrigger value="quiz" className="flex-1">3. Quiz</TabsTrigger>
             </TabsList>
 
-            {/* Step 1: Dados */}
+            {/* Step 1: Dados — sem campo de imagem de capa */}
             <TabsContent value="dados" className="flex flex-col gap-4 pt-4">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="trail-title">Título</Label>
@@ -269,29 +332,41 @@ export function TrailManagementScreen() {
               </div>
               <div className="flex flex-col gap-2">
                 <Label>Visibilidade</Label>
-                <Select value={trailVisibility} onValueChange={(v) => setTrailVisibility(v as TrailVisibility)}>
+                <Select value={trailVisibility} onValueChange={(v) => { setTrailVisibility(v as TrailVisibility); if (v === 'global') setSelectedClients([]) }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="global">Global</SelectItem>
-                    <SelectItem value="exclusiva">Exclusiva</SelectItem>
+                    <SelectItem value="global">Global (todas as empresas)</SelectItem>
+                    <SelectItem value="exclusiva">Exclusiva (empresas específicas)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {trailVisibility === 'exclusiva' && (
                 <div className="flex flex-col gap-2">
-                  <Label>Clientes</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione o cliente" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CLIENTS.filter((c) => c.status === 'ativo').map((c) => (
-                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Empresas com acesso</Label>
+                  <Body muted className="text-xs">Selecione uma ou mais empresas que terão acesso a esta trilha</Body>
+                  <div className="border border-border max-h-[160px] overflow-y-auto">
+                    {CLIENTS.filter((c) => c.status === 'ativo').map((c) => {
+                      const isSelected = selectedClients.includes(c.id)
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => toggleClient(c.id)}
+                          className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between border-b border-border last:border-b-0 transition-colors ${
+                            isSelected ? 'bg-planton-accent/10 text-planton-accent' : 'hover:bg-muted'
+                          }`}
+                        >
+                          <span>{c.name}</span>
+                          {isSelected && <Badge variant="outline" className="text-xs">selecionado</Badge>}
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {selectedClients.length > 0 && (
+                    <Body muted className="text-xs">{selectedClients.length} empresa{selectedClients.length !== 1 ? 's' : ''} selecionada{selectedClients.length !== 1 ? 's' : ''}</Body>
+                  )}
                 </div>
               )}
               <div className="flex flex-col gap-2">
@@ -306,10 +381,6 @@ export function TrailManagementScreen() {
                     <SelectItem value="ativa">Ativa</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="trail-cover">Imagem de capa (mock)</Label>
-                <Input id="trail-cover" type="file" accept="image/*" />
               </div>
             </TabsContent>
 
@@ -387,6 +458,47 @@ export function TrailManagementScreen() {
 
               {quizEnabled && (
                 <>
+                  {/* Visibilidade do quiz por empresa */}
+                  <div className="flex flex-col gap-2">
+                    <Label>Visibilidade do quiz</Label>
+                    <Body muted className="text-xs">Selecione se o quiz deve aparecer para todas as empresas ou apenas para algumas</Body>
+                    <Select value={quizVisibility} onValueChange={(v) => { setQuizVisibility(v as 'all' | 'specific'); if (v === 'all') setQuizClients([]) }}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas as empresas</SelectItem>
+                        <SelectItem value="specific">Empresas específicas</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {quizVisibility === 'specific' && (
+                    <div className="flex flex-col gap-2">
+                      <Label>Empresas que verão o quiz</Label>
+                      <div className="border border-border max-h-[140px] overflow-y-auto">
+                        {CLIENTS.filter((c) => c.status === 'ativo').map((c) => {
+                          const isSelected = quizClients.includes(c.id)
+                          return (
+                            <button
+                              key={c.id}
+                              type="button"
+                              onClick={() => toggleQuizClient(c.id)}
+                              className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between border-b border-border last:border-b-0 transition-colors ${
+                                isSelected ? 'bg-planton-accent/10 text-planton-accent' : 'hover:bg-muted'
+                              }`}
+                            >
+                              <span>{c.name}</span>
+                              {isSelected && <Badge variant="outline" className="text-xs">selecionado</Badge>}
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {quizClients.length > 0 && (
+                        <Body muted className="text-xs">{quizClients.length} empresa{quizClients.length !== 1 ? 's' : ''} selecionada{quizClients.length !== 1 ? 's' : ''}</Body>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between">
                     <Body muted className="text-sm">{questions.length} questão(ões)</Body>
                     <Button onClick={addQuestion}>
