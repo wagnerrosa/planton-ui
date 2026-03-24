@@ -18,7 +18,6 @@ const TYPE_OPTIONS: { value: ContentType; label: string }[] = [
   { value: 'artigo', label: 'Artigo' },
   { value: 'podcast', label: 'Podcast' },
   { value: 'guia', label: 'Guia' },
-  { value: 'trilha', label: 'Trilhas' },
 ]
 
 const TAG_OPTIONS: { value: ContentTag; label: string }[] = [

@@ -20,7 +20,7 @@ const BASE = '/design-system/screens/academy'
 function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname()
   const trails = MOCK_TRAILS.filter((t) => t.status !== 'em-breve')
-  const isTrailsActive = pathname.startsWith(`${BASE}/trail`)
+  const isTrailsActive = pathname.startsWith(`${BASE}/trail`) || pathname === `${BASE}/trilhas`
   const [trailsOpen, setTrailsOpen] = useState(isTrailsActive)
 
   return (
@@ -41,9 +41,9 @@ function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
 
       {/* Trilhas */}
       <div>
-        <button
-          type="button"
-          onClick={() => setTrailsOpen((v) => !v)}
+        <Link
+          href={`${BASE}/trilhas`}
+          onClick={onLinkClick}
           className={`w-full flex items-center gap-2.5 px-2 py-2 text-sm font-sans transition-colors ${
             isTrailsActive
               ? 'bg-sidebar-accent text-planton-accent'
@@ -55,8 +55,9 @@ function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
           <ChevronDown
             size={13}
             className={`transition-transform ${trailsOpen ? 'rotate-180' : ''}`}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTrailsOpen((v) => !v) }}
           />
-        </button>
+        </Link>
 
         {trailsOpen && (
           <div className="flex flex-col mt-0.5">

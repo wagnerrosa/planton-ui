@@ -1,15 +1,11 @@
+import Link from 'next/link'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 
-type CertificationBannerProps = {
-  onExploreTrails?: () => void
-}
-
-export function CertificationBanner({ onExploreTrails }: CertificationBannerProps) {
+export function CertificationBanner() {
   return (
-    <button
-      type="button"
-      onClick={onExploreTrails}
+    <Link
+      href="/design-system/screens/academy/trilhas"
       className="group relative isolate flex h-full w-full overflow-hidden bg-card text-left transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-planton-accent/30 cursor-pointer lg:-ml-8 lg:w-[calc(100%+2rem)] rounded-none flex-1"
     >
       <span
@@ -44,6 +40,6 @@ export function CertificationBanner({ onExploreTrails }: CertificationBannerProp
           </span>
         </div>
       </div>
-    </button>
+    </Link>
   )
 }

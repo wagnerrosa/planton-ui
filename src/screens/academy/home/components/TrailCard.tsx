@@ -40,7 +40,7 @@ function getThumb(item: ContentItem): string {
 }
 
 export function TrailCard({ trail }: TrailCardProps) {
-  const { title, description, contentsCount, duration, progress, category, href, contents } = trail
+  const { title, description, contentsCount, duration, progress, href, contents } = trail
   const thumbs = contents?.slice(0, 5) ?? []
 
   // Build metadata line: "5 conteúdos • 1h51min • 40% concluído"
@@ -55,7 +55,7 @@ export function TrailCard({ trail }: TrailCardProps) {
   return (
     <Link
       href={href}
-      className="group relative flex flex-col gap-5 border border-border p-6 bg-card hover:bg-secondary/20 transition-colors duration-300 cursor-pointer overflow-hidden min-h-[200px]"
+      className="group relative flex flex-col gap-6 border border-border p-8 bg-card hover:bg-secondary/20 hover:shadow-md hover:scale-[1.01] transition-all duration-300 cursor-pointer overflow-hidden"
     >
       {/* Indicator bar — mesmo padrão do Card.tsx */}
       <span
@@ -63,30 +63,25 @@ export function TrailCard({ trail }: TrailCardProps) {
         className="absolute left-0 top-0 w-[3px] h-0 bg-planton-accent transition-[height] ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:h-full"
       />
 
-      {/* Eyebrow */}
-      <span className="font-mono text-[10px] uppercase tracking-widest text-planton-accent">
-        {category ?? 'Trilha'}
-      </span>
-
-      {/* Title + Description */}
+      {/* 1. Title + Description */}
       <div className="flex flex-col gap-2 flex-1">
         <h3 className="font-heading text-xl font-semibold leading-snug text-foreground line-clamp-2">
           {title}
         </h3>
         {description && (
-          <p className="font-sans text-sm leading-relaxed text-planton-muted line-clamp-2">
+          <p className="font-sans text-sm leading-relaxed text-planton-muted line-clamp-3">
             {description}
           </p>
         )}
       </div>
 
-      {/* Miniaturas dos conteúdos */}
+      {/* 2. Miniaturas dos conteúdos */}
       {thumbs.length > 0 && (
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           {thumbs.map((item) => {
             const Icon = typeIcon[item.type] ?? BookOpen
             return (
-              <div key={item.id} className="relative w-10 h-10 rounded-sm overflow-hidden shrink-0">
+              <div key={item.id} className="relative w-12 h-12 rounded-sm overflow-hidden shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={getThumb(item)}
@@ -95,25 +90,25 @@ export function TrailCard({ trail }: TrailCardProps) {
                   draggable={false}
                 />
                 <span className="absolute inset-0 flex items-center justify-center">
-                  <Icon className="h-3.5 w-3.5 text-white/90" />
+                  <Icon className="h-4 w-4 text-white/90" />
                 </span>
               </div>
             )
           })}
           {contentsCount > thumbs.length && (
-            <div className="w-10 h-10 rounded-sm bg-secondary flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-sm bg-secondary flex items-center justify-center shrink-0">
               <span className="font-mono text-[10px] text-planton-muted">+{contentsCount - thumbs.length}</span>
             </div>
           )}
         </div>
       )}
 
-      {/* Metadata + Progress inline */}
+      {/* 3. Metadata */}
       <p className="font-mono text-xs text-planton-muted">
         {metaParts.join('  •  ')}
       </p>
 
-      {/* Progress bar */}
+      {/* 4. Progress bar */}
       {progress !== undefined && progress > 0 && (
         <div className="h-px w-full bg-planton-accent/15">
           <div
@@ -123,7 +118,7 @@ export function TrailCard({ trail }: TrailCardProps) {
         </div>
       )}
 
-      {/* CTA */}
+      {/* 5. CTA */}
       <span className="inline-flex items-center gap-1 font-mono text-xs text-planton-accent group-hover:gap-2 transition-all duration-150">
         Ver trilha
         <ArrowRight className="h-3 w-3" />

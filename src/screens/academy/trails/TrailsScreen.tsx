@@ -1,0 +1,58 @@
+'use client'
+
+import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
+import { AcademyFooter } from '@/components/navigation/AcademyFooter'
+import { Heading } from '@/components/primitives/Heading'
+import { Body } from '@/components/primitives/Body'
+import { HeroContent } from '../home/components/HeroContent'
+import { TrailCard } from '../home/components/TrailCard'
+import { HERO_CONTENTS, MOCK_TRAILS } from '../home/mock-data'
+
+export function TrailsScreen() {
+  return (
+    <div className="min-h-screen bg-background">
+      <AcademyNavbarSync
+        breadcrumbs={[
+          { label: 'Home', href: '/design-system/screens/academy/home' },
+          { label: 'Trilhas' },
+        ]}
+      />
+
+      {/* 1. Hero */}
+      <HeroContent contents={HERO_CONTENTS} />
+
+      {/* 2. Intro text */}
+      <div className="max-w-[1920px] mx-auto px-6 pt-12 pb-2 flex flex-col gap-3">
+        <Heading as="h2" size="heading-lg">
+          Trilhas
+        </Heading>
+        <Body muted>
+          Escolha uma jornada estruturada e avance no seu ritmo até a certificação
+        </Body>
+      </div>
+
+      {/* 3. Grid de trilhas — 2 colunas */}
+      <div className="max-w-[1920px] mx-auto px-6 pt-8 pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {MOCK_TRAILS.map((t) => (
+            <TrailCard
+              key={t.id}
+              trail={{
+                id: t.id,
+                title: t.title,
+                description: t.description,
+                contentsCount: t.totalItems,
+                duration: t.totalDuration,
+                progress: t.progress,
+                contents: t.contents,
+                href: `/design-system/screens/academy/trail/${t.id}`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      <AcademyFooter />
+    </div>
+  )
+}

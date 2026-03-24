@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useRef } from 'react'
+import { useState, useMemo } from 'react'
 import { X } from 'lucide-react'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -12,13 +12,11 @@ import { CertificationBanner } from './components/CertificationBanner'
 import { SearchBar } from './components/SearchBar'
 import { FilterChips, type FilterState } from './components/FilterChips'
 import { ContentGrid } from './components/ContentGrid'
-import { TrailGrid } from './components/TrailGrid'
 import { OnboardingDialog } from './components/OnboardingDialog'
 import {
   HERO_CONTENTS,
   CONTINUE_WATCHING_ITEMS,
   CONTENT_ITEMS,
-  MOCK_TRAILS,
 } from './mock-data'
 
 const EMPTY_FILTERS: FilterState = { types: [], tags: [], statuses: [] }
@@ -26,7 +24,6 @@ const EMPTY_FILTERS: FilterState = { types: [], tags: [], statuses: [] }
 export function HomeScreen() {
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
-  const contentsSectionRef = useRef<HTMLDivElement>(null)
 
   const hasContinueWatching = CONTINUE_WATCHING_ITEMS.length > 0
 
@@ -36,15 +33,9 @@ export function HomeScreen() {
     filters.tags.length > 0 ||
     filters.statuses.length > 0
 
-  const showTrails = filters.types.includes('trilha')
-  // Content types without trilha for item filtering
-  const contentTypes = filters.types.filter((t) => t !== 'trilha')
-
   // Filtered results
   const filteredItems = useMemo(() => {
     if (!hasActiveFilters) return []
-    // If only trilha is selected, no content items
-    if (filters.types.length > 0 && contentTypes.length === 0) return []
 
     let items = CONTENT_ITEMS
 
@@ -58,8 +49,8 @@ export function HomeScreen() {
       )
     }
 
-    if (contentTypes.length > 0) {
-      items = items.filter((c) => (contentTypes as string[]).includes(c.type))
+    if (filters.types.length > 0) {
+      items = items.filter((c) => (filters.types as string[]).includes(c.type))
     }
 
     if (filters.tags.length > 0) {
@@ -71,7 +62,7 @@ export function HomeScreen() {
     }
 
     return items
-  }, [search, filters, hasActiveFilters, contentTypes])
+  }, [search, filters, hasActiveFilters])
 
   // Content by type (when no search/filter active)
   const videoItems = CONTENT_ITEMS.filter((c) => c.type === 'video')
@@ -84,18 +75,11 @@ export function HomeScreen() {
     setFilters(EMPTY_FILTERS)
   }
 
-  function handleExploreTrails() {
-    setFilters({ ...EMPTY_FILTERS, types: ['trilha'] })
-    setTimeout(() => {
-      contentsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 50)
-  }
-
   // Build active filter label
   function getActiveLabel(): string {
     const parts: string[] = []
     if (search.trim()) parts.push(`"${search.trim()}"`)
-    const typeLabels: Record<string, string> = { video: 'Vídeo', artigo: 'Artigo', podcast: 'Podcast', guia: 'Guia', trilha: 'Trilhas' }
+    const typeLabels: Record<string, string> = { video: 'Vídeo', artigo: 'Artigo', podcast: 'Podcast', guia: 'Guia' }
     if (filters.types.length > 0) parts.push(filters.types.map((t) => typeLabels[t]).join(', '))
     if (filters.tags.length > 0) parts.push(filters.tags.join(', '))
     const statusLabels: Record<string, string> = { 'nao-iniciado': 'Não iniciado', visualizado: 'Em andamento', concluido: 'Concluído' }
@@ -134,13 +118,13 @@ export function HomeScreen() {
                 />
               </div>
               <div className="pt-8 lg:pt-0 lg:pl-8 lg:-my-10 lg:-mr-6 flex flex-col">
-                <CertificationBanner onExploreTrails={handleExploreTrails} />
+                <CertificationBanner />
               </div>
             </div>
           )}
 
           {!hasContinueWatching && (
-            <CertificationBanner onExploreTrails={handleExploreTrails} />
+            <CertificationBanner />
           )}
         </div>
 
@@ -161,7 +145,7 @@ export function HomeScreen() {
       </div>
 
       {/* 4. Conteúdos */}
-      <div ref={contentsSectionRef}>
+      <div>
         {hasActiveFilters ? (
           <div className="max-w-[1920px] mx-auto px-6 pt-8 pb-16 flex flex-col gap-12">
             {/* Filtered results header */}
@@ -175,13 +159,9 @@ export function HomeScreen() {
               </Button>
             </div>
 
-            {showTrails && <TrailGrid trails={MOCK_TRAILS} />}
-
-            {filteredItems.length > 0 && (
+            {filteredItems.length > 0 ? (
               <ContentGrid title="" items={filteredItems} initialCount={12} />
-            )}
-
-            {!showTrails && filteredItems.length === 0 && (
+            ) : (
               <div className="py-16 text-center">
                 <Body muted>Nenhum conteúdo encontrado para os filtros selecionados.</Body>
               </div>

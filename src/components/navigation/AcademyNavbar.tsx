@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Menu, Search, ChevronRight, ChevronLeft, LogOut, User } from 'lucide-react'
+import { Menu, ChevronRight, ChevronLeft, LogOut, User } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Sun, Moon } from 'lucide-react'
 import {
@@ -34,20 +34,6 @@ export interface AcademyNavbarProps {
   userAvatarUrl?: string
   /** Callback do botão hamburger (toggle sidebar). */
   onMenuToggle?: () => void
-  /**
-   * Callback disparado quando o usuário clica no botão de busca (trigger ⌘K).
-   *
-   * TODO: implementar SearchModal (spotlight)
-   * - Abrir um modal/overlay fullscreen ou centrado com input real
-   * - Suportar busca em tempo real por conteúdos e trilhas
-   * - Fechar com Escape ou clique fora
-   * - Atalho de teclado ⌘K (ou Ctrl+K) deve também disparar este callback
-   *
-   * Por ora, este callback não recebe query , apenas sinaliza a intenção de abrir.
-   * Quando o modal for implementado, a assinatura pode evoluir para
-   * `onSearchOpen?: () => void` e a query será gerenciada internamente no modal.
-   */
-  onSearch?: () => void
   /** Callback de logout. */
   onLogout?: () => void
 }
@@ -105,7 +91,6 @@ export function AcademyNavbar({
   userName = 'Usuário',
   userAvatarUrl,
   onMenuToggle,
-  onSearch,
   onLogout,
 }: AcademyNavbarProps) {
   const { toggleSidebar } = useSidebar()
@@ -210,34 +195,6 @@ export function AcademyNavbar({
 
         {/* ---- Right ---- */}
         <div className="flex items-stretch gap-0 shrink-0 self-stretch">
-          {/* Search trigger , desktop: full field, mobile: icon only */}
-          <div className="hidden md:flex items-center px-4 border-l border-sidebar-border">
-            <button
-              onClick={() => onSearch?.()}
-              className="flex items-center gap-2.5 h-8 w-52 px-3 bg-sidebar-accent/20 border border-sidebar-border/60 text-sidebar-foreground/40 hover:bg-sidebar-accent/40 hover:border-sidebar-border hover:text-sidebar-foreground/60 transition-all group"
-              aria-label="Buscar"
-            >
-              <Search size={13} className="shrink-0" />
-              <span className="flex-1 text-left font-sans text-[13px] truncate">
-                Buscar...
-              </span>
-              <span className="flex items-center gap-0.5 shrink-0">
-                <kbd className="font-mono text-[10px] leading-none px-1 py-0.5 bg-sidebar-foreground/10 border border-sidebar-border/60 text-sidebar-foreground/30 group-hover:text-sidebar-foreground/50 group-hover:border-sidebar-border transition-colors">
-                  ⌘K
-                </kbd>
-              </span>
-            </button>
-          </div>
-          <div className="flex md:hidden items-center px-3 border-l border-sidebar-border">
-            <button
-              onClick={() => onSearch?.()}
-              className="flex items-center justify-center w-8 h-8 text-sidebar-foreground/60 hover:text-sidebar-foreground transition-colors"
-              aria-label="Buscar"
-            >
-              <Search size={16} />
-            </button>
-          </div>
-
           {/* Theme toggle , desktop only (mobile: inside sidebar) */}
           <div className="hidden md:flex items-center px-4 border-l border-sidebar-border hover:bg-sidebar-accent transition-colors">
             <ThemeToggleButton />
