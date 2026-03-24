@@ -89,24 +89,28 @@ src/
 │       │   ├── LoginFlow.tsx           # Fluxo de autenticação multi-step
 │       │   ├── LoginScreen.tsx         # Tela de login estática (legado)
 │       │   └── steps/                  # 12 step components do fluxo (onboarding movido para Home)
+│       ├── components/
+│       │   └── AcademyHero.tsx         # Hero compartilhado (vídeo Mux + slides + dots de progresso)
 │       ├── home/
 │       │   ├── HomeScreen.tsx          # Home do Academy (hero + busca + filtros + conteúdos por tipo)
-│       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos)
+│       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos, slides de hero)
 │       │   └── components/
-│       │       ├── HeroContent.tsx         # Banner hero com conteúdo em destaque
 │       │       ├── ContentRow.tsx          # Row horizontal (Embla Carousel) com cards de conteúdo
 │       │       ├── ContentCard.tsx         # Card streaming-style (4:5, overlay, hover scale, badges)
 │       │       ├── ContentGrid.tsx         # Grid responsivo (2-6 cols) com "mostrar mais"
 │       │       ├── ContentTypeIcon.tsx     # Ícone por tipo de conteúdo
-│       │       ├── CertificationBanner.tsx # Banner de certificação com texture pattern
+│       │       ├── CertificationBanner.tsx # Banner fundo planton-forest com Textura_Forest.jpg e CTA
 │       │       ├── SearchBar.tsx           # Barra de busca centralizada
 │       │       ├── FilterChips.tsx         # Chips de filtro (tipo, tema, status)
 │       │       ├── TrailGrid.tsx           # Grid de cards de trilha
 │       │       ├── TrailCard.tsx           # Card de trilha (miniaturas, progress, metadata)
 │       │       ├── ContinueTrailsCard.tsx  # Lista de trilhas em andamento com progress bars
 │       │       └── OnboardingDialog.tsx    # Dialog de boas-vindas com vídeo (abre ao entrar na Home)
+│       ├── trails/
+│       │   ├── TrailsScreen.tsx        # Listagem de todas as trilhas (hero + grid 2 colunas)
+│       │   └── TrailCard.tsx           # Card de trilha para a tela de Trilhas
 │       ├── trail/
-│       │   └── TrailScreen.tsx         # Tela de trilha (lista de conteúdos)
+│       │   └── TrailScreen.tsx         # Tela de trilha (sidebar + player de conteúdo)
 │       └── content/
 │           └── ContentScreen.tsx       # Player de conteúdo (vídeo/podcast/artigo)
 │
@@ -278,11 +282,12 @@ Dados mockados em `mock-data.ts` , nenhuma API é chamada.
 
 #### CertificationBanner
 
-Banner com texture pattern (`Textura_cinza.jpg`), CTA "Ver trilhas" e indicador verde no hover.
+Banner com fundo `bg-planton-forest` e texture pattern (`Textura_Forest.jpg`), CTA "Ver trilhas" e indicador verde no hover.
 
+- Título em `text-planton-cream`, subtítulo em `text-planton-cream/80`, CTA em `text-planton-accent`
 - Conteúdo centralizado verticalmente (`justify-center`)
 - No grid com "Continue assistindo": preenche toda a célula com `-my-10` (vertical) e `-mr-6` (borda direita)
-- Texture: `absolute inset-0`, `opacity-[0.15]`
+- Texture: `absolute inset-0`, `opacity-[0.12]` repouso → `opacity-[0.18]` no hover
 - Indicador esquerdo: `w-[3px]`, animação `cubic-bezier(0.16, 1, 0.3, 1)`
 
 #### Busca e filtros
@@ -345,6 +350,50 @@ Cards com visual inspirado em plataformas de streaming (Netflix / Apple TV):
 
 ---
 
+### Hero compartilhado (`academy/components/AcademyHero`)
+
+Componente de hero reutilizado na Home e na tela de Trilhas. Recebe um array de `AcademyHeroSlide` e renderiza:
+
+- Vídeo de fundo em loop via HLS (Mux) com fallback para thumbnail
+- Gradiente `from-black/90 via-black/50` à esquerda + `from-black/70` no rodapé
+- Slide info: badge, eyebrow, título, meta (tipo + duração), descrição, pills temáticas, CTAs
+- Dots de progresso animados (linear timer) quando há mais de 1 slide
+- Transição entre slides: `opacity-0 translate-y-4` → `opacity-100 translate-y-0` (400ms)
+- Altura: `h-[75vh] min-h-[520px]`
+
+```tsx
+<AcademyHero slides={TRAILS_HERO_SLIDES} />
+```
+
+**AcademyHeroAction** — 3 variantes de CTA:
+- `style: 'accent'` → retângulo sólido `bg-planton-accent text-planton-dark`
+- `style: 'outline'` → borda `white/30`, hover `white`
+- `variant: 'link'` → link inline `text-planton-accent`
+
+---
+
+### Trilhas (`academy/trails/`)
+
+Tela de listagem de todas as trilhas disponíveis.
+
+Acesse: `http://localhost:3000/design-system/screens/academy/trilhas`
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  1. AcademyHero (slides das trilhas)                     │
+├──────────────────────────────────────────────────────────┤
+│  2. Container com borda                                   │
+│     ├─ Header: "Avance no seu ritmo até a certificação"  │
+│     └─ Grid 2 colunas × N linhas de TrailCards          │
+└──────────────────────────────────────────────────────────┘
+```
+
+- Grid com bordas internas: `border-b` entre linhas, `border-r` na coluna esquerda
+- Cada `TrailCard` linka para `/design-system/screens/academy/trail/[id]`
+- Dados dos slides: `TRAILS_HERO_SLIDES` em `mock-data.ts`
+
+---
+
 ### Trilha (`academy/trail/`)
 
 Tela de trilha com sidebar lateral (340px) e área de conteúdo.
@@ -357,7 +406,7 @@ Tela de trilha com sidebar lateral (340px) e área de conteúdo.
 
 Acesse: `http://localhost:3000/design-system/screens/academy/trail/[id]`
 
-IDs disponíveis nos mocks: `gestao-emissoes`, `fatores-emissao`, `relatorio-gee`
+IDs disponíveis nos mocks: `trail-1`, `trail-2`, `trail-3`, `trail-4`
 
 ---
 
@@ -535,7 +584,8 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system/screens` | Índice de telas |
 | `/design-system/screens/academy/login` | Fluxo de autenticação multi-step |
 | `/design-system/screens/academy/home` | Home do Academy (hero + trilhas + conteúdos) |
-| `/design-system/screens/academy/trail/[id]` | Tela de trilha com lista de conteúdos |
+| `/design-system/screens/academy/trilhas` | Listagem de trilhas (hero + grid 2 colunas) |
+| `/design-system/screens/academy/trail/[id]` | Tela de trilha com sidebar e player de conteúdo |
 | `/design-system/screens/academy/content/[id]` | Player de conteúdo (vídeo, podcast, artigo) |
 
 ---
