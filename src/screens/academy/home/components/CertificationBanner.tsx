@@ -23,8 +23,8 @@ export function CertificationBanner() {
         className="absolute left-0 top-0 z-10 w-[3px] h-0 bg-planton-accent transition-[height] ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:h-full"
       />
 
-      <div className="relative z-20 flex flex-1 flex-col justify-center gap-4 px-8 py-8 md:px-10 md:py-10">
-        <div className="flex flex-col items-start gap-2">
+      <div className="relative z-20 flex flex-1 flex-col justify-center gap-10 px-8 py-8 md:px-10 md:py-10">
+        <div className="flex flex-col items-start gap-6">
           <Heading
             as="h3"
             size="heading-lg"

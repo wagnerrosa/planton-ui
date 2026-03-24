@@ -23,10 +23,11 @@ const screens = [
   {
     product: 'Academy',
     items: [
-      { href: '/design-system/screens/academy/login',      label: 'Login',   description: 'Tela de autenticação' },
-      { href: '/design-system/screens/academy/home',       label: 'Home',    description: 'Listagem de trilhas e cursos' },
-      { href: '/design-system/screens/academy/trail/1',    label: 'Trilha',  description: 'Player de trilha com sidebar de conteúdos' },
-      { href: '/design-system/screens/academy/content/c1', label: 'Conteúdo', description: 'Tela individual de conteúdo' },
+      { href: '/design-system/screens/academy/login',           label: 'Login',   description: 'Tela de autenticação' },
+      { href: '/design-system/screens/academy/home',            label: 'Home',    description: 'Listagem de trilhas e cursos' },
+      { href: '/design-system/screens/academy/trilhas',         label: 'Trilhas', description: 'Listagem de trilhas disponíveis' },
+      { href: '/design-system/screens/academy/trail/trail-1',   label: 'Trilha',  description: 'Player de trilha com sidebar de conteúdos' },
+      { href: '/design-system/screens/academy/content/c1',      label: 'Conteúdo', description: 'Tela individual de conteúdo' },
     ],
   },
 ]
