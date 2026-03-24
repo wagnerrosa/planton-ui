@@ -4,9 +4,9 @@ import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
-import { HeroContent } from '../home/components/HeroContent'
+import { TrailsHero } from './TrailsHero'
 import { TrailCard } from './TrailCard'
-import { HERO_CONTENTS, MOCK_TRAILS } from '../home/mock-data'
+import { MOCK_TRAILS } from '../home/mock-data'
 
 export function TrailsScreen() {
   return (
@@ -19,7 +19,7 @@ export function TrailsScreen() {
       />
 
       {/* 1. Hero */}
-      <HeroContent contents={HERO_CONTENTS} />
+      <TrailsHero />
 
       {/* 2. Intro text */}
       <div className="max-w-[1920px] mx-auto px-6 pt-12 pb-2 flex flex-col gap-3">
@@ -29,7 +29,7 @@ export function TrailsScreen() {
       </div>
 
       {/* 3. Grid de trilhas — 2 colunas */}
-      <div className="max-w-[1920px] mx-auto px-6 pt-8 pb-16">
+      <div id="trilhas" className="max-w-[1920px] mx-auto px-6 pt-8 pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {MOCK_TRAILS.map((t) => (
             <TrailCard

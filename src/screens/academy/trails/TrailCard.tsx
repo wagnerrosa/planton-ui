@@ -42,6 +42,7 @@ function getThumb(item: ContentItem): string {
 export function TrailCard({ trail }: TrailCardProps) {
   const { title, description, contentsCount, duration, progress, href, contents } = trail
   const thumbs = contents?.slice(0, 5) ?? []
+  const [firstThumb, ...restThumbs] = thumbs
 
   // Build metadata line: "5 conteúdos • 1h51min • 40% concluído"
   const metaParts = [
@@ -55,7 +56,7 @@ export function TrailCard({ trail }: TrailCardProps) {
   return (
     <Link
       href={href}
-      className="group relative flex flex-col gap-6 border border-border p-8 bg-card hover:bg-secondary/20 hover:shadow-md hover:scale-[1.01] transition-all duration-300 cursor-pointer overflow-hidden"
+      className="group relative flex flex-col gap-7 border border-border p-10 bg-card hover:bg-secondary/20 transition-colors duration-200 cursor-pointer overflow-hidden"
     >
       {/* Indicator bar — mesmo padrão do Card.tsx */}
       <span
@@ -64,8 +65,8 @@ export function TrailCard({ trail }: TrailCardProps) {
       />
 
       {/* 1. Title + Description */}
-      <div className="flex flex-col gap-2 flex-1">
-        <h3 className="font-heading text-xl font-semibold leading-snug text-foreground line-clamp-2">
+      <div className="flex flex-col gap-3">
+        <h3 className="font-heading text-2xl font-semibold leading-snug text-foreground line-clamp-2">
           {title}
         </h3>
         {description && (
@@ -75,13 +76,33 @@ export function TrailCard({ trail }: TrailCardProps) {
         )}
       </div>
 
-      {/* 2. Miniaturas dos conteúdos */}
+      {/* 2. Miniaturas dos conteúdos — primeiro item maior */}
       {thumbs.length > 0 && (
-        <div className="flex gap-2">
-          {thumbs.map((item) => {
+        <div className="flex items-end gap-2">
+          {/* Primeiro thumb — maior, destaque */}
+          {firstThumb && (() => {
+            const Icon = typeIcon[firstThumb.type] ?? BookOpen
+            return (
+              <div key={firstThumb.id} className="relative w-20 h-20 rounded-sm overflow-hidden shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={getThumb(firstThumb)}
+                  alt=""
+                  className="w-full h-full object-cover brightness-75"
+                  draggable={false}
+                />
+                <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <Icon className="h-5 w-5 text-white/90" />
+                </span>
+              </div>
+            )
+          })()}
+
+          {/* Demais thumbs — menores */}
+          {restThumbs.map((item) => {
             const Icon = typeIcon[item.type] ?? BookOpen
             return (
-              <div key={item.id} className="relative w-12 h-12 rounded-sm overflow-hidden shrink-0">
+              <div key={item.id} className="relative w-16 h-16 rounded-sm overflow-hidden shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={getThumb(item)}
@@ -89,14 +110,15 @@ export function TrailCard({ trail }: TrailCardProps) {
                   className="w-full h-full object-cover brightness-75"
                   draggable={false}
                 />
-                <span className="absolute inset-0 flex items-center justify-center">
+                <span className="absolute inset-0 flex items-center justify-center bg-black/30">
                   <Icon className="h-4 w-4 text-white/90" />
                 </span>
               </div>
             )
           })}
+
           {contentsCount > thumbs.length && (
-            <div className="w-12 h-12 rounded-sm bg-secondary flex items-center justify-center shrink-0">
+            <div className="w-16 h-16 rounded-sm bg-secondary flex items-center justify-center shrink-0">
               <span className="font-mono text-[10px] text-planton-muted">+{contentsCount - thumbs.length}</span>
             </div>
           )}
@@ -110,7 +132,7 @@ export function TrailCard({ trail }: TrailCardProps) {
 
       {/* 4. Progress bar */}
       {progress !== undefined && progress > 0 && (
-        <div className="h-px w-full bg-planton-accent/15">
+        <div className="h-[2px] w-full bg-planton-accent/15">
           <div
             className="h-full bg-planton-accent transition-all duration-300"
             style={{ width: `${progress}%` }}
