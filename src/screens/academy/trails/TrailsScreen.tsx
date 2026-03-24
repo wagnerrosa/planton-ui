@@ -3,7 +3,6 @@
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Heading } from '@/components/primitives/Heading'
-import { Body } from '@/components/primitives/Body'
 import { TrailsHero } from './TrailsHero'
 import { TrailCard } from './TrailCard'
 import { MOCK_TRAILS } from '../home/mock-data'
@@ -41,6 +40,8 @@ export function TrailsScreen() {
                 contentsCount: t.totalItems,
                 duration: t.totalDuration,
                 progress: t.progress,
+                status: t.status,
+                accentColor: t.accentColor,
                 contents: t.contents,
                 href: `/design-system/screens/academy/trail/${t.id}`,
               }}

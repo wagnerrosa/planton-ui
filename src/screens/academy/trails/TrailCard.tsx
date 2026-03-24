@@ -1,6 +1,8 @@
 import Link from 'next/link'
-import { ArrowRight, PlayCircle, Headphones, FileText, BookOpen } from 'lucide-react'
+import { ArrowRight, PlayCircle, Headphones, FileText, BookOpen, Award } from 'lucide-react'
 import type { ContentItem } from '../home/mock-data'
+
+type TrailStatus = 'nao-iniciada' | 'em-andamento' | 'concluida' | 'em-breve'
 
 type Trail = {
   id: string
@@ -9,7 +11,8 @@ type Trail = {
   contentsCount: number
   duration: string
   progress?: number
-  category?: string
+  status?: TrailStatus
+  accentColor?: string
   href: string
   contents?: ContentItem[]
 }
@@ -33,6 +36,13 @@ const fallbackImages: Record<string, string[]> = {
   trilha: ['/assets/PANTANAL-BG.jpg'],
 }
 
+const statusLabel: Record<TrailStatus, string> = {
+  'nao-iniciada': 'Não iniciada',
+  'em-andamento': 'Em andamento',
+  'concluida': 'Concluída',
+  'em-breve': 'Em breve',
+}
+
 function getThumb(item: ContentItem): string {
   if (item.type === 'video' && item.thumbnailUrl) return item.thumbnailUrl
   const list = fallbackImages[item.type] ?? fallbackImages.artigo
@@ -40,111 +50,110 @@ function getThumb(item: ContentItem): string {
 }
 
 export function TrailCard({ trail }: TrailCardProps) {
-  const { title, description, contentsCount, duration, progress, href, contents } = trail
+  const { title, description, contentsCount, duration, progress, status, accentColor, href, contents } = trail
   const thumbs = contents?.slice(0, 5) ?? []
-  const [firstThumb, ...restThumbs] = thumbs
-
-  // Build metadata line: "5 conteúdos • 1h51min • 40% concluído"
-  const metaParts = [
-    `${contentsCount} conteúdo${contentsCount !== 1 ? 's' : ''}`,
-    duration,
-  ]
-  if (progress !== undefined && progress > 0) {
-    metaParts.push(`${progress}% concluído`)
-  }
+  const accent = accentColor ?? 'var(--color-planton-accent)'
+  const isConcluida = status === 'concluida'
 
   return (
     <Link
       href={href}
-      className="group relative flex flex-col gap-7 border border-border p-10 bg-card hover:bg-secondary/20 transition-colors duration-200 cursor-pointer overflow-hidden"
+      className="group relative flex flex-col bg-card border border-border overflow-hidden hover:border-border/80 transition-colors duration-200 cursor-pointer"
     >
-      {/* Indicator bar — mesmo padrão do Card.tsx */}
-      <span
-        aria-hidden
-        className="absolute left-0 top-0 w-[3px] h-0 bg-planton-accent transition-[height] ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:h-full"
-      />
+      {/* Faixa de cor superior — identidade da trilha */}
+      <div className="h-1 w-full" style={{ backgroundColor: accent }} />
 
-      {/* 1. Title + Description */}
-      <div className="flex flex-col gap-3">
-        <h3 className="font-heading text-2xl font-semibold leading-snug text-foreground line-clamp-2">
-          {title}
-        </h3>
-        {description && (
-          <p className="font-sans text-sm leading-relaxed text-planton-muted line-clamp-3">
-            {description}
-          </p>
-        )}
-      </div>
+      {/* Corpo do card */}
+      <div className="flex flex-col gap-6 p-8">
 
-      {/* 2. Miniaturas dos conteúdos — primeiro item maior */}
-      {thumbs.length > 0 && (
-        <div className="flex items-end gap-2">
-          {/* Primeiro thumb — maior, destaque */}
-          {firstThumb && (() => {
-            const Icon = typeIcon[firstThumb.type] ?? BookOpen
-            return (
-              <div key={firstThumb.id} className="relative w-20 h-20 rounded-sm overflow-hidden shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={getThumb(firstThumb)}
-                  alt=""
-                  className="w-full h-full object-cover brightness-75"
-                  draggable={false}
-                />
-                <span className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <Icon className="h-5 w-5 text-white/90" />
-                </span>
-              </div>
-            )
-          })()}
+        {/* 1. Meta topo: status + duração */}
+        <div className="flex items-center justify-between">
+          {status && (
+            <span
+              className="inline-flex items-center gap-1.5 font-mono text-[0.625rem] uppercase tracking-[0.12em]"
+              style={{ color: isConcluida ? accent : 'var(--color-planton-muted)' }}
+            >
+              {isConcluida && <Award className="h-3 w-3" />}
+              {statusLabel[status]}
+            </span>
+          )}
+          <span className="font-mono text-[0.625rem] text-planton-muted ml-auto">
+            {duration}
+          </span>
+        </div>
 
-          {/* Demais thumbs — menores */}
-          {restThumbs.map((item) => {
-            const Icon = typeIcon[item.type] ?? BookOpen
-            return (
-              <div key={item.id} className="relative w-16 h-16 rounded-sm overflow-hidden shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={getThumb(item)}
-                  alt=""
-                  className="w-full h-full object-cover brightness-75"
-                  draggable={false}
-                />
-                <span className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <Icon className="h-4 w-4 text-white/90" />
-                </span>
-              </div>
-            )
-          })}
-
-          {contentsCount > thumbs.length && (
-            <div className="w-16 h-16 rounded-sm bg-secondary flex items-center justify-center shrink-0">
-              <span className="font-mono text-[10px] text-planton-muted">+{contentsCount - thumbs.length}</span>
-            </div>
+        {/* 2. Título + descrição */}
+        <div className="flex flex-col gap-2">
+          <h3 className="font-heading text-2xl font-semibold leading-snug text-foreground line-clamp-2">
+            {title}
+          </h3>
+          {description && (
+            <p className="font-sans text-sm leading-relaxed text-planton-muted line-clamp-2">
+              {description}
+            </p>
           )}
         </div>
-      )}
 
-      {/* 3. Metadata */}
-      <p className="font-mono text-xs text-planton-muted">
-        {metaParts.join('  •  ')}
-      </p>
+        {/* Divisor */}
+        <div className="h-px w-full bg-border" />
 
-      {/* 4. Progress bar */}
-      {progress !== undefined && progress > 0 && (
-        <div className="h-[2px] w-full bg-planton-accent/15">
-          <div
-            className="h-full bg-planton-accent transition-all duration-300"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      )}
+        {/* 3. Thumbs — proporção 16/9 */}
+        {thumbs.length > 0 && (
+          <div className="flex gap-2 items-center">
+            {thumbs.map((item) => {
+              const Icon = typeIcon[item.type] ?? BookOpen
+              return (
+                <div
+                  key={item.id}
+                  className="relative overflow-hidden rounded-sm shrink-0"
+                  style={{ width: 80, height: 45 }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={getThumb(item)}
+                    alt=""
+                    className="w-full h-full object-cover brightness-75"
+                    draggable={false}
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                    <Icon className="h-3.5 w-3.5 text-white/85" />
+                  </span>
+                </div>
+              )
+            })}
+            {contentsCount > thumbs.length && (
+              <span className="font-mono text-[10px] text-planton-muted pl-1">
+                +{contentsCount - thumbs.length}
+              </span>
+            )}
+          </div>
+        )}
 
-      {/* 5. CTA */}
-      <span className="inline-flex items-center gap-1 font-mono text-xs text-planton-accent group-hover:gap-2 transition-all duration-150">
-        Ver trilha
-        <ArrowRight className="h-3 w-3" />
-      </span>
+        {/* 4. Progress bar */}
+        {progress !== undefined && progress > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <div className="h-[3px] w-full bg-border rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-300"
+                style={{ width: `${progress}%`, backgroundColor: accent }}
+              />
+            </div>
+            <span className="font-mono text-[0.625rem] text-planton-muted">
+              {progress}% concluído  •  {contentsCount} conteúdo{contentsCount !== 1 ? 's' : ''}
+            </span>
+          </div>
+        )}
+
+        {/* 5. CTA */}
+        <span
+          className="inline-flex items-center gap-1.5 font-mono text-xs font-medium group-hover:gap-3 transition-all duration-150"
+          style={{ color: accent }}
+        >
+          Ver trilha
+          <ArrowRight className="h-3.5 w-3.5" />
+        </span>
+
+      </div>
     </Link>
   )
 }
