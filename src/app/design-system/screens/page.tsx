@@ -23,11 +23,22 @@ const screens = [
   {
     product: 'Academy',
     items: [
-      { href: '/design-system/screens/academy/login',           label: 'Login',   description: 'Tela de autenticação' },
-      { href: '/design-system/screens/academy/home',            label: 'Home',    description: 'Listagem de trilhas e cursos' },
-      { href: '/design-system/screens/academy/trilhas',         label: 'Trilhas', description: 'Listagem de trilhas disponíveis' },
-      { href: '/design-system/screens/academy/trail/trail-1',   label: 'Trilha',  description: 'Player de trilha com sidebar de conteúdos' },
+      { href: '/design-system/screens/academy/login',           label: 'Login',    description: 'Tela de autenticação' },
+      { href: '/design-system/screens/academy/home',            label: 'Home',     description: 'Listagem de trilhas e cursos' },
+      { href: '/design-system/screens/academy/trilhas',         label: 'Trilhas',  description: 'Listagem de trilhas disponíveis' },
+      { href: '/design-system/screens/academy/trail/trail-1',   label: 'Trilha',   description: 'Player de trilha com sidebar de conteúdos' },
       { href: '/design-system/screens/academy/content/c1',      label: 'Conteúdo', description: 'Tela individual de conteúdo' },
+    ],
+  },
+  {
+    product: 'Super Admin',
+    items: [
+      { href: '/design-system/screens/academy/admin',             label: 'Dashboard',  description: 'KPIs globais e resumo da plataforma' },
+      { href: '/design-system/screens/academy/admin/clients',     label: 'Clientes',   description: 'Gestão de empresas e membros' },
+      { href: '/design-system/screens/academy/admin/clients/c1',  label: 'Detalhe do Cliente', description: 'Membros, domínios e KPIs do cliente' },
+      { href: '/design-system/screens/academy/admin/vouchers',    label: 'Vouchers',   description: 'Gestão de vouchers de ativação' },
+      { href: '/design-system/screens/academy/admin/content',     label: 'Conteúdo',   description: 'Catálogo de conteúdos' },
+      { href: '/design-system/screens/academy/admin/trails',      label: 'Trilhas',    description: 'CRUD de trilhas com criação em etapas' },
     ],
   },
 ]

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, ChevronDown, LogOut, User } from 'lucide-react'
+import { Home, BookOpen, ChevronDown, LogOut, User, Shield } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
 import { useAcademyNavbar } from './AcademyNavbarContext'
 import { ThemeToggleButton, UserAvatar } from './AcademyNavbar'
@@ -21,7 +21,17 @@ function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname()
   const trails = MOCK_TRAILS.filter((t) => t.status !== 'em-breve')
   const isTrailsActive = pathname.startsWith(`${BASE}/trail`) || pathname === `${BASE}/trilhas`
+  const isAdminActive = pathname.startsWith(`${BASE}/admin`)
   const [trailsOpen, setTrailsOpen] = useState(isTrailsActive)
+  const [adminOpen, setAdminOpen] = useState(isAdminActive)
+
+  const adminItems = [
+    { href: `${BASE}/admin`, label: 'Dashboard', exact: true },
+    { href: `${BASE}/admin/clients`, label: 'Clientes', exact: false },
+    { href: `${BASE}/admin/vouchers`, label: 'Vouchers', exact: true },
+    { href: `${BASE}/admin/content`, label: 'Conteúdo', exact: true },
+    { href: `${BASE}/admin/trails`, label: 'Trilhas', exact: true },
+  ]
 
   return (
     <nav className="px-3 py-4 flex flex-col gap-1">
@@ -75,6 +85,50 @@ function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
                 {trail.title}
               </Link>
             ))}
+          </div>
+        )}
+      </div>
+
+      {/* Admin section */}
+      <div className="-mx-3 my-3 border-t border-sidebar-border" />
+
+      <div>
+        <button
+          type="button"
+          onClick={() => setAdminOpen((v) => !v)}
+          className={`w-full flex items-center gap-2.5 px-2 py-2 text-sm font-sans transition-colors ${
+            isAdminActive
+              ? 'bg-sidebar-accent text-planton-accent'
+              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+          }`}
+        >
+          <Shield size={15} />
+          <span className="flex-1 text-left">Admin</span>
+          <ChevronDown
+            size={13}
+            className={`transition-transform ${adminOpen ? 'rotate-180' : ''}`}
+          />
+        </button>
+
+        {adminOpen && (
+          <div className="flex flex-col mt-0.5">
+            {adminItems.map(({ href, label, exact }) => {
+              const isActive = exact ? pathname === href : pathname.startsWith(href)
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={onLinkClick}
+                  className={`pl-9 pr-2 py-1.5 text-[13px] font-sans transition-colors ${
+                    isActive
+                      ? 'text-planton-accent'
+                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  }`}
+                >
+                  {label}
+                </Link>
+              )
+            })}
           </div>
         )}
       </div>
