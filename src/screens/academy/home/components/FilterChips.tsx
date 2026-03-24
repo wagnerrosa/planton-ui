@@ -55,8 +55,8 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
   }
 
   return (
-    <div className="flex items-start gap-4 w-full max-w-5xl flex-wrap">
-      <FilterRow label="Tipo">
+    <div className="flex items-start gap-4 w-full max-w-6xl flex-wrap lg:flex-nowrap">
+      <FilterRow label="Tipo" className="shrink-0">
         {TYPE_OPTIONS.map((opt) => (
           <Chip
             key={opt.value}
@@ -69,7 +69,11 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
 
       <span className="w-px bg-border self-stretch" />
 
-      <FilterRow label="Tema" className="flex-1 min-w-[200px]">
+      <FilterRow
+        label="Tema"
+        className="w-full lg:w-fit min-w-[200px] md:min-w-[420px] lg:min-w-0"
+        chipsClassName="lg:flex-nowrap"
+      >
         {TAG_OPTIONS.map((opt) => (
           <Chip
             key={opt.value}
@@ -82,7 +86,7 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
 
       <span className="w-px bg-border self-stretch" />
 
-      <FilterRow label="Status">
+      <FilterRow label="Status" className="shrink-0">
         {STATUS_OPTIONS.map((opt) => (
           <Chip
             key={opt.value}
@@ -96,13 +100,23 @@ export function FilterChips({ filters, onChange }: FilterChipsProps) {
   )
 }
 
-function FilterRow({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
+function FilterRow({
+  label,
+  children,
+  className,
+  chipsClassName,
+}: {
+  label: string
+  children: React.ReactNode
+  className?: string
+  chipsClassName?: string
+}) {
   return (
     <div className={`flex flex-col gap-2 ${className ?? ''}`}>
       <span className="font-mono text-[10px] uppercase tracking-widest text-planton-muted">
         {label}
       </span>
-      <div className="flex flex-wrap gap-1.5">
+      <div className={`flex flex-wrap gap-1.5 ${chipsClassName ?? ''}`}>
         {children}
       </div>
     </div>

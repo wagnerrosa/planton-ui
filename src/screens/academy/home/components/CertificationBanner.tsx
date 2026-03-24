@@ -25,17 +25,17 @@ export function CertificationBanner() {
 
       <div className="relative z-20 flex flex-1 flex-col justify-center gap-4 px-8 py-8 md:px-10 md:py-10">
         <div className="flex flex-col items-start gap-2">
-          <Heading as="h3" size="heading-lg" className="max-w-[32ch] text-planton-cream">
+          <Heading as="h3" size="heading-lg" className="text-white">
             Faça cursos e conquiste seu certificado
           </Heading>
 
-          <Body size="base" muted className="max-w-[42ch] text-planton-cream/80">
+          <Body size="base" muted className="max-w-[42ch] text-white/80">
             Cursos estruturados para evoluir do básico ao avançado
           </Body>
         </div>
 
         <div className="flex flex-col items-start">
-          <span className="inline-flex items-center gap-2 font-sans text-base font-normal text-planton-accent transition-all duration-150 group-hover:gap-3">
+          <span className="inline-flex items-center gap-2 font-sans text-base font-normal text-white transition-all duration-150 group-hover:gap-3">
             Ver trilhas →
           </span>
         </div>

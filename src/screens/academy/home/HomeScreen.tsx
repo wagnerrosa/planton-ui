@@ -95,16 +95,6 @@ export function HomeScreen() {
       <HeroContent contents={HERO_CONTENTS} />
 
       <div className="relative">
-        {hasContinueWatching && (
-          <div className="pointer-events-none absolute inset-y-0 hidden lg:block w-full" aria-hidden>
-            <div className="max-w-[1920px] mx-auto h-full px-6">
-              <div className="relative h-full">
-                <span className="absolute top-0 bottom-0 left-[66.6667%] w-px -translate-x-1/2 bg-border" />
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* 2. Continue assistindo + Banner de certificação */}
         <div className="max-w-[1920px] mx-auto px-6 py-10 flex flex-col gap-12">
           {hasContinueWatching && (
@@ -117,7 +107,7 @@ export function HomeScreen() {
                   showTrail
                 />
               </div>
-              <div className="pt-8 lg:pt-0 lg:pl-8 lg:-my-10 lg:-mr-6 flex flex-col">
+              <div className="pt-8 lg:pt-0 lg:pl-8 lg:-my-10 lg:-mr-6 flex flex-col lg:border-l lg:border-border">
                 <CertificationBanner />
               </div>
             </div>
