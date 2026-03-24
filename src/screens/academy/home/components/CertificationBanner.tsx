@@ -10,11 +10,11 @@ export function CertificationBanner() {
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 opacity-[0.12] transition-opacity duration-300 group-hover:opacity-[0.18]"
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.32] transition-opacity duration-300 group-hover:opacity-[0.88]"
         style={{
           backgroundImage: "url('/patterns/Textura_Forest.jpg')",
           backgroundRepeat: 'repeat',
-          backgroundSize: '180px 180px',
+          backgroundSize: '320px 320px',
         }}
       />
 
