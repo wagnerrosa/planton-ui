@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock, ArrowUp, ArrowDown, X, Search, Route, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock, ArrowUp, ArrowDown, X, Search, Route } from 'lucide-react'
 import { toast } from 'sonner'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -9,7 +9,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Badge } from '@/components/shadcn/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
 import { Switch } from '@/components/shadcn/switch'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
@@ -274,31 +274,13 @@ export function TrailManagementScreen() {
                   )}
                 </TableBody>
               </Table>
-              {/* Pagination */}
-              {filtered.length > PER_PAGE && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-                  <Body muted className="text-sm">
-                    {filtered.length} trilha{filtered.length !== 1 ? 's' : ''}
-                  </Body>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronLeft size={16} />
-                    </Button>
-                    <Body muted className="text-sm font-mono">{page} / {totalPages}</Body>
-                    <Button
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={page === totalPages}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronRight size={16} />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              <TablePagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                itemLabel={`trilha${filtered.length !== 1 ? 's' : ''}`}
+                onPageChange={setPage}
+              />
             </div>
           </div>
         </div>

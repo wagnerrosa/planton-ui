@@ -1,4 +1,5 @@
 import * as React from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -105,6 +106,59 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = "TableCaption"
 
+// ---------------------------------------------------------------------------
+// TablePagination — componente global de paginação para tabelas
+// ---------------------------------------------------------------------------
+
+type TablePaginationProps = {
+  page: number
+  totalPages: number
+  totalItems: number
+  itemLabel: string
+  onPageChange: (page: number) => void
+  className?: string
+}
+
+function TablePagination({
+  page,
+  totalPages,
+  totalItems,
+  itemLabel,
+  onPageChange,
+  className,
+}: TablePaginationProps) {
+  if (totalPages <= 1) return null
+
+  return (
+    <div className={cn("flex items-center justify-between px-4 py-3 border-t border-border", className)}>
+      <span className="text-sm text-muted-foreground">
+        {totalItems} {itemLabel}
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.max(1, page - 1))}
+          disabled={page === 1}
+          className="inline-flex items-center justify-center h-8 w-8 border border-border text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <span className="text-sm font-mono text-muted-foreground">
+          {page} / {totalPages}
+        </span>
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+          disabled={page === totalPages}
+          className="inline-flex items-center justify-center h-8 w-8 border border-border text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export {
   Table,
   TableHeader,
@@ -114,4 +168,5 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TablePagination,
 }

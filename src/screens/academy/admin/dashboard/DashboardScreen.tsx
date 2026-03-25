@@ -2,15 +2,14 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, ArrowRight, Building2, Award, Clock, Users, BookCheck, HelpCircle, Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { AlertTriangle, ArrowRight, Building2, Award, Clock, Users, BookCheck, HelpCircle, Search } from 'lucide-react'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
-import { Button } from '@/components/primitives/Button'
 import { Alert, AlertBody, AlertDescription } from '@/components/shadcn/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
 import { Badge } from '@/components/shadcn/badge'
 import { Input } from '@/components/shadcn/input'
 import { Skeleton } from '@/components/shadcn/skeleton'
@@ -146,15 +145,13 @@ export function DashboardScreen() {
             </div>
           </div>
 
-          {/* Expiring Plans Alert */}
+          {/* Expiring Plans */}
           {EXPIRING_PLANS.length > 0 && (
             <div className="max-w-[1920px] mx-auto px-6 pb-10">
               <div className="border border-border">
-                <div className="px-10 pt-10 pb-6 border-b border-border">
+                <div className="px-6 pt-6 pb-4 border-b border-border flex items-center justify-between gap-4">
                   <Heading as="h2" size="heading-md">Planos próximos do vencimento</Heading>
-                </div>
-                <div className="p-6">
-                  <Alert variant="warning">
+                  <Alert variant="warning" className="w-fit">
                     <AlertTriangle size={16} />
                     <AlertBody>
                       <AlertDescription>
@@ -162,40 +159,40 @@ export function DashboardScreen() {
                       </AlertDescription>
                     </AlertBody>
                   </Alert>
-                  <Table className="mt-4">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Empresa</TableHead>
-                        <TableHead>Plano</TableHead>
-                        <TableHead>Vencimento</TableHead>
-                        <TableHead>Dias restantes</TableHead>
-                        <TableHead className="text-right">Ação</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {EXPIRING_PLANS.map((client) => (
-                        <TableRow key={client.id}>
-                          <TableCell className="font-medium">{client.name}</TableCell>
-                          <TableCell>{client.plan.name}</TableCell>
-                          <TableCell className="font-mono text-sm">{client.plan.expiration}</TableCell>
-                          <TableCell>
-                            <Badge variant={client.plan.daysRemaining <= 10 ? 'destructive' : 'warning'}>
-                              {client.plan.daysRemaining} dias
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Link
-                              href={`${BASE}/admin/clients/${client.id}`}
-                              className="text-sm text-planton-accent hover:underline"
-                            >
-                              Ver cliente
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
                 </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Empresa</TableHead>
+                      <TableHead>Plano</TableHead>
+                      <TableHead>Vencimento</TableHead>
+                      <TableHead>Dias restantes</TableHead>
+                      <TableHead className="text-right">Ação</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {EXPIRING_PLANS.map((client) => (
+                      <TableRow key={client.id}>
+                        <TableCell className="font-medium">{client.name}</TableCell>
+                        <TableCell>{client.plan.name}</TableCell>
+                        <TableCell className="font-mono text-sm">{client.plan.expiration}</TableCell>
+                        <TableCell>
+                          <Badge variant={client.plan.daysRemaining <= 10 ? 'destructive' : 'warning'}>
+                            {client.plan.daysRemaining} dias
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Link
+                            href={`${BASE}/admin/clients/${client.id}`}
+                            className="text-sm text-planton-accent hover:underline"
+                          >
+                            Ver cliente
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
             </div>
           )}
@@ -203,7 +200,7 @@ export function DashboardScreen() {
           {/* Top Content */}
           <div className="max-w-[1920px] mx-auto px-6 pb-10">
             <div className="border border-border">
-              <div className="px-10 pt-10 pb-6 border-b border-border">
+              <div className="px-6 pt-6 pb-4 border-b border-border">
                 <Heading as="h2" size="heading-md">Top conteúdos mais assistidos</Heading>
               </div>
               <Table>
@@ -248,7 +245,7 @@ export function DashboardScreen() {
           {/* Company Summary (Drill-down) */}
           <div className="max-w-[1920px] mx-auto px-6 pb-10">
             <div className="border border-border">
-              <div className="px-10 pt-10 pb-6 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="px-6 pt-6 pb-4 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <Heading as="h2" size="heading-md">Resumo por empresa</Heading>
                 <div className="relative w-full sm:w-[260px]">
                   <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-planton-muted" />
@@ -307,31 +304,13 @@ export function DashboardScreen() {
                   )}
                 </TableBody>
               </Table>
-              {/* Pagination */}
-              {filteredSummary.length > SUMMARY_PER_PAGE && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-                  <Body muted className="text-sm">
-                    {filteredSummary.length} empresa{filteredSummary.length !== 1 ? 's' : ''}
-                  </Body>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => setSummaryPage((p) => Math.max(1, p - 1))}
-                      disabled={summaryPage === 1}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronLeft size={16} />
-                    </Button>
-                    <Body muted className="text-sm font-mono">{summaryPage} / {summaryTotalPages}</Body>
-                    <Button
-                      onClick={() => setSummaryPage((p) => Math.min(summaryTotalPages, p + 1))}
-                      disabled={summaryPage === summaryTotalPages}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronRight size={16} />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              <TablePagination
+                page={summaryPage}
+                totalPages={summaryTotalPages}
+                totalItems={filteredSummary.length}
+                itemLabel={`empresa${filteredSummary.length !== 1 ? 's' : ''}`}
+                onPageChange={setSummaryPage}
+              />
             </div>
           </div>
         </div>

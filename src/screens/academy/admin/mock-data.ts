@@ -2,7 +2,7 @@
 // Types
 // ---------------------------------------------------------------------------
 
-export type ClientStatus = 'ativo' | 'suspenso'
+export type ClientStatus = 'ativo' | 'suspenso' | 'sem-voucher' | 'inativo' | 'expirado'
 export type VoucherStatus = 'ativo' | 'usado' | 'expirado' | 'revogado'
 export type ContentType = 'video' | 'artigo' | 'podcast' | 'guia'
 export type ContentScope = 'global' | 'exclusivo'
@@ -161,7 +161,7 @@ export const CLIENTS: Client[] = [
     name: 'EcoPlantAR',
     cnpj: '34.567.890/0001-12',
     domains: ['ecoplantar.com.br'],
-    status: 'suspenso',
+    status: 'expirado',
     totalUsers: 56,
     totalHours: 134,
     totalCertificates: 12,
@@ -241,6 +241,51 @@ export const CLIENTS: Client[] = [
     plan: { name: 'Enterprise', expiration: '2026-11-15', daysRemaining: 236 },
     members: [
       { id: 'm19', name: 'Isabela Santos', email: 'isabela@mataatlantica.com.br', role: 'gestor-master' },
+    ],
+  },
+  {
+    id: 'c9',
+    name: 'Agro Norte Sementes',
+    cnpj: '90.123.456/0001-78',
+    domains: ['agronorte.com.br'],
+    status: 'sem-voucher',
+    totalUsers: 0,
+    totalHours: 0,
+    totalCertificates: 0,
+    trailsCompleted: 0,
+    plan: { name: '—', expiration: '—', daysRemaining: 0 },
+    members: [
+      { id: 'm20', name: 'Marcos Tavares', email: 'marcos@agronorte.com.br', role: 'gestor-master' },
+    ],
+  },
+  {
+    id: 'c10',
+    name: 'Fazendas Reunidas do Sul',
+    cnpj: '01.234.567/0001-89',
+    domains: ['fazendassul.com.br'],
+    status: 'inativo',
+    totalUsers: 23,
+    totalHours: 45,
+    totalCertificates: 5,
+    trailsCompleted: 8,
+    plan: { name: 'Starter', expiration: '2025-12-31', daysRemaining: 0 },
+    members: [
+      { id: 'm21', name: 'Letícia Moura', email: 'leticia@fazendassul.com.br', role: 'gestor-master' },
+    ],
+  },
+  {
+    id: 'c11',
+    name: 'Cerealista Planalto',
+    cnpj: '11.222.333/0001-44',
+    domains: ['cerealplanalto.com.br'],
+    status: 'suspenso',
+    totalUsers: 75,
+    totalHours: 189,
+    totalCertificates: 22,
+    trailsCompleted: 34,
+    plan: { name: 'Professional', expiration: '2026-06-30', daysRemaining: 98 },
+    members: [
+      { id: 'm22', name: 'André Fonseca', email: 'andre@cerealplanalto.com.br', role: 'gestor-master' },
     ],
   },
 ]

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { Users, Clock, Award, BookCheck, Plus, Pause, Play, Pencil } from 'lucide-react'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
@@ -10,7 +10,7 @@ import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Badge } from '@/components/shadcn/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/shadcn/tabs'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/shadcn/dialog'
 import { Input } from '@/components/shadcn/input'
@@ -21,10 +21,13 @@ import { CLIENTS, type Client, type MemberRole } from '../mock-data'
 
 const BASE = '/design-system/screens/academy'
 
+const MEMBERS_PER_PAGE = 5
+
 export function ClientDetailScreen({ clientId }: { clientId: string }) {
   const [loading, setLoading] = useState(true)
   const [addMemberOpen, setAddMemberOpen] = useState(false)
   const [addDomainOpen, setAddDomainOpen] = useState(false)
+  const [membersPage, setMembersPage] = useState(1)
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 600)
@@ -44,7 +47,18 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
     )
   }
 
-  const statusBadgeVariant = client.status === 'ativo' ? 'success' : 'destructive'
+  const STATUS_BADGE_VARIANT: Record<string, 'success' | 'destructive' | 'warning' | 'outline'> = {
+    ativo: 'success',
+    suspenso: 'destructive',
+    'sem-voucher': 'outline',
+    inativo: 'outline',
+    expirado: 'warning',
+  }
+  const STATUS_BADGE_CLASS: Record<string, string> = {
+    inativo: 'text-muted-foreground',
+  }
+  const statusBadgeVariant = STATUS_BADGE_VARIANT[client.status] ?? 'outline'
+  const statusBadgeClass = STATUS_BADGE_CLASS[client.status] ?? ''
 
   const kpis = [
     { label: 'Usuários', value: String(client.totalUsers), change: '+12', period: 'últimos 30 dias', trend: 'up' as const, icon: <Users size={16} /> },
@@ -52,6 +66,12 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
     { label: 'Certificados', value: String(client.totalCertificates), change: '+5', period: 'últimos 30 dias', trend: 'up' as const, icon: <Award size={16} /> },
     { label: 'Trilhas concluídas', value: String(client.trailsCompleted), change: '+18', period: 'últimos 30 dias', trend: 'up' as const, icon: <BookCheck size={16} /> },
   ]
+
+  const membersTotalPages = Math.max(1, Math.ceil(client.members.length / MEMBERS_PER_PAGE))
+  const paginatedMembers = useMemo(
+    () => client.members.slice((membersPage - 1) * MEMBERS_PER_PAGE, membersPage * MEMBERS_PER_PAGE),
+    [client.members, membersPage]
+  )
 
   return (
     <>
@@ -69,7 +89,7 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <Heading as="h1" size="heading-xl">{client.name}</Heading>
-                  <Badge variant={statusBadgeVariant}>{client.status}</Badge>
+                  <Badge variant={statusBadgeVariant} className={statusBadgeClass}>{client.status}</Badge>
                 </div>
                 <div className="flex flex-col gap-1">
                   <Body muted className="font-mono text-sm">{client.cnpj}</Body>
@@ -77,7 +97,7 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
                     Domínios: {client.domains.join(', ')}
                   </Body>
                   <Body muted className="text-sm">
-                    Plano: {client.plan.name} — vence em {client.plan.expiration}
+                    Vencimento: {client.plan.expiration}
                     {client.plan.daysRemaining <= 30 && client.plan.daysRemaining > 0 && (
                       <Badge variant="warning" className="ml-2">{client.plan.daysRemaining} dias</Badge>
                     )}
@@ -164,7 +184,7 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
                           </TableCell>
                         </TableRow>
                       ) : (
-                        client.members.map((member) => (
+                        paginatedMembers.map((member) => (
                           <TableRow key={member.id}>
                             <TableCell className="font-medium">{member.name}</TableCell>
                             <TableCell className="text-sm">{member.email}</TableCell>
@@ -184,6 +204,13 @@ export function ClientDetailScreen({ clientId }: { clientId: string }) {
                       )}
                     </TableBody>
                   </Table>
+                  <TablePagination
+                    page={membersPage}
+                    totalPages={membersTotalPages}
+                    totalItems={client.members.length}
+                    itemLabel={`membro${client.members.length !== 1 ? 's' : ''}`}
+                    onPageChange={setMembersPage}
+                  />
                 </TabsContent>
 
                 <TabsContent value="domains" className="mt-0">

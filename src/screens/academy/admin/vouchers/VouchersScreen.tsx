@@ -9,7 +9,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Badge } from '@/components/shadcn/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/shadcn/dialog'
@@ -27,9 +27,19 @@ const STATUS_BADGE: Record<VoucherStatus, 'success' | 'default' | 'warning' | 'd
   revogado: 'destructive',
 }
 
+const STATUS_LABELS: Record<VoucherStatus, string> = {
+  ativo: 'Ativo',
+  usado: 'Usado',
+  expirado: 'Expirado',
+  revogado: 'Revogado',
+}
+
+const PER_PAGE = 10
+
 export function VouchersScreen() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [clientFilter, setClientFilter] = useState('all')
+  const [page, setPage] = useState(1)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loading, setLoading] = useState(true)
 
@@ -44,6 +54,11 @@ export function VouchersScreen() {
     if (clientFilter !== 'all') items = items.filter((v) => v.clientId === clientFilter)
     return items
   }, [statusFilter, clientFilter])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
+  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
+  useEffect(() => { setPage(1) }, [statusFilter, clientFilter])
 
   return (
     <>
@@ -120,7 +135,7 @@ export function VouchersScreen() {
                         <TableCell><Skeleton className="h-4 w-4" /></TableCell>
                       </TableRow>
                     ))
-                  ) : filtered.length === 0 ? (
+                  ) : paginated.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-16">
                         <div className="flex flex-col items-center gap-3">
@@ -134,13 +149,13 @@ export function VouchersScreen() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filtered.map((voucher) => (
+                    paginated.map((voucher) => (
                       <TableRow key={voucher.id}>
                         <TableCell className="font-mono text-sm font-medium">{voucher.code}</TableCell>
                         <TableCell>{voucher.clientName}</TableCell>
                         <TableCell>
                           <Badge variant={STATUS_BADGE[voucher.status]}>
-                            {voucher.status}
+                            {STATUS_LABELS[voucher.status]}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-mono text-sm">{voucher.activationDeadline}</TableCell>
@@ -172,6 +187,13 @@ export function VouchersScreen() {
                   )}
                 </TableBody>
               </Table>
+              <TablePagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                itemLabel={`voucher${filtered.length !== 1 ? 's' : ''}`}
+                onPageChange={setPage}
+              />
             </div>
           </div>
         </div>

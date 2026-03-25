@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
-import { Plus, MoreHorizontal, Eye, Pause, Play, Pencil, Building2, Search, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Plus, MoreHorizontal, Eye, Pause, Play, Pencil, Ticket, Building2, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -10,7 +10,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Badge } from '@/components/shadcn/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/shadcn/dialog'
@@ -22,9 +22,28 @@ import { CLIENTS, type ClientStatus } from '../mock-data'
 const BASE = '/design-system/screens/academy'
 const PER_PAGE = 10
 
-const STATUS_BADGE: Record<ClientStatus, 'success' | 'destructive'> = {
+const STATUS_BADGE: Record<ClientStatus, 'success' | 'destructive' | 'warning' | 'outline'> = {
   ativo: 'success',
   suspenso: 'destructive',
+  'sem-voucher': 'outline',
+  inativo: 'outline',
+  expirado: 'warning',
+}
+
+const STATUS_BADGE_CLASS: Record<ClientStatus, string> = {
+  ativo: '',
+  suspenso: '',
+  'sem-voucher': '',
+  inativo: 'text-muted-foreground',
+  expirado: '',
+}
+
+const STATUS_LABELS: Record<ClientStatus, string> = {
+  ativo: 'Ativo',
+  suspenso: 'Suspenso',
+  'sem-voucher': 'Sem voucher',
+  inativo: 'Inativo',
+  expirado: 'Expirado',
 }
 
 export function ClientsScreen() {
@@ -84,10 +103,38 @@ export function ClientsScreen() {
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-[260px]">
                 <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="ativo">Ativo</SelectItem>
-                <SelectItem value="suspenso">Suspenso</SelectItem>
+                <SelectItem value="ativo" className="items-start">
+                  <span className="flex flex-col gap-0.5">
+                    <span>Ativo</span>
+                    <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Possui voucher ativo e acesso liberado</span>
+                  </span>
+                </SelectItem>
+                <SelectItem value="suspenso" className="items-start">
+                  <span className="flex flex-col gap-0.5">
+                    <span>Suspenso</span>
+                    <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Acesso bloqueado manualmente pelo admin</span>
+                  </span>
+                </SelectItem>
+                <SelectItem value="sem-voucher" className="items-start">
+                  <span className="flex flex-col gap-0.5">
+                    <span>Sem voucher</span>
+                    <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Cadastrado, mas ainda sem voucher associado</span>
+                  </span>
+                </SelectItem>
+                <SelectItem value="inativo" className="items-start">
+                  <span className="flex flex-col gap-0.5">
+                    <span>Inativo</span>
+                    <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Nunca ativou ou sem uso por longo período</span>
+                  </span>
+                </SelectItem>
+                <SelectItem value="expirado" className="items-start">
+                  <span className="flex flex-col gap-0.5">
+                    <span>Expirado</span>
+                    <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Voucher vencido, acesso encerrado</span>
+                  </span>
+                </SelectItem>
               </SelectContent>
             </Select>
             <div className="relative w-full sm:w-[280px]">
@@ -112,7 +159,7 @@ export function ClientsScreen() {
                     <TableHead>Domínios</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Usuários</TableHead>
-                    <TableHead>Plano (vencimento)</TableHead>
+                    <TableHead>Vencimento</TableHead>
                     <TableHead className="w-12" />
                   </TableRow>
                 </TableHeader>
@@ -153,13 +200,13 @@ export function ClientsScreen() {
                         <TableCell className="font-mono text-sm">{client.cnpj}</TableCell>
                         <TableCell className="text-sm">{client.domains.join(', ')}</TableCell>
                         <TableCell>
-                          <Badge variant={STATUS_BADGE[client.status]}>
-                            {client.status}
+                          <Badge variant={STATUS_BADGE[client.status]} className={STATUS_BADGE_CLASS[client.status]}>
+                            {STATUS_LABELS[client.status]}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right font-mono text-sm">{client.totalUsers}</TableCell>
-                        <TableCell className="text-sm">
-                          {client.plan.name} ({client.plan.expiration})
+                        <TableCell className="font-mono text-sm">
+                          {client.plan.expiration}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -184,6 +231,14 @@ export function ClientsScreen() {
                                 <Pencil size={14} className="mr-2" />
                                 Editar
                               </DropdownMenuItem>
+                              {client.status === 'sem-voucher' && (
+                                <DropdownMenuItem asChild>
+                                  <Link href={`${BASE}/admin/vouchers`}>
+                                    <Ticket size={14} className="mr-2" />
+                                    Criar voucher
+                                  </Link>
+                                </DropdownMenuItem>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -192,31 +247,13 @@ export function ClientsScreen() {
                   )}
                 </TableBody>
               </Table>
-              {/* Pagination */}
-              {filtered.length > PER_PAGE && (
-                <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-                  <Body muted className="text-sm">
-                    {filtered.length} cliente{filtered.length !== 1 ? 's' : ''}
-                  </Body>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronLeft size={16} />
-                    </Button>
-                    <Body muted className="text-sm font-mono">{page} / {totalPages}</Body>
-                    <Button
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={page === totalPages}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ChevronRight size={16} />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              <TablePagination
+                page={page}
+                totalPages={totalPages}
+                totalItems={filtered.length}
+                itemLabel={`cliente${filtered.length !== 1 ? 's' : ''}`}
+                onPageChange={setPage}
+              />
             </div>
           </div>
         </div>
