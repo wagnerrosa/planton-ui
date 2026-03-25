@@ -9,7 +9,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Alert, AlertBody, AlertDescription } from '@/components/shadcn/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination, tableLinkClass } from '@/components/shadcn/table'
 import { Badge } from '@/components/shadcn/badge'
 import { Input } from '@/components/shadcn/input'
 import { Skeleton } from '@/components/shadcn/skeleton'
@@ -173,7 +173,7 @@ export function DashboardScreen() {
                     {EXPIRING_PLANS.map((client) => (
                       <TableRow key={client.id}>
                         <TableCell className="font-medium">
-                          <Link href={`${BASE}/admin/clients/${client.id}`} className="hover:text-planton-accent hover:underline transition-colors">
+                          <Link href={`${BASE}/admin/clients/${client.id}`} className={tableLinkClass}>
                             {client.name}
                           </Link>
                         </TableCell>
@@ -283,7 +283,7 @@ export function DashboardScreen() {
                     paginatedSummary.map((company) => (
                       <TableRow key={company.id}>
                         <TableCell className="font-medium">
-                          <Link href={`${BASE}/admin/clients/${company.id}`} className="hover:text-planton-accent hover:underline transition-colors">
+                          <Link href={`${BASE}/admin/clients/${company.id}`} className={tableLinkClass}>
                             {company.name}
                           </Link>
                         </TableCell>

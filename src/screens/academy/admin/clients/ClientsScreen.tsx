@@ -10,7 +10,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Badge } from '@/components/shadcn/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination, tableLinkClass } from '@/components/shadcn/table'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/shadcn/select'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/shadcn/dialog'
@@ -193,7 +193,7 @@ export function ClientsScreen() {
                     paginated.map((client) => (
                       <TableRow key={client.id}>
                         <TableCell className="font-medium">
-                          <Link href={`${BASE}/admin/clients/${client.id}`} className="hover:text-planton-accent hover:underline transition-colors">
+                          <Link href={`${BASE}/admin/clients/${client.id}`} className={tableLinkClass}>
                             {client.name}
                           </Link>
                         </TableCell>

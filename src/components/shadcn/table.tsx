@@ -31,7 +31,7 @@ const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={cn("[&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-muted/10", className)}
+    className={cn("[&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-muted/30", className)}
     {...props}
   />
 ))
@@ -159,6 +159,13 @@ function TablePagination({
   )
 }
 
+/**
+ * Classe utilitária para links/botões clicáveis dentro de células de tabela.
+ * Exibe sublinha pontilhada sempre visível; no hover muda para sólida + cor accent.
+ */
+const tableLinkClass =
+  "underline decoration-dotted underline-offset-4 decoration-muted-foreground/60 hover:decoration-solid hover:text-planton-accent hover:decoration-planton-accent transition-colors cursor-pointer"
+
 export {
   Table,
   TableHeader,
@@ -169,4 +176,5 @@ export {
   TableCell,
   TableCaption,
   TablePagination,
+  tableLinkClass,
 }

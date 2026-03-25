@@ -9,7 +9,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Badge } from '@/components/shadcn/badge'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination, tableLinkClass } from '@/components/shadcn/table'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/shadcn/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/shadcn/dialog'
 import { Input } from '@/components/shadcn/input'
@@ -373,7 +373,7 @@ export function GMDashboardScreen() {
                           <button
                             type="button"
                             onClick={() => setSelectedCollab(collab)}
-                            className="hover:text-planton-accent hover:underline transition-colors text-left"
+                            className={`${tableLinkClass} text-left`}
                           >
                             {collab.name}
                           </button>
