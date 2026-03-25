@@ -155,11 +155,11 @@ export function ClientsScreen() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Empresa</TableHead>
-                    <TableHead>CNPJ / CPF</TableHead>
+                    <TableHead className="text-right">CNPJ / CPF</TableHead>
                     <TableHead>Domínios</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Usuários</TableHead>
-                    <TableHead>Vencimento</TableHead>
+                    <TableHead className="text-right">Vencimento</TableHead>
                     <TableHead className="w-12" />
                   </TableRow>
                 </TableHeader>
@@ -193,11 +193,11 @@ export function ClientsScreen() {
                     paginated.map((client) => (
                       <TableRow key={client.id}>
                         <TableCell className="font-medium">
-                          <Link href={`${BASE}/admin/clients/${client.id}`} className="hover:text-planton-accent transition-colors">
+                          <Link href={`${BASE}/admin/clients/${client.id}`} className="hover:text-planton-accent hover:underline transition-colors">
                             {client.name}
                           </Link>
                         </TableCell>
-                        <TableCell className="font-mono text-sm">{client.cnpj}</TableCell>
+                        <TableCell className="text-right font-mono text-sm tabular-nums">{client.cnpj}</TableCell>
                         <TableCell className="text-sm">{client.domains.join(', ')}</TableCell>
                         <TableCell>
                           <Badge variant={STATUS_BADGE[client.status]} className={STATUS_BADGE_CLASS[client.status]}>
@@ -205,7 +205,7 @@ export function ClientsScreen() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right font-mono text-sm">{client.totalUsers}</TableCell>
-                        <TableCell className="font-mono text-sm">
+                        <TableCell className="text-right font-mono text-sm tabular-nums">
                           {client.plan.expiration}
                         </TableCell>
                         <TableCell>

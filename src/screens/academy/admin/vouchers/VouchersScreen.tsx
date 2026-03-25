@@ -116,7 +116,7 @@ export function VouchersScreen() {
                     <TableHead>Código</TableHead>
                     <TableHead>Empresa</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Prazo ativação</TableHead>
+                    <TableHead className="text-right">Prazo ativação</TableHead>
                     <TableHead>Duração plano</TableHead>
                     <TableHead>Domínios</TableHead>
                     <TableHead className="w-12" />
@@ -158,7 +158,7 @@ export function VouchersScreen() {
                             {STATUS_LABELS[voucher.status]}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-mono text-sm">{voucher.activationDeadline}</TableCell>
+                        <TableCell className="text-right font-mono text-sm tabular-nums">{voucher.activationDeadline}</TableCell>
                         <TableCell className="text-sm">{voucher.planDuration}</TableCell>
                         <TableCell className="text-sm">{voucher.domains.join(', ')}</TableCell>
                         <TableCell>
