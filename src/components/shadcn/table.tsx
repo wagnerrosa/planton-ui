@@ -21,7 +21,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b [&_tr]:border-border", className)} {...props} />
+  <thead ref={ref} className={cn("bg-muted/50 [&_tr]:border-b [&_tr]:border-border", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -31,7 +31,7 @@ const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={cn("[&_tr:last-child]:border-0", className)}
+    className={cn("[&_tr:last-child]:border-0 [&_tr:nth-child(even)]:bg-muted/30", className)}
     {...props}
   />
 ))
@@ -59,7 +59,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b border-border transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      "border-b border-border transition-colors hover:bg-muted/60 data-[state=selected]:bg-muted",
       className
     )}
     {...props}
@@ -130,27 +130,27 @@ function TablePagination({
   if (totalPages <= 1) return null
 
   return (
-    <div className={cn("flex items-center justify-between px-4 py-3 border-t border-border", className)}>
+    <div className={cn("flex items-center justify-between px-4 py-3 border-t border-border bg-muted/50", className)}>
       <span className="text-sm text-muted-foreground">
         {totalItems} {itemLabel}
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page === 1}
-          className="inline-flex items-center justify-center h-8 w-8 border border-border text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center h-9 w-9 rounded-sm border border-border text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:pointer-events-none"
         >
           <ChevronLeft size={16} />
         </button>
-        <span className="text-sm font-mono text-muted-foreground">
+        <span className="text-sm font-mono text-muted-foreground px-1">
           {page} / {totalPages}
         </span>
         <button
           type="button"
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           disabled={page === totalPages}
-          className="inline-flex items-center justify-center h-8 w-8 border border-border text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed"
+          className="inline-flex items-center justify-center h-9 w-9 rounded-sm border border-border text-sm transition-colors hover:bg-muted disabled:opacity-40 disabled:pointer-events-none"
         >
           <ChevronRight size={16} />
         </button>
