@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 
 export type ClientStatus = 'ativo' | 'suspenso' | 'sem-voucher' | 'inativo' | 'expirado'
-export type VoucherStatus = 'ativo' | 'usado' | 'expirado' | 'revogado'
+export type VoucherStatus = 'aguardando-ativacao' | 'ativo' | 'expirado' | 'bloqueado'
 export type ContentType = 'video' | 'artigo' | 'podcast' | 'guia'
 export type ContentScope = 'global' | 'exclusivo'
 export type TrailStatus = 'rascunho' | 'em-breve' | 'ativa'
@@ -308,7 +308,7 @@ export const VOUCHERS: Voucher[] = [
     code: 'PLANTON-2026-AGRO',
     clientName: 'AgroTech Solutions',
     clientId: 'c1',
-    status: 'usado',
+    status: 'ativo',
     activationDeadline: '2026-01-15',
     planDuration: '12 meses',
     domains: ['agrotech.com.br'],
@@ -341,7 +341,7 @@ export const VOUCHERS: Voucher[] = [
     code: 'PLANTON-2026-SUST',
     clientName: 'SustentAgro',
     clientId: 'c4',
-    status: 'usado',
+    status: 'ativo',
     activationDeadline: '2026-01-01',
     planDuration: '12 meses',
     domains: ['sustentagro.com.br'],
@@ -371,14 +371,36 @@ export const VOUCHERS: Voucher[] = [
   },
   {
     id: 'v7',
-    code: 'PLANTON-2025-TEST',
-    clientName: 'Empresa Teste',
-    clientId: '',
-    status: 'revogado',
-    activationDeadline: '2025-12-31',
-    planDuration: '3 meses',
-    domains: ['teste.com.br'],
-    createdAt: '2025-09-01',
+    code: 'PLANTON-2026-PAMPA',
+    clientName: 'Pampa Agropecuária',
+    clientId: 'c7',
+    status: 'aguardando-ativacao',
+    activationDeadline: '2026-04-01',
+    planDuration: '6 meses',
+    domains: ['pampaagro.com.br'],
+    createdAt: '2026-03-25',
+  },
+  {
+    id: 'v8',
+    code: 'PLANTON-2026-MATA',
+    clientName: 'Mata Atlântica Foods',
+    clientId: 'c8',
+    status: 'aguardando-ativacao',
+    activationDeadline: '2026-04-02',
+    planDuration: '12 meses',
+    domains: ['mataatlantica.com.br'],
+    createdAt: '2026-03-26',
+  },
+  {
+    id: 'v9',
+    code: 'PLANTON-2025-FAZSUL',
+    clientName: 'Fazendas Reunidas do Sul',
+    clientId: 'c10',
+    status: 'bloqueado',
+    activationDeadline: '2026-01-07',
+    planDuration: '6 meses',
+    domains: ['fazendassul.com.br'],
+    createdAt: '2025-12-31',
   },
 ]
 

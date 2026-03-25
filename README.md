@@ -554,6 +554,46 @@ Todos os dados são simulados no frontend , nenhuma API é chamada.
 
 ---
 
+## Padrões de UI
+
+### Select com descrições nas opções
+
+Quando um `Select` precisa mostrar descrições nas opções do dropdown mas exibir apenas o nome do item no trigger após a seleção, **não use `<SelectValue>`** — o Radix renderiza o conteúdo completo do item selecionado (incluindo a descrição) dentro do trigger. O `textValue` não resolve isso, serve apenas para busca e acessibilidade.
+
+**Solução:** substituir `<SelectValue>` por um `<span>` condicional no trigger, usando o mapa de labels do componente.
+
+```tsx
+const STATUS_LABELS: Record<MyStatus, string> = {
+  ativo: 'Ativo',
+  expirado: 'Expirado',
+  // ...
+}
+
+<Select value={filter} onValueChange={setFilter}>
+  <SelectTrigger className="w-[180px]">
+    {/* span condicional em vez de <SelectValue> */}
+    <span>{filter === 'all' ? 'Todos' : STATUS_LABELS[filter as MyStatus]}</span>
+  </SelectTrigger>
+  <SelectContent className="w-[260px]">
+    <SelectItem value="all">Todos</SelectItem>
+    <SelectItem value="ativo" className="items-start">
+      <span className="flex flex-col gap-0.5">
+        <span>Ativo</span>
+        <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">
+          Descrição do status ativo
+        </span>
+      </span>
+    </SelectItem>
+  </SelectContent>
+</Select>
+```
+
+> `SelectContent` com `className="w-[260px]"` (ou maior) para acomodar as descrições sem truncar. `SelectItem` com `className="items-start"` para alinhar o checkmark ao topo.
+
+Aplicado em: `ClientsScreen`, `VouchersScreen`.
+
+---
+
 ## Dark Mode
 
 Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está disponível no design system.

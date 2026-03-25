@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, ArrowRight, Building2, Award, Clock, Users, BookCheck, HelpCircle, Search } from 'lucide-react'
+import { AlertTriangle, Building2, Award, Clock, Users, BookCheck, HelpCircle, Search } from 'lucide-react'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Heading } from '@/components/primitives/Heading'
@@ -167,27 +167,22 @@ export function DashboardScreen() {
                       <TableHead>Plano</TableHead>
                       <TableHead>Vencimento</TableHead>
                       <TableHead>Dias restantes</TableHead>
-                      <TableHead className="text-right">Ação</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {EXPIRING_PLANS.map((client) => (
                       <TableRow key={client.id}>
-                        <TableCell className="font-medium">{client.name}</TableCell>
+                        <TableCell className="font-medium">
+                          <Link href={`${BASE}/admin/clients/${client.id}`} className="hover:text-planton-accent hover:underline transition-colors">
+                            {client.name}
+                          </Link>
+                        </TableCell>
                         <TableCell>{client.plan.name}</TableCell>
-                        <TableCell className="font-mono text-sm">{client.plan.expiration}</TableCell>
+                        <TableCell className="text-right font-mono text-sm tabular-nums">{client.plan.expiration}</TableCell>
                         <TableCell>
                           <Badge variant={client.plan.daysRemaining <= 10 ? 'destructive' : 'warning'}>
                             {client.plan.daysRemaining} dias
                           </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Link
-                            href={`${BASE}/admin/clients/${client.id}`}
-                            className="text-sm text-planton-accent hover:underline"
-                          >
-                            Ver cliente
-                          </Link>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -265,7 +260,6 @@ export function DashboardScreen() {
                     <TableHead className="text-right">Horas</TableHead>
                     <TableHead className="text-right">Certificados</TableHead>
                     <TableHead className="text-right">Trilhas concluídas</TableHead>
-                    <TableHead className="w-12" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -277,28 +271,26 @@ export function DashboardScreen() {
                         <TableCell><Skeleton className="h-4 w-12 ml-auto" /></TableCell>
                         <TableCell><Skeleton className="h-4 w-10 ml-auto" /></TableCell>
                         <TableCell><Skeleton className="h-4 w-10 ml-auto" /></TableCell>
-                        <TableCell><Skeleton className="h-4 w-4 ml-auto" /></TableCell>
                       </TableRow>
                     ))
                   ) : paginatedSummary.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center py-12 text-planton-muted">
+                      <TableCell colSpan={5} className="text-center py-12 text-planton-muted">
                         Nenhum dado disponível
                       </TableCell>
                     </TableRow>
                   ) : (
                     paginatedSummary.map((company) => (
                       <TableRow key={company.id}>
-                        <TableCell className="font-medium">{company.name}</TableCell>
-                        <TableCell className="text-right font-mono text-sm">{company.users}</TableCell>
-                        <TableCell className="text-right font-mono text-sm">{company.hours}h</TableCell>
-                        <TableCell className="text-right font-mono text-sm">{company.certificates}</TableCell>
-                        <TableCell className="text-right font-mono text-sm">{company.trailsCompleted}</TableCell>
-                        <TableCell>
-                          <Link href={`${BASE}/admin/clients/${company.id}`} className="text-planton-accent hover:text-planton-accent/80 transition-colors">
-                            <ArrowRight size={16} />
+                        <TableCell className="font-medium">
+                          <Link href={`${BASE}/admin/clients/${company.id}`} className="hover:text-planton-accent hover:underline transition-colors">
+                            {company.name}
                           </Link>
                         </TableCell>
+                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.users}</TableCell>
+                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.hours}h</TableCell>
+                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.certificates}</TableCell>
+                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.trailsCompleted}</TableCell>
                       </TableRow>
                     ))
                   )}

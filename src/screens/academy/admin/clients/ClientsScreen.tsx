@@ -11,7 +11,7 @@ import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Badge } from '@/components/shadcn/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/shadcn/select'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/shadcn/dialog'
 import { Input } from '@/components/shadcn/input'
@@ -101,35 +101,35 @@ export function ClientsScreen() {
           <div className="max-w-[1920px] mx-auto px-6 pb-6 flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Status" />
+                <span>{statusFilter === 'all' ? 'Todos' : STATUS_LABELS[statusFilter as ClientStatus]}</span>
               </SelectTrigger>
               <SelectContent className="w-[260px]">
                 <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="ativo" className="items-start">
+                <SelectItem value="ativo" textValue="Ativo" className="items-start">
                   <span className="flex flex-col gap-0.5">
                     <span>Ativo</span>
                     <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Possui voucher ativo e acesso liberado</span>
                   </span>
                 </SelectItem>
-                <SelectItem value="suspenso" className="items-start">
+                <SelectItem value="suspenso" textValue="Suspenso" className="items-start">
                   <span className="flex flex-col gap-0.5">
                     <span>Suspenso</span>
                     <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Acesso bloqueado manualmente pelo admin</span>
                   </span>
                 </SelectItem>
-                <SelectItem value="sem-voucher" className="items-start">
+                <SelectItem value="sem-voucher" textValue="Sem voucher" className="items-start">
                   <span className="flex flex-col gap-0.5">
                     <span>Sem voucher</span>
                     <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Cadastrado, mas ainda sem voucher associado</span>
                   </span>
                 </SelectItem>
-                <SelectItem value="inativo" className="items-start">
+                <SelectItem value="inativo" textValue="Inativo" className="items-start">
                   <span className="flex flex-col gap-0.5">
                     <span>Inativo</span>
-                    <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Nunca ativou ou sem uso por longo período</span>
+                    <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Voucher vinculado, mas nunca acessou</span>
                   </span>
                 </SelectItem>
-                <SelectItem value="expirado" className="items-start">
+                <SelectItem value="expirado" textValue="Expirado" className="items-start">
                   <span className="flex flex-col gap-0.5">
                     <span>Expirado</span>
                     <span className="text-xs text-muted-foreground font-normal normal-case tracking-normal">Voucher vencido, acesso encerrado</span>
@@ -220,17 +220,22 @@ export function ClientsScreen() {
                                   Ver detalhe
                                 </Link>
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => toast.success(`Cliente ${client.status === 'ativo' ? 'suspenso' : 'ativado'}`)}>
-                                {client.status === 'ativo' ? (
-                                  <><Pause size={14} className="mr-2" />Suspender</>
-                                ) : (
-                                  <><Play size={14} className="mr-2" />Ativar</>
-                                )}
-                              </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => toast('Edição em breve')}>
                                 <Pencil size={14} className="mr-2" />
                                 Editar
                               </DropdownMenuItem>
+                              {client.status === 'ativo' && (
+                                <DropdownMenuItem onClick={() => toast.success('Cliente suspenso')}>
+                                  <Pause size={14} className="mr-2" />
+                                  Suspender
+                                </DropdownMenuItem>
+                              )}
+                              {client.status === 'suspenso' && (
+                                <DropdownMenuItem onClick={() => toast.success('Cliente ativado')}>
+                                  <Play size={14} className="mr-2" />
+                                  Ativar
+                                </DropdownMenuItem>
+                              )}
                               {client.status === 'sem-voucher' && (
                                 <DropdownMenuItem asChild>
                                   <Link href={`${BASE}/admin/vouchers`}>
