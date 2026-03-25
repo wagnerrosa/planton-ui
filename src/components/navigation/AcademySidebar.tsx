@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, BookOpen, ChevronDown, LogOut, User, Shield } from 'lucide-react'
+import { Home, BookOpen, ChevronDown, LogOut, User, Shield, BarChart3 } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
 import { useAcademyNavbar } from './AcademyNavbarContext'
 import { ThemeToggleButton, UserAvatar } from './AcademyNavbar'
@@ -21,6 +21,7 @@ function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname()
   const trails = MOCK_TRAILS.filter((t) => t.status !== 'em-breve')
   const isTrailsActive = pathname.startsWith(`${BASE}/trail`) || pathname === `${BASE}/trilhas`
+  const isGMActive = pathname.startsWith(`${BASE}/gm`)
   const isAdminActive = pathname.startsWith(`${BASE}/admin`)
   const [trailsOpen, setTrailsOpen] = useState(isTrailsActive)
   const [adminOpen, setAdminOpen] = useState(isAdminActive)
@@ -88,6 +89,20 @@ function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
           </div>
         )}
       </div>
+
+      {/* Gestor Master */}
+      <Link
+        href={`${BASE}/gm`}
+        onClick={onLinkClick}
+        className={`flex items-center gap-2.5 px-2 py-2 text-sm font-sans transition-colors ${
+          isGMActive
+            ? 'bg-sidebar-accent text-planton-accent'
+            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+        }`}
+      >
+        <BarChart3 size={15} />
+        Gestor
+      </Link>
 
       {/* Admin section */}
       <div className="-mx-3 my-3 border-t border-sidebar-border" />
