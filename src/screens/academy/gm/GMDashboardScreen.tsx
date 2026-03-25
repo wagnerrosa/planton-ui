@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Users, UserCheck, Clock, Award, Search, Plus, Send, CalendarClock } from 'lucide-react'
+import { Users, UserCheck, Clock, Award, Search, Plus, Send } from 'lucide-react'
 import { toast } from 'sonner'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -22,7 +22,9 @@ import {
   GM_KPIS,
   GM_TOP_TRAILS,
   GM_COLLABORATORS,
+  formatDateBR,
   type CollaboratorStatus,
+  type Collaborator,
 } from './mock-data'
 
 const BASE = '/design-system/screens/academy'
@@ -36,14 +38,108 @@ const KPI_ICONS = [
   <Award key="a" size={16} />,
 ]
 
-const STATUS_BADGE: Record<CollaboratorStatus, 'success' | 'info'> = {
+const STATUS_BADGE: Record<CollaboratorStatus, 'success' | 'info' | 'outline'> = {
   ativo: 'success',
   'convite-enviado': 'info',
+  'nunca-acessou': 'outline',
 }
 
 const STATUS_LABELS: Record<CollaboratorStatus, string> = {
   ativo: 'Ativo',
   'convite-enviado': 'Convite enviado',
+  'nunca-acessou': 'Nunca acessou',
+}
+
+const CONTENT_TYPE_LABELS: Record<string, string> = {
+  video: 'Vídeo',
+  artigo: 'Artigo',
+  podcast: 'Podcast',
+  guia: 'Guia',
+}
+
+function CollaboratorDetailModal({
+  collab,
+  open,
+  onClose,
+}: {
+  collab: Collaborator | null
+  open: boolean
+  onClose: () => void
+}) {
+  if (!collab) return null
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>{collab.name}</DialogTitle>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-6 py-2">
+          {/* Info */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-planton-muted">{collab.email}</span>
+            <Badge variant={STATUS_BADGE[collab.status]}>{STATUS_LABELS[collab.status]}</Badge>
+          </div>
+
+          {/* KPIs individuais */}
+          <div className="grid grid-cols-3 border-t border-l border-border">
+            <div className="border-r border-b border-border p-4 flex flex-col gap-1">
+              <span className="font-mono text-xs uppercase tracking-[0.1em] text-planton-muted">Trilhas</span>
+              <span className="font-heading text-2xl font-bold">{collab.trailsCompleted}</span>
+            </div>
+            <div className="border-r border-b border-border p-4 flex flex-col gap-1">
+              <span className="font-mono text-xs uppercase tracking-[0.1em] text-planton-muted">Horas</span>
+              <span className="font-heading text-2xl font-bold">{collab.hoursWatched}h</span>
+            </div>
+            <div className="border-r border-b border-border p-4 flex flex-col gap-1">
+              <span className="font-mono text-xs uppercase tracking-[0.1em] text-planton-muted">Certificados</span>
+              <span className="font-heading text-2xl font-bold">{collab.certificates}</span>
+            </div>
+          </div>
+
+          {/* Certificados obtidos */}
+          {collab.certificateNames.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-xs uppercase tracking-[0.1em] text-planton-muted">Certificados obtidos</span>
+              <div className="flex flex-col gap-1">
+                {collab.certificateNames.map((name) => (
+                  <div key={name} className="flex items-center gap-2 px-3 py-2 border border-border">
+                    <Award size={13} className="text-planton-muted shrink-0" />
+                    <span className="text-sm">{name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Conteúdos assistidos */}
+          <div className="flex flex-col gap-2">
+            <span className="font-mono text-xs uppercase tracking-[0.1em] text-planton-muted">Conteúdos assistidos</span>
+            {collab.watchedContents.length === 0 ? (
+              <Body muted className="text-sm">Nenhum conteúdo assistido ainda</Body>
+            ) : (
+              <div className="flex flex-col gap-1">
+                {collab.watchedContents.map((c) => (
+                  <div key={c.id} className="flex items-center justify-between px-3 py-2 border border-border">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">{CONTENT_TYPE_LABELS[c.type] ?? c.type}</Badge>
+                      <span className="text-sm">{c.title}</span>
+                    </div>
+                    <span className="text-xs font-mono text-planton-muted tabular-nums shrink-0 ml-2">{formatDateBR(c.watchedAt)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button onClick={onClose}>Fechar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 export function GMDashboardScreen() {
@@ -52,6 +148,7 @@ export function GMDashboardScreen() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [page, setPage] = useState(1)
   const [inviteOpen, setInviteOpen] = useState(false)
+  const [selectedCollab, setSelectedCollab] = useState<Collaborator | null>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 800)
@@ -88,17 +185,16 @@ export function GMDashboardScreen() {
         <div className="flex-1">
           {/* Header */}
           <div className="max-w-[1920px] mx-auto px-6 pt-10 pb-8">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                <Heading as="h1" size="heading-xl">Painel do Gestor</Heading>
-                <Body muted>{GM_COMPANY.name}</Body>
-              </div>
+            <div className="flex flex-col gap-1">
+              <Heading as="h1" size="heading-xl">Painel do Gestor</Heading>
+              <Body muted>{GM_COMPANY.name}</Body>
             </div>
           </div>
 
-          {/* KPI Cards */}
+          {/* KPI Cards + Plan Timeline (mesmo grupo) */}
           <div className="max-w-[1920px] mx-auto px-6 pb-10">
             <div className="overflow-hidden border-t border-l border-border">
+              {/* KPIs */}
               {loading ? (
                 <div className="grid grid-cols-2 lg:grid-cols-4">
                   {Array.from({ length: 4 }).map((_, i) => (
@@ -124,52 +220,35 @@ export function GMDashboardScreen() {
                   ))}
                 </div>
               )}
-            </div>
-          </div>
 
-          {/* Plan Timeline */}
-          <div className="max-w-[1920px] mx-auto px-6 pb-10">
-            <div className="border border-border">
-              <div className="px-6 pt-6 pb-4 border-b border-border flex items-center gap-3">
-                <CalendarClock size={18} className="text-planton-muted" />
-                <Heading as="h2" size="heading-md">Plano da empresa</Heading>
-              </div>
-              <div className="px-6 py-6">
+              {/* Plan Timeline — mesma grade, ocupa linha inteira */}
+              <div className="border-r border-b border-border px-6 py-6 flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-muted">Vigência do contrato</span>
+                  {!loading && (
+                    <Badge variant={planUrgent ? 'destructive' : 'warning'}>
+                      {GM_PLAN.daysRemaining} dias restantes
+                    </Badge>
+                  )}
+                </div>
                 {loading ? (
-                  <div className="flex flex-col gap-3">
-                    <Skeleton className="h-4 w-48" />
-                    <Skeleton className="h-3 w-full max-w-md" />
-                    <Skeleton className="h-4 w-24" />
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-2 w-full" />
+                    <Skeleton className="h-3 w-48" />
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-sm text-planton-muted">Plano:</span>
-                        <span className="font-medium">{GM_PLAN.name}</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-sm text-planton-muted">Vencimento:</span>
-                        <span className="font-mono text-sm tabular-nums">{GM_PLAN.expiration}</span>
-                        <Badge variant={planUrgent ? 'destructive' : 'warning'}>
-                          {GM_PLAN.daysRemaining} dias restantes
-                        </Badge>
-                      </div>
+                  <>
+                    <div className="h-2 w-full bg-muted overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${planUrgent ? 'bg-destructive' : 'bg-planton-accent'}`}
+                        style={{ width: `${planProgress}%` }}
+                      />
                     </div>
-                    {/* Progress bar */}
-                    <div className="flex flex-col gap-1.5">
-                      <div className="h-2 w-full bg-muted overflow-hidden">
-                        <div
-                          className={`h-full transition-all ${planUrgent ? 'bg-destructive' : 'bg-planton-accent'}`}
-                          style={{ width: `${planProgress}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-xs text-planton-muted font-mono">
-                        <span>{GM_PLAN.startDate}</span>
-                        <span>{GM_PLAN.expiration}</span>
-                      </div>
+                    <div className="flex justify-between text-xs text-planton-muted font-mono">
+                      <span>Início: {formatDateBR(GM_PLAN.startDate)}</span>
+                      <span>Vencimento: {formatDateBR(GM_PLAN.expiration)}</span>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
             </div>
@@ -233,6 +312,7 @@ export function GMDashboardScreen() {
                       <SelectItem value="all">Todos</SelectItem>
                       <SelectItem value="ativo">Ativo</SelectItem>
                       <SelectItem value="convite-enviado">Convite enviado</SelectItem>
+                      <SelectItem value="nunca-acessou">Nunca acessou</SelectItem>
                     </SelectContent>
                   </Select>
                   <div className="relative w-full sm:w-[280px]">
@@ -289,7 +369,15 @@ export function GMDashboardScreen() {
                   ) : (
                     paginated.map((collab) => (
                       <TableRow key={collab.id}>
-                        <TableCell className="font-medium">{collab.name}</TableCell>
+                        <TableCell className="font-medium">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCollab(collab)}
+                            className="hover:text-planton-accent hover:underline transition-colors text-left"
+                          >
+                            {collab.name}
+                          </button>
+                        </TableCell>
                         <TableCell className="text-sm">{collab.email}</TableCell>
                         <TableCell>
                           <Badge variant={STATUS_BADGE[collab.status]}>
@@ -300,7 +388,7 @@ export function GMDashboardScreen() {
                         <TableCell className="text-right font-mono text-sm tabular-nums">{collab.hoursWatched}h</TableCell>
                         <TableCell className="text-right font-mono text-sm tabular-nums">{collab.certificates}</TableCell>
                         <TableCell className="text-right font-mono text-sm tabular-nums">
-                          {collab.lastAccess ?? <span className="text-planton-muted">—</span>}
+                          {collab.lastAccess ? formatDateBR(collab.lastAccess) : <span className="text-planton-muted">—</span>}
                         </TableCell>
                       </TableRow>
                     ))
@@ -345,6 +433,13 @@ export function GMDashboardScreen() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog: Detalhe do colaborador */}
+      <CollaboratorDetailModal
+        collab={selectedCollab}
+        open={selectedCollab !== null}
+        onClose={() => setSelectedCollab(null)}
+      />
     </>
   )
 }
