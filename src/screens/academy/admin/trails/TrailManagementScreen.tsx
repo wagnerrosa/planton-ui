@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock, ArrowUp, ArrowDown, X, Search, Route } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock, ArrowUp, ArrowDown, X, Search, Route, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -19,6 +19,7 @@ import { Input } from '@/components/shadcn/input'
 import { Textarea } from '@/components/shadcn/textarea'
 import { Label } from '@/components/shadcn/label'
 import { Skeleton } from '@/components/shadcn/skeleton'
+import { Checkbox } from '@/components/shadcn/checkbox'
 import {
   ADMIN_TRAILS,
   CATALOG_CONTENT,
@@ -31,10 +32,10 @@ import {
 const BASE = '/design-system/screens/academy'
 const PER_PAGE = 10
 
-const STATUS_BADGE: Record<TrailStatus, 'success' | 'default' | 'warning'> = {
+const STATUS_BADGE: Record<TrailStatus, 'success' | 'warning' | 'info'> = {
   ativa: 'success',
-  rascunho: 'default',
-  'em-breve': 'warning',
+  rascunho: 'warning',
+  'em-breve': 'info',
 }
 
 export function TrailManagementScreen() {
@@ -49,8 +50,12 @@ export function TrailManagementScreen() {
   const [dialogTab, setDialogTab] = useState('dados')
   const [trailVisibility, setTrailVisibility] = useState<TrailVisibility>('global')
   const [selectedClients, setSelectedClients] = useState<string[]>([])
+  const [excludedClients, setExcludedClients] = useState<string[]>([])
+  const [clientSearch, setClientSearch] = useState('')
   const [selectedContents, setSelectedContents] = useState<string[]>([])
   const [contentSearch, setContentSearch] = useState('')
+  const [isDraft, setIsDraft] = useState(false)
+  const [scheduledDate, setScheduledDate] = useState('')
   const [quizEnabled, setQuizEnabled] = useState(false)
   const [quizVisibility, setQuizVisibility] = useState<'all' | 'specific'>('all')
   const [quizClients, setQuizClients] = useState<string[]>([])
@@ -88,8 +93,12 @@ export function TrailManagementScreen() {
     setDialogTab('dados')
     setTrailVisibility('global')
     setSelectedClients([])
+    setExcludedClients([])
+    setClientSearch('')
     setSelectedContents([])
     setContentSearch('')
+    setIsDraft(false)
+    setScheduledDate('')
     setQuizEnabled(false)
     setQuizVisibility('all')
     setQuizClients([])
@@ -109,6 +118,17 @@ export function TrailManagementScreen() {
       prev.includes(clientId) ? prev.filter((id) => id !== clientId) : [...prev, clientId]
     )
   }
+
+  const toggleExcludedClient = (clientId: string) => {
+    setExcludedClients((prev) =>
+      prev.includes(clientId) ? prev.filter((id) => id !== clientId) : [...prev, clientId]
+    )
+  }
+
+  const activeClients = CLIENTS.filter((c) => c.status === 'ativo')
+  const filteredClients = clientSearch.trim()
+    ? activeClients.filter((c) => c.name.toLowerCase().includes(clientSearch.toLowerCase().trim()))
+    : activeClients
 
   const toggleQuizClient = (clientId: string) => {
     setQuizClients((prev) =>
@@ -314,7 +334,7 @@ export function TrailManagementScreen() {
               </div>
               <div className="flex flex-col gap-2">
                 <Label>Visibilidade</Label>
-                <Select value={trailVisibility} onValueChange={(v) => { setTrailVisibility(v as TrailVisibility); if (v === 'global') setSelectedClients([]) }}>
+                <Select value={trailVisibility} onValueChange={(v) => { setTrailVisibility(v as TrailVisibility); setSelectedClients([]); setExcludedClients([]); setClientSearch('') }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -324,46 +344,88 @@ export function TrailManagementScreen() {
                   </SelectContent>
                 </Select>
               </div>
-              {trailVisibility === 'exclusiva' && (
-                <div className="flex flex-col gap-2">
-                  <Label>Empresas com acesso</Label>
-                  <Body muted className="text-xs">Selecione uma ou mais empresas que terão acesso a esta trilha</Body>
-                  <div className="border border-border max-h-[160px] overflow-y-auto">
-                    {CLIENTS.filter((c) => c.status === 'ativo').map((c) => {
-                      const isSelected = selectedClients.includes(c.id)
+              <div className="flex flex-col gap-2">
+                <Label>{trailVisibility === 'exclusiva' ? 'Empresas com acesso' : 'Excluir empresas'}</Label>
+                <Body muted className="text-xs">
+                  {trailVisibility === 'exclusiva'
+                    ? 'Selecione as empresas que terão acesso a esta trilha.'
+                    : 'Selecione as empresas que não poderão visualizar esta trilha. Se nenhuma for selecionada, todas terão acesso.'}
+                </Body>
+                <div className="relative">
+                  <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-planton-muted" />
+                  <Input
+                    placeholder="Buscar empresa..."
+                    value={clientSearch}
+                    onChange={(e) => setClientSearch(e.target.value)}
+                    className="pl-9 h-8 text-sm"
+                  />
+                </div>
+                <div className="border border-border max-h-[160px] overflow-y-auto">
+                  {filteredClients.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-planton-muted text-center">Nenhuma empresa encontrada</div>
+                  ) : (
+                    filteredClients.map((c) => {
+                      const isSelected = trailVisibility === 'exclusiva'
+                        ? selectedClients.includes(c.id)
+                        : excludedClients.includes(c.id)
                       return (
                         <button
                           key={c.id}
                           type="button"
-                          onClick={() => toggleClient(c.id)}
+                          onClick={() => trailVisibility === 'exclusiva' ? toggleClient(c.id) : toggleExcludedClient(c.id)}
                           className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between border-b border-border last:border-b-0 transition-colors ${
                             isSelected ? 'bg-planton-accent/10 text-planton-accent' : 'hover:bg-muted'
                           }`}
                         >
                           <span>{c.name}</span>
-                          {isSelected && <Badge variant="outline" className="text-xs">selecionado</Badge>}
+                          {isSelected && (
+                            <Badge variant="outline" className="text-xs">
+                              {trailVisibility === 'exclusiva' ? 'selecionado' : 'excluído'}
+                            </Badge>
+                          )}
                         </button>
                       )
-                    })}
-                  </div>
-                  {selectedClients.length > 0 && (
-                    <Body muted className="text-xs">{selectedClients.length} empresa{selectedClients.length !== 1 ? 's' : ''} selecionada{selectedClients.length !== 1 ? 's' : ''}</Body>
+                    })
                   )}
                 </div>
-              )}
-              <div className="flex flex-col gap-2">
-                <Label>Status inicial</Label>
-                <Select defaultValue="rascunho">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="rascunho">Rascunho</SelectItem>
-                    <SelectItem value="em-breve">Em breve</SelectItem>
-                    <SelectItem value="ativa">Ativa</SelectItem>
-                  </SelectContent>
-                </Select>
+                {trailVisibility === 'exclusiva' && selectedClients.length > 0 && (
+                  <Body muted className="text-xs">{selectedClients.length} empresa{selectedClients.length !== 1 ? 's' : ''} selecionada{selectedClients.length !== 1 ? 's' : ''}</Body>
+                )}
+                {trailVisibility === 'global' && excludedClients.length > 0 && (
+                  <Body muted className="text-xs">{excludedClients.length} empresa{excludedClients.length !== 1 ? 's' : ''} excluída{excludedClients.length !== 1 ? 's' : ''}</Body>
+                )}
               </div>
+              {/* Agendamento */}
+              {!isDraft && (
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="trail-schedule">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar size={14} />
+                      Agendar publicação
+                    </div>
+                  </Label>
+                  <Input
+                    id="trail-schedule"
+                    type="datetime-local"
+                    value={scheduledDate}
+                    onChange={(e) => setScheduledDate(e.target.value)}
+                  />
+                  <Body muted className="text-xs">
+                    Se preenchido, a trilha será publicada automaticamente na data e hora selecionadas. Deixe vazio para publicar imediatamente.
+                  </Body>
+                </div>
+              )}
+
+              {/* Rascunho */}
+              <div className="flex items-center gap-2">
+                <Checkbox id="trail-draft" checked={isDraft} onCheckedChange={(checked) => { setIsDraft(checked === true); if (checked) setScheduledDate('') }} />
+                <Label htmlFor="trail-draft" className="font-normal cursor-pointer">
+                  Salvar como rascunho
+                </Label>
+              </div>
+              <Body muted className="text-xs -mt-2">
+                A trilha não será publicada nem listada para os usuários. Ficará salva no sistema para edição futura.
+              </Body>
             </TabsContent>
 
             {/* Step 2: Conteúdos */}
@@ -540,8 +602,8 @@ export function TrailManagementScreen() {
                 Próximo
               </Button>
             ) : (
-              <Button onClick={() => { setDialogOpen(false); resetDialog(); toast.success('Trilha criada com sucesso') }}>
-                Criar trilha
+              <Button onClick={() => { setDialogOpen(false); resetDialog(); toast.success(isDraft ? 'Rascunho salvo com sucesso' : scheduledDate ? 'Trilha agendada com sucesso' : 'Trilha criada com sucesso') }}>
+                {isDraft ? 'Salvar rascunho' : scheduledDate ? 'Agendar' : 'Criar trilha'}
               </Button>
             )}
           </DialogFooter>
