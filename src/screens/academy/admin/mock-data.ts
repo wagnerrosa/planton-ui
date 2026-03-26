@@ -61,7 +61,7 @@ export type CatalogContent = {
   type: ContentType
   scope: ContentScope
   clients: string[]
-  status: 'publicado' | 'rascunho' | 'agendado'
+  status: 'publicado' | 'nao-listado' | 'agendado'
   quizEnabled: boolean
   views: number
   totalHours: number
@@ -431,7 +431,7 @@ export const CATALOG_CONTENT: CatalogContent[] = [
   { id: 'ct5', title: 'Carbono no Solo', type: 'artigo', scope: 'global', clients: [], status: 'publicado', quizEnabled: false, views: 634, totalHours: 0.3 },
   { id: 'ct6', title: 'Inventário de Emissões Scope 1', type: 'video', scope: 'exclusivo', clients: ['AgroTech Solutions', 'SustentAgro'], status: 'publicado', quizEnabled: true, views: 412, totalHours: 1.0 },
   { id: 'ct7', title: 'Relatório GEE - Template', type: 'guia', scope: 'exclusivo', clients: ['SustentAgro'], status: 'publicado', quizEnabled: false, views: 189, totalHours: 2.0 },
-  { id: 'ct8', title: 'Biodiversidade e Agricultura', type: 'video', scope: 'global', clients: [], status: 'rascunho', quizEnabled: false, views: 0, totalHours: 0.6 },
+  { id: 'ct8', title: 'Biodiversidade e Agricultura', type: 'video', scope: 'global', clients: [], status: 'nao-listado', quizEnabled: false, views: 0, totalHours: 0.6 },
   { id: 'ct9', title: 'Pegada de Carbono Empresarial', type: 'artigo', scope: 'global', clients: [], status: 'agendado', quizEnabled: true, views: 0, totalHours: 0.4 },
   { id: 'ct10', title: 'Compensação de Carbono', type: 'podcast', scope: 'global', clients: [], status: 'publicado', quizEnabled: false, views: 523, totalHours: 0.9 },
 ]

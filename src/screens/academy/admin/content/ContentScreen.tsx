@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
-import { Plus, MoreHorizontal, Pencil, Trash2, FileText, Search, X, Upload, Link2, Image } from 'lucide-react'
+import { Plus, MoreHorizontal, Pencil, Trash2, FileText, Search, X, Upload, Link2, Image, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
@@ -17,6 +17,7 @@ import { Input } from '@/components/shadcn/input'
 import { Textarea } from '@/components/shadcn/textarea'
 import { Label } from '@/components/shadcn/label'
 import { Skeleton } from '@/components/shadcn/skeleton'
+import { Checkbox } from '@/components/shadcn/checkbox'
 import { CATALOG_CONTENT, CLIENTS, type ContentType, type ContentScope } from '../mock-data'
 
 const BASE = '/design-system/screens/academy'
@@ -29,10 +30,16 @@ const TYPE_LABELS: Record<ContentType, string> = {
   guia: 'Guia',
 }
 
-const STATUS_BADGE: Record<string, 'success' | 'default' | 'info'> = {
+const STATUS_BADGE: Record<string, 'success' | 'warning' | 'info'> = {
   publicado: 'success',
-  rascunho: 'default',
+  'nao-listado': 'warning',
   agendado: 'info',
+}
+
+const STATUS_LABELS: Record<string, string> = {
+  publicado: 'Publicado',
+  'nao-listado': 'Não listado',
+  agendado: 'Agendado',
 }
 
 const INITIAL_THEMES = ['ESG', 'Emissões', 'ISO', 'Sustentabilidade', 'Carbono', 'Clima']
@@ -50,9 +57,13 @@ export function AdminContentScreen() {
   const [uploadScope, setUploadScope] = useState<ContentScope>('global')
   const [uploadType, setUploadType] = useState<ContentType | ''>('')
   const [selectedClients, setSelectedClients] = useState<string[]>([])
+  const [excludedClients, setExcludedClients] = useState<string[]>([])
+  const [clientSearch, setClientSearch] = useState('')
   const [selectedThemes, setSelectedThemes] = useState<string[]>([])
   const [themes, setThemes] = useState<string[]>(INITIAL_THEMES)
   const [newTheme, setNewTheme] = useState('')
+  const [isDraft, setIsDraft] = useState(false)
+  const [scheduledDate, setScheduledDate] = useState('')
   const [deleteThemeConfirm, setDeleteThemeConfirm] = useState<string | null>(null)
 
   useEffect(() => {
@@ -84,8 +95,12 @@ export function AdminContentScreen() {
     setUploadScope('global')
     setUploadType('')
     setSelectedClients([])
+    setExcludedClients([])
+    setClientSearch('')
     setSelectedThemes([])
     setNewTheme('')
+    setIsDraft(false)
+    setScheduledDate('')
     setDeleteThemeConfirm(null)
   }
 
@@ -94,6 +109,17 @@ export function AdminContentScreen() {
       prev.includes(clientId) ? prev.filter((id) => id !== clientId) : [...prev, clientId]
     )
   }
+
+  const toggleExcludedClient = (clientId: string) => {
+    setExcludedClients((prev) =>
+      prev.includes(clientId) ? prev.filter((id) => id !== clientId) : [...prev, clientId]
+    )
+  }
+
+  const activeClients = CLIENTS.filter((c) => c.status === 'ativo')
+  const filteredClients = clientSearch.trim()
+    ? activeClients.filter((c) => c.name.toLowerCase().includes(clientSearch.toLowerCase().trim()))
+    : activeClients
 
   const toggleTheme = (theme: string) => {
     setSelectedThemes((prev) =>
@@ -174,7 +200,7 @@ export function AdminContentScreen() {
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="publicado">Publicado</SelectItem>
-                <SelectItem value="rascunho">Rascunho</SelectItem>
+                <SelectItem value="nao-listado">Não listado</SelectItem>
                 <SelectItem value="agendado">Agendado</SelectItem>
               </SelectContent>
             </Select>
@@ -245,7 +271,7 @@ export function AdminContentScreen() {
                         </TableCell>
                         <TableCell>
                           <Badge variant={STATUS_BADGE[content.status]}>
-                            {content.status}
+                            {STATUS_LABELS[content.status]}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -369,7 +395,7 @@ export function AdminContentScreen() {
             {/* Escopo */}
             <div className="flex flex-col gap-2">
               <Label>Escopo</Label>
-              <Select value={uploadScope} onValueChange={(v) => { setUploadScope(v as ContentScope); if (v === 'global') setSelectedClients([]) }}>
+              <Select value={uploadScope} onValueChange={(v) => { setUploadScope(v as ContentScope); setSelectedClients([]); setExcludedClients([]); setClientSearch('') }}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -380,33 +406,58 @@ export function AdminContentScreen() {
               </Select>
             </div>
 
-            {/* Multi-select de empresas para escopo exclusivo */}
-            {uploadScope === 'exclusivo' && (
-              <div className="flex flex-col gap-2">
-                <Label>Empresas</Label>
-                <div className="border border-border max-h-[160px] overflow-y-auto">
-                  {CLIENTS.filter((c) => c.status === 'ativo').map((c) => {
-                    const isSelected = selectedClients.includes(c.id)
+            {/* Seleção de empresas */}
+            <div className="flex flex-col gap-2">
+              <Label>{uploadScope === 'exclusivo' ? 'Empresas com acesso' : 'Excluir empresas'}</Label>
+              <Body muted className="text-xs">
+                {uploadScope === 'exclusivo'
+                  ? 'Selecione as empresas que terão acesso a este conteúdo.'
+                  : 'Selecione as empresas que não poderão visualizar este conteúdo. Se nenhuma for selecionada, todas terão acesso.'}
+              </Body>
+              <div className="relative">
+                <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-planton-muted" />
+                <Input
+                  placeholder="Buscar empresa..."
+                  value={clientSearch}
+                  onChange={(e) => setClientSearch(e.target.value)}
+                  className="pl-9 h-8 text-sm"
+                />
+              </div>
+              <div className="border border-border max-h-[160px] overflow-y-auto">
+                {filteredClients.length === 0 ? (
+                  <div className="px-4 py-3 text-sm text-planton-muted text-center">Nenhuma empresa encontrada</div>
+                ) : (
+                  filteredClients.map((c) => {
+                    const isSelected = uploadScope === 'exclusivo'
+                      ? selectedClients.includes(c.id)
+                      : excludedClients.includes(c.id)
                     return (
                       <button
                         key={c.id}
                         type="button"
-                        onClick={() => toggleClient(c.id)}
+                        onClick={() => uploadScope === 'exclusivo' ? toggleClient(c.id) : toggleExcludedClient(c.id)}
                         className={`w-full text-left px-4 py-2.5 text-sm flex items-center justify-between border-b border-border last:border-b-0 transition-colors ${
                           isSelected ? 'bg-planton-accent/10 text-planton-accent' : 'hover:bg-muted'
                         }`}
                       >
                         <span>{c.name}</span>
-                        {isSelected && <Badge variant="outline" className="text-xs">selecionado</Badge>}
+                        {isSelected && (
+                          <Badge variant="outline" className="text-xs">
+                            {uploadScope === 'exclusivo' ? 'selecionado' : 'excluído'}
+                          </Badge>
+                        )}
                       </button>
                     )
-                  })}
-                </div>
-                {selectedClients.length > 0 && (
-                  <Body muted className="text-xs">{selectedClients.length} empresa{selectedClients.length !== 1 ? 's' : ''} selecionada{selectedClients.length !== 1 ? 's' : ''}</Body>
+                  })
                 )}
               </div>
-            )}
+              {uploadScope === 'exclusivo' && selectedClients.length > 0 && (
+                <Body muted className="text-xs">{selectedClients.length} empresa{selectedClients.length !== 1 ? 's' : ''} selecionada{selectedClients.length !== 1 ? 's' : ''}</Body>
+              )}
+              {uploadScope === 'global' && excludedClients.length > 0 && (
+                <Body muted className="text-xs">{excludedClients.length} empresa{excludedClients.length !== 1 ? 's' : ''} excluída{excludedClients.length !== 1 ? 's' : ''}</Body>
+              )}
+            </div>
 
             {/* Temas / Keywords */}
             <div className="flex flex-col gap-2">
@@ -454,10 +505,41 @@ export function AdminContentScreen() {
                 </Button>
               </div>
             </div>
+            {/* Agendamento */}
+            {!isDraft && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="content-schedule">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar size={14} />
+                    Agendar publicação
+                  </div>
+                </Label>
+                <Input
+                  id="content-schedule"
+                  type="datetime-local"
+                  value={scheduledDate}
+                  onChange={(e) => setScheduledDate(e.target.value)}
+                />
+                <Body muted className="text-xs">
+                  Se preenchido, o conteúdo será publicado automaticamente na data e hora selecionadas. Deixe vazio para publicar imediatamente.
+                </Body>
+              </div>
+            )}
+
+            {/* Rascunho */}
+            <div className="flex items-center gap-2">
+              <Checkbox id="content-draft" checked={isDraft} onCheckedChange={(checked) => { setIsDraft(checked === true); if (checked) setScheduledDate('') }} />
+              <Label htmlFor="content-draft" className="font-normal cursor-pointer">
+                Salvar como rascunho
+              </Label>
+            </div>
+            <Body muted className="text-xs -mt-2">
+              O conteúdo não será publicado nem listado para os usuários. Ficará salvo no sistema para edição futura.
+            </Body>
           </div>
           <DialogFooter>
-            <Button onClick={() => { setDialogOpen(false); resetDialog(); toast.success('Conteúdo enviado com sucesso') }}>
-              Enviar
+            <Button onClick={() => { setDialogOpen(false); resetDialog(); toast.success(isDraft ? 'Rascunho salvo com sucesso' : scheduledDate ? 'Conteúdo agendado com sucesso' : 'Conteúdo enviado com sucesso') }}>
+              {isDraft ? 'Salvar rascunho' : scheduledDate ? 'Agendar' : 'Enviar'}
             </Button>
           </DialogFooter>
         </DialogContent>
