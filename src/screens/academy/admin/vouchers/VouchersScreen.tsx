@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/shadcn/input'
 import { Label } from '@/components/shadcn/label'
 import { Skeleton } from '@/components/shadcn/skeleton'
-import { VOUCHERS, CLIENTS, type VoucherStatus } from '../mock-data'
+import { VOUCHERS, CLIENTS, formatDateBR, type VoucherStatus } from '../mock-data'
 
 const BASE = '/design-system/screens/academy'
 
@@ -215,7 +215,7 @@ export function VouchersScreen() {
                             {STATUS_LABELS[voucher.status]}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{voucher.activationDeadline}</TableCell>
+                        <TableCell className="text-right text-sm">{formatDateBR(voucher.activationDeadline)}</TableCell>
                         <TableCell className="text-sm">{voucher.planDuration}</TableCell>
                         <TableCell className="text-sm">{voucher.domains.join(', ')}</TableCell>
                         <TableCell>

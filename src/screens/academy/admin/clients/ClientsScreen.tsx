@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/shadcn/input'
 import { Label } from '@/components/shadcn/label'
 import { Skeleton } from '@/components/shadcn/skeleton'
-import { CLIENTS, type ClientStatus } from '../mock-data'
+import { CLIENTS, formatDateBR, type ClientStatus } from '../mock-data'
 
 const BASE = '/design-system/screens/academy'
 const PER_PAGE = 10
@@ -197,16 +197,16 @@ export function ClientsScreen() {
                             {client.name}
                           </Link>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{client.cnpj}</TableCell>
+                        <TableCell className="text-right text-sm">{client.cnpj}</TableCell>
                         <TableCell className="text-sm">{client.domains.join(', ')}</TableCell>
                         <TableCell>
                           <Badge variant={STATUS_BADGE[client.status]} className={STATUS_BADGE_CLASS[client.status]}>
                             {STATUS_LABELS[client.status]}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-sm">{client.totalUsers}</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">
-                          {client.plan.expiration}
+                        <TableCell className="text-right text-sm">{client.totalUsers}</TableCell>
+                        <TableCell className="text-right text-sm">
+                          {formatDateBR(client.plan.expiration)}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>

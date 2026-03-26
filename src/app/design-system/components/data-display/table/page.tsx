@@ -59,30 +59,30 @@ export default function TablePage() {
               <TableRow className="border-border">
                 <TableCell className="text-sm text-foreground">Ana Beatriz Silva</TableCell>
                 <TableCell className="text-sm text-foreground">Gestão de Emissões de GEE</TableCell>
-                <TableCell className="text-sm font-mono text-foreground">65%</TableCell>
+                <TableCell className="text-sm text-foreground">65%</TableCell>
                 <TableCell><Badge variant="outline">Pendente</Badge></TableCell>
-                <TableCell className="text-sm font-mono text-muted-foreground">14 mar 2026</TableCell>
+                <TableCell className="text-sm text-muted-foreground">14 mar 2026</TableCell>
               </TableRow>
               <TableRow className="border-border">
                 <TableCell className="text-sm text-foreground">Carlos Eduardo Mota</TableCell>
                 <TableCell className="text-sm text-foreground">Fundamentos ESG</TableCell>
-                <TableCell className="text-sm font-mono text-foreground">100%</TableCell>
+                <TableCell className="text-sm text-foreground">100%</TableCell>
                 <TableCell><Badge variant="success">Emitido</Badge></TableCell>
-                <TableCell className="text-sm font-mono text-muted-foreground">10 mar 2026</TableCell>
+                <TableCell className="text-sm text-muted-foreground">10 mar 2026</TableCell>
               </TableRow>
               <TableRow className="border-border">
                 <TableCell className="text-sm text-foreground">Fernanda Lima</TableCell>
                 <TableCell className="text-sm text-foreground">GHG Protocol Avançado</TableCell>
-                <TableCell className="text-sm font-mono text-foreground">20%</TableCell>
+                <TableCell className="text-sm text-foreground">20%</TableCell>
                 <TableCell><Badge variant="outline">Pendente</Badge></TableCell>
-                <TableCell className="text-sm font-mono text-muted-foreground">15 mar 2026</TableCell>
+                <TableCell className="text-sm text-muted-foreground">15 mar 2026</TableCell>
               </TableRow>
               <TableRow className="border-border">
                 <TableCell className="text-sm text-foreground">Rafael Gonçalves</TableCell>
                 <TableCell className="text-sm text-foreground">Relatórios GRI 400</TableCell>
-                <TableCell className="text-sm font-mono text-foreground">100%</TableCell>
+                <TableCell className="text-sm text-foreground">100%</TableCell>
                 <TableCell><Badge variant="success">Emitido</Badge></TableCell>
-                <TableCell className="text-sm font-mono text-muted-foreground">12 mar 2026</TableCell>
+                <TableCell className="text-sm text-muted-foreground">12 mar 2026</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -108,11 +108,11 @@ export default function TablePage() {
                 <TableRow key={row.name} className="border-border">
                   <TableCell className="text-sm text-foreground">{row.name}</TableCell>
                   <TableCell className="text-sm text-foreground">{row.trail}</TableCell>
-                  <TableCell className="text-sm font-mono text-foreground">{row.progress}</TableCell>
+                  <TableCell className="text-sm text-foreground">{row.progress}</TableCell>
                   <TableCell>
                     <Badge variant={row.cert === 'Emitido' ? 'success' : 'outline'}>{row.cert}</Badge>
                   </TableCell>
-                  <TableCell className="text-sm font-mono text-muted-foreground">{row.access}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{row.access}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

@@ -240,7 +240,7 @@ export function TrailManagementScreen() {
                             {trail.visibility}
                           </span>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-sm">{trail.contents.length}</TableCell>
+                        <TableCell className="text-right text-sm">{trail.contents.length}</TableCell>
                         <TableCell>
                           <Badge variant={trail.quizEnabled ? 'success' : 'outline'}>
                             {trail.quizEnabled ? 'sim' : 'não'}

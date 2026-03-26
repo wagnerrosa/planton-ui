@@ -63,10 +63,15 @@ export const GM_PLAN: GMPlan = {
   totalDays: 365,
 }
 
-// Helper: format ISO date to pt-BR (DD/MM/AAAA)
+const MONTHS_PT = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+
+// Helper: format ISO date (YYYY-MM-DD) to DD MMM YYYY
 export function formatDateBR(isoDate: string): string {
+  if (!isoDate || isoDate === '—') return '—'
   const [year, month, day] = isoDate.split('-')
-  return `${day}/${month}/${year}`
+  if (!year || !month || !day) return isoDate
+  const m = parseInt(month, 10)
+  return `${day} ${MONTHS_PT[m - 1]} ${year}`
 }
 
 export const GM_KPIS: GMKPI[] = [

@@ -126,7 +126,7 @@ function CollaboratorDetailModal({
                       <Badge variant="outline">{CONTENT_TYPE_LABELS[c.type] ?? c.type}</Badge>
                       <span className="text-sm">{c.title}</span>
                     </div>
-                    <span className="text-xs font-mono text-planton-muted tabular-nums shrink-0 ml-2">{formatDateBR(c.watchedAt)}</span>
+                    <span className="text-xs text-planton-muted shrink-0 ml-2">{formatDateBR(c.watchedAt)}</span>
                   </div>
                 ))}
               </div>
@@ -244,7 +244,7 @@ export function GMDashboardScreen() {
                         style={{ width: `${planProgress}%` }}
                       />
                     </div>
-                    <div className="flex justify-between text-xs text-planton-muted font-mono">
+                    <div className="flex justify-between text-xs text-planton-muted">
                       <span>Início: {formatDateBR(GM_PLAN.startDate)}</span>
                       <span>Vencimento: {formatDateBR(GM_PLAN.expiration)}</span>
                     </div>
@@ -280,9 +280,9 @@ export function GMDashboardScreen() {
                   ) : (
                     GM_TOP_TRAILS.map((trail, i) => (
                       <TableRow key={trail.id}>
-                        <TableCell className="font-mono text-planton-muted">{i + 1}</TableCell>
+                        <TableCell className="text-planton-muted">{i + 1}</TableCell>
                         <TableCell className="font-medium">{trail.title}</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{trail.accessCount}</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">{trail.accessCount}</TableCell>
                       </TableRow>
                     ))
                   )}
@@ -384,10 +384,10 @@ export function GMDashboardScreen() {
                             {STATUS_LABELS[collab.status]}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{collab.trailsCompleted}</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{collab.hoursWatched}h</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{collab.certificates}</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">
+                        <TableCell className="text-right text-sm tabular-nums">{collab.trailsCompleted}</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">{collab.hoursWatched}h</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">{collab.certificates}</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">
                           {collab.lastAccess ? formatDateBR(collab.lastAccess) : <span className="text-planton-muted">—</span>}
                         </TableCell>
                       </TableRow>

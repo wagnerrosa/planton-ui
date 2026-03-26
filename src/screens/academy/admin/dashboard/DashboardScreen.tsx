@@ -20,6 +20,7 @@ import {
   TOP_CONTENT,
   COMPANY_SUMMARY,
   CLIENTS,
+  formatDateBR,
 } from '../mock-data'
 
 const BASE = '/design-system/screens/academy'
@@ -150,7 +151,7 @@ export function DashboardScreen() {
             <div className="max-w-[1920px] mx-auto px-6 pb-10">
               <div className="border border-border">
                 <div className="px-6 pt-6 pb-4 border-b border-border flex items-center justify-between gap-4">
-                  <Heading as="h2" size="heading-md">Planos próximos do vencimento</Heading>
+                  <Heading as="h2" size="heading-md">Clientes próximos do vencimento</Heading>
                   <Alert variant="warning" className="w-fit">
                     <AlertTriangle size={16} />
                     <AlertBody>
@@ -165,8 +166,8 @@ export function DashboardScreen() {
                     <TableRow>
                       <TableHead>Empresa</TableHead>
                       <TableHead>Plano</TableHead>
-                      <TableHead>Vencimento</TableHead>
-                      <TableHead>Dias restantes</TableHead>
+                      <TableHead className="text-right">Vencimento</TableHead>
+                      <TableHead className="text-right">Dias restantes</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -178,8 +179,8 @@ export function DashboardScreen() {
                           </Link>
                         </TableCell>
                         <TableCell>{client.plan.name}</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{client.plan.expiration}</TableCell>
-                        <TableCell>
+                        <TableCell className="text-right text-sm">{formatDateBR(client.plan.expiration)}</TableCell>
+                        <TableCell className="text-right">
                           <Badge variant={client.plan.daysRemaining <= 10 ? 'destructive' : 'warning'}>
                             {client.plan.daysRemaining} dias
                           </Badge>
@@ -222,13 +223,13 @@ export function DashboardScreen() {
                   ) : (
                     TOP_CONTENT.map((content, i) => (
                       <TableRow key={content.id}>
-                        <TableCell className="font-mono text-planton-muted">{i + 1}</TableCell>
+                        <TableCell className="text-planton-muted">{i + 1}</TableCell>
                         <TableCell className="font-medium">{content.title}</TableCell>
                         <TableCell>
                           <Badge variant="outline">{contentTypeLabels[content.type] || content.type}</Badge>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-sm">{content.views.toLocaleString('pt-BR')}</TableCell>
-                        <TableCell className="text-right font-mono text-sm">{content.totalHours}h</TableCell>
+                        <TableCell className="text-right text-sm">{content.views.toLocaleString('pt-BR')}</TableCell>
+                        <TableCell className="text-right text-sm">{content.totalHours}h</TableCell>
                       </TableRow>
                     ))
                   )}
@@ -287,10 +288,10 @@ export function DashboardScreen() {
                             {company.name}
                           </Link>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.users}</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.hours}h</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.certificates}</TableCell>
-                        <TableCell className="text-right font-mono text-sm tabular-nums">{company.trailsCompleted}</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">{company.users}</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">{company.hours}h</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">{company.certificates}</TableCell>
+                        <TableCell className="text-right text-sm tabular-nums">{company.trailsCompleted}</TableCell>
                       </TableRow>
                     ))
                   )}
