@@ -18,7 +18,7 @@ export function TutorAvatar({ size = 'md', className }: TutorAvatarProps) {
   return (
     <div
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-white',
+        'flex shrink-0 items-center justify-center',
         SIZES[size],
         className,
       )}

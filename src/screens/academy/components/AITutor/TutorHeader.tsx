@@ -17,11 +17,11 @@ export function TutorHeader({ onClose }: TutorHeaderProps) {
         </h3>
         <span className="h-4 w-px bg-white/20" />
         <Image
-          src="/powered_by_genius.svg"
+          src="/powered_by_genius_horizontal.svg"
           alt="Powered by Planton Genius"
           width={110}
           height={18}
-          className="h-5 w-auto object-contain opacity-90"
+          className="h-3.5 w-auto object-contain opacity-90"
           unoptimized
         />
       </div>

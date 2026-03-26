@@ -19,7 +19,7 @@ export function FloatingButton({ open, onClick }: FloatingButtonProps) {
         open
           ? 'flex h-14 w-14 items-center justify-center rounded-full border border-planton-accent bg-planton-dark text-planton-accent shadow-lg'
           : cn(
-              'flex items-center overflow-visible rounded-l-2xl rounded-r-[2.75rem] py-0 pl-5 pr-1',
+              'flex h-14 items-center overflow-hidden rounded-full py-0 pl-6 pr-0',
               'border border-white/15 bg-background/60 backdrop-blur-2xl backdrop-saturate-150',
             ),
       )}
@@ -43,30 +43,26 @@ export function FloatingButton({ open, onClick }: FloatingButtonProps) {
           open ? 'pointer-events-none absolute scale-0 opacity-0' : 'scale-100 opacity-100',
         )}
       >
-        {/* Left: text */}
-        <span className="flex flex-col items-start gap-1 py-3">
-          <span className="font-heading text-base font-semibold leading-none text-planton-forest">
-            Tutor IA
-          </span>
-          <span className="h-px w-full bg-white/20" />
-          <Image
-            src="/powered_by_genius.svg"
-            alt="Powered by Planton Genius"
-            width={140}
-            height={24}
-            className="h-6 w-auto object-contain"
-            unoptimized
-          />
+        <span className="font-heading text-base font-semibold leading-none text-planton-forest">
+          Tutor IA
         </span>
-
-        {/* Right: Planton symbol — circle that overflows */}
-        <span className="-mr-1 flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-full border-1 border-white/20 bg-planton-accent/5">
+        <span className="h-8 w-px bg-white/20" />
+        <Image
+          src="/powered_by_genius.svg"
+          alt="Powered by Planton Genius"
+          width={130}
+          height={22}
+          className="h-5 w-auto object-contain"
+          unoptimized
+        />
+        {/* Planton symbol — full height, flush right */}
+        <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-[1px] border-white/20 bg-planton-accent/5">
           <Image
             src="/favicon/favicon.svg"
             alt="Planton"
-            width={44}
-            height={44}
-            className="h-11 w-11 rounded-lg object-contain"
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-md object-contain"
             unoptimized
           />
         </span>
