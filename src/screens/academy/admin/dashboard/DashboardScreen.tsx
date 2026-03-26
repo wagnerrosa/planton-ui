@@ -14,6 +14,7 @@ import { Badge } from '@/components/shadcn/badge'
 import { Input } from '@/components/shadcn/input'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import { AdminStatsCard } from '../components/AdminStatsCard'
+import { AdminUsageChart } from './components/AdminUsageChart'
 import {
   ADMIN_KPIS,
   EXPIRING_PLANS,
@@ -144,6 +145,11 @@ export function DashboardScreen() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Usage Chart */}
+          <div className="max-w-[1920px] mx-auto px-6 pb-10">
+            <AdminUsageChart />
           </div>
 
           {/* Expiring Plans */}
