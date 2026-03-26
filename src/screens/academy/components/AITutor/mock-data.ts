@@ -1,9 +1,9 @@
 import type { QuickPrompt, RichBlock } from './types'
 
 export const QUICK_PROMPTS: QuickPrompt[] = [
-  { label: 'O que estudar agora?', prompt: 'Quais conteudos devo estudar agora?' },
-  { label: 'O que e GEE?', prompt: 'Explique o que e GEE' },
-  { label: 'Trilhas para iniciantes', prompt: 'Recomende trilhas para iniciantes' },
+  { label: 'Quero uma trilha para começar', prompt: 'Quero começar a estudar, me recomende uma trilha' },
+  { label: 'Tenho uma dúvida sobre o conteúdo', prompt: 'Tenho uma dúvida sobre um conteúdo da plataforma' },
+  { label: 'Me explica um conceito', prompt: 'Pode me explicar um conceito do curso?' },
 ]
 
 /** Respostas mock indexadas por keyword simples. */

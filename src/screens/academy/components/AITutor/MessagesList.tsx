@@ -43,8 +43,8 @@ export function MessagesList({ messages, isTyping, quickPrompts, onQuickPrompt }
           <div className="flex flex-col items-center gap-6 py-8">
             <TutorAvatar size="lg" />
             <div className="text-center">
-              <p className="font-heading text-sm font-medium text-foreground">Olá! Sou o Tutor Planton</p>
-              <p className="mt-1 text-xs text-muted-foreground">Como posso te ajudar hoje?</p>
+              <p className="font-heading text-sm font-medium text-foreground">Olá! Sou o Tutor da Planton.</p>
+              <p className="mt-1 text-xs text-muted-foreground">O que você quer aprender hoje?</p>
             </div>
             <div className="flex w-full flex-col gap-2">
               {quickPrompts.map((qp) => (
