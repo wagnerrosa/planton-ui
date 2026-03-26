@@ -15,12 +15,12 @@ export function FloatingButton({ open, onClick }: FloatingButtonProps) {
       aria-label={open ? 'Fechar tutor' : 'Abrir tutor'}
       className={cn(
         'fixed bottom-6 right-6 z-[60] transition-all duration-300 ease-[var(--ease-sweep)]',
-        'hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]',
+        'shadow-md shadow-black/10 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/15 active:scale-[0.98] active:shadow-sm',
         open
           ? 'flex h-14 w-14 items-center justify-center rounded-full border border-planton-accent bg-planton-dark text-planton-accent shadow-lg'
           : cn(
               'flex items-center overflow-visible rounded-l-2xl rounded-r-[2.75rem] py-0 pl-5 pr-1',
-              'border border-white/15 bg-background/60 shadow-2xl shadow-black/30 backdrop-blur-2xl backdrop-saturate-150',
+              'border border-white/15 bg-background/60 backdrop-blur-2xl backdrop-saturate-150',
             ),
       )}
     >

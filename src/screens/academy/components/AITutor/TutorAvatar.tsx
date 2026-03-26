@@ -24,7 +24,7 @@ export function TutorAvatar({ size = 'md', className }: TutorAvatarProps) {
       )}
     >
       <Image
-        src="/favicon/favicon-32x32.png"
+        src="/favicon/favicon.svg"
         alt="Tutor Planton"
         width={IMG_PX[size]}
         height={IMG_PX[size]}
