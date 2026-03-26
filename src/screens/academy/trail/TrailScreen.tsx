@@ -11,6 +11,7 @@ import { Label } from '@/components/shadcn/label'
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { ContentTypeIcon } from '../home/components/ContentTypeIcon'
+import { CertificatePreview } from './CertificatePreview'
 import {
   CheckCircle,
   Circle,
@@ -250,23 +251,18 @@ function CertificateView({ trail }: { trail: Trail }) {
   }
 
   return (
-    <div className="w-full" style={{ aspectRatio: '16/9' }}>
-      <div className="w-full h-full bg-planton-accent/10 flex flex-col items-center justify-center gap-6 px-8">
-        <GraduationCap className="h-16 w-16 text-planton-accent" />
-        <div className="text-center flex flex-col gap-2">
-          <Heading as="h2" size="heading-xl">Certificado de Conclusão</Heading>
-          <Body muted>{trail.certificate.title}</Body>
-        </div>
-        <div className="flex gap-3">
-          <Button variant="primary">
-            <Download className="h-4 w-4" />
-            Baixar PDF
-          </Button>
-          <Button variant="outline">
-            <Linkedin className="h-4 w-4" />
-            Adicionar ao LinkedIn
-          </Button>
-        </div>
+    <div className="w-full max-w-[900px] mx-auto px-6 pt-8 pb-10 flex flex-col gap-4">
+      <CertificatePreview trail={trail} />
+
+      <div className="flex gap-3 justify-center">
+        <Button variant="primary">
+          <Download className="h-4 w-4" />
+          Baixar PDF
+        </Button>
+        <Button variant="outline">
+          <Linkedin className="h-4 w-4" />
+          Publicar no LinkedIn
+        </Button>
       </div>
     </div>
   )
