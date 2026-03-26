@@ -16,6 +16,7 @@ import { Input } from '@/components/shadcn/input'
 import { Label } from '@/components/shadcn/label'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import { AdminStatsCard } from '../admin/components/AdminStatsCard'
+import { GMUsageChart } from './components/GMUsageChart'
 import {
   GM_COMPANY,
   GM_PLAN,
@@ -251,6 +252,9 @@ export function GMDashboardScreen() {
                   </>
                 )}
               </div>
+
+              {/* Usage Chart — continua na mesma grade */}
+              <GMUsageChart />
             </div>
           </div>
 
