@@ -275,7 +275,7 @@ export function VouchersScreen() {
           <div className="flex flex-col gap-4 py-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="voucher-code">Código</Label>
-              <Input id="voucher-code" placeholder="PLANTON-2026-XXXX" />
+              <Input id="voucher-code" placeholder="NOMEDAEMPRESA-ANO-XXXX" />
             </div>
             <div className="flex flex-col gap-2">
               <Label>Empresa</Label>

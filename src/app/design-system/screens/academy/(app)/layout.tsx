@@ -25,6 +25,7 @@ import { AcademySidebar } from '@/components/navigation/AcademySidebar'
 import { AcademyNavbar } from '@/components/navigation/AcademyNavbar'
 import { AcademyNavbarProvider, useAcademyNavbar } from '@/components/navigation/AcademyNavbarContext'
 import { TopNotificationBar } from '@/components/ui/TopNotificationBar'
+import { AITutor } from '@/screens/academy/components/AITutor'
 
 const TRIAL_DAYS_REMAINING = 7
 
@@ -59,6 +60,9 @@ function AcademyLayoutInner({ children }: { children: React.ReactNode }) {
             {children}
           </main>
         </div>
+
+        {/* AI Tutor — visível apenas nas telas do aluno (home, trilhas, trail, content) */}
+        <AITutor />
       </div>
     </SidebarProvider>
   )
