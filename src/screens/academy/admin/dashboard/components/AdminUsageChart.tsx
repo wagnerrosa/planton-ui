@@ -37,11 +37,11 @@ const SEMESTER_RANGES: Record<string, number[]> = {
 const chartConfig = {
   usuarios: {
     label: "Usuários ativos",
-    color: "var(--chart-1)",
+    color: "var(--info)",
   },
   horas: {
     label: "Horas assistidas",
-    color: "var(--chart-2)",
+    color: "var(--planton-accent)",
   },
 } satisfies ChartConfig
 
@@ -95,14 +95,12 @@ export function AdminUsageChart() {
               type="natural"
               fill="url(#adminFillHoras)"
               stroke="var(--color-horas)"
-              stackId="a"
             />
             <Area
               dataKey="usuarios"
               type="natural"
               fill="url(#adminFillUsuarios)"
               stroke="var(--color-usuarios)"
-              stackId="a"
             />
             <ChartLegend content={<ChartLegendContent />} />
           </AreaChart>
