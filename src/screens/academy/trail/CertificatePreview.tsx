@@ -70,13 +70,13 @@ export function CertificatePreview({ trail }: { trail: Trail }) {
         </div>
 
         {/* ROW 2: Student name (30%) */}
-        <div className="flex items-center" style={{ height: '30%', paddingLeft: '5cqw' }}>
-          <div className="flex flex-col" style={{ gap: '0.5cqh' }}>
+        <div className="flex items-center overflow-hidden" style={{ height: '30%', paddingLeft: '5cqw', paddingRight: '5cqw' }}>
+          <div className="flex flex-col w-full" style={{ gap: '0.5cqh' }}>
             <span style={{ fontFamily: 'var(--font-sans)', fontSize: '1.4cqw', color: CREAM, lineHeight: 1.4 }}>
               Certificado
             </span>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: '6cqw', color: ACCENT, lineHeight: 1 }}>
-              Nome do Aluno
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.5rem, 5cqw, 6cqw)', color: ACCENT, lineHeight: 1.1, wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+              Nome do Aluno que Concluiu a Trilha
             </span>
           </div>
         </div>
@@ -84,21 +84,21 @@ export function CertificatePreview({ trail }: { trail: Trail }) {
         {/* ROW 3: Trail info + texture (42%) */}
         <div className="flex flex-1">
           {/* Left (60%) */}
-          <div className="flex flex-col justify-between" style={{ width: '60%', paddingLeft: '5cqw', paddingRight: '3cqw', paddingTop: '3cqh', paddingBottom: '3cqh' }}>
+          <div className="flex flex-col justify-center" style={{ width: '60%', paddingLeft: '5cqw', paddingRight: '3cqw', paddingTop: '3cqh', paddingBottom: '3cqh' }}>
             <div className="flex flex-col" style={{ gap: '0.8cqh' }}>
               <span style={{ fontFamily: 'var(--font-sans)', fontSize: '1.4cqw', color: CREAM, lineHeight: 1.4 }}>
                 Concluiu com sucesso a trilha:
               </span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontSize: '3.6cqw', color: ACCENT, lineHeight: 1.15 }}>
+              <span style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(0.5rem, 3.2cqw, 3.6cqw)', color: ACCENT, lineHeight: 1.15, wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
                 {trail.title}
               </span>
             </div>
-            <div className="flex" style={{ gap: '4cqw' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.2cqw', color: CREAM }}>
-                Data: 20/03/2026
+            <div className="flex" style={{ gap: '2cqw', marginTop: '4cqh' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.4cqw', color: CREAM }}>
+                <span style={{ opacity: 0.7 }}>Data:</span> 20/03/2026
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.2cqw', color: CREAM }}>
-                Duração: {trail.totalDuration}
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.4cqw', color: CREAM }}>
+                <span style={{ opacity: 0.7 }}>Duração:</span> {trail.totalDuration}
               </span>
             </div>
           </div>
