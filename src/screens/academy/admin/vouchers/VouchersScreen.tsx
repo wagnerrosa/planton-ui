@@ -297,6 +297,7 @@ export function VouchersScreen() {
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="14d">14 dias</SelectItem>
                   <SelectItem value="3">3 meses</SelectItem>
                   <SelectItem value="6">6 meses</SelectItem>
                   <SelectItem value="12">12 meses</SelectItem>
@@ -332,6 +333,7 @@ export function VouchersScreen() {
                   <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="14d">14 dias</SelectItem>
                   <SelectItem value="3">3 meses</SelectItem>
                   <SelectItem value="6">6 meses</SelectItem>
                   <SelectItem value="12">12 meses</SelectItem>
