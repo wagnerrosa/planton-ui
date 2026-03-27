@@ -5,9 +5,10 @@ import { cn } from '@/lib/utils'
 type InputAreaProps = {
   onSend: (text: string) => void
   disabled?: boolean
+  isMobile?: boolean
 }
 
-export function InputArea({ onSend, disabled }: InputAreaProps) {
+export function InputArea({ onSend, disabled, isMobile }: InputAreaProps) {
   const [value, setValue] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -21,7 +22,11 @@ export function InputArea({ onSend, disabled }: InputAreaProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-white/10 px-4 py-3">
+    <form
+      onSubmit={handleSubmit}
+      className="border-t border-white/10 px-4 py-3"
+      style={isMobile ? { paddingBottom: `calc(0.75rem + env(safe-area-inset-bottom))` } : undefined}
+    >
       <div className="flex items-center gap-2">
         <input
           ref={inputRef}

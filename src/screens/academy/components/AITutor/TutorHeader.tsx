@@ -4,11 +4,15 @@ import { TutorAvatar } from './TutorAvatar'
 
 type TutorHeaderProps = {
   onClose: () => void
+  isMobile?: boolean
 }
 
-export function TutorHeader({ onClose }: TutorHeaderProps) {
+export function TutorHeader({ onClose, isMobile }: TutorHeaderProps) {
   return (
-    <div className="flex items-center border-b border-white/10 px-5 py-4">
+    <div
+      className="flex items-center border-b border-white/10 px-5 py-4"
+      style={isMobile ? { paddingTop: `calc(1rem + env(safe-area-inset-top))` } : undefined}
+    >
       {/* Left group: avatar + Tutor IA + separator + powered by */}
       <div className="flex items-center gap-3">
         <TutorAvatar size="md" />
