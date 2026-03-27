@@ -3,6 +3,7 @@
 import { AcademyNavbarSync } from '@/components/navigation/AcademyNavbarSync'
 import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Heading } from '@/components/primitives/Heading'
+import { Body } from '@/components/primitives/Body'
 import { AcademyHero } from '../components/AcademyHero'
 import { TrailCard } from './TrailCard'
 import { MOCK_TRAILS, TRAILS_HERO_SLIDES } from '../home/mock-data'
@@ -20,50 +21,38 @@ export function TrailsScreen() {
       {/* 1. Hero */}
       <AcademyHero slides={TRAILS_HERO_SLIDES} />
 
-      {/* 2. Intro text + trilhas — container com borda */}
-      <div id="trilhas" className="max-w-[1920px] mx-auto px-6 pb-20">
-        <div className="border border-border">
+      {/* 2. Intro */}
+      <div className="max-w-4xl mx-auto px-6 pt-16 pb-10 text-center">
+        <Heading as="h2" size="heading-lg">
+          Avance no seu ritmo até a certificação
+        </Heading>
+        <Body size="base" muted className="mt-3">
+          Escolha uma trilha, acompanhe seu progresso e conquiste seu certificado.
+        </Body>
+      </div>
 
-          {/* Heading */}
-          <div className="px-10 pt-10 pb-8 border-b border-border">
-            <Heading as="h2" size="heading-lg">
-              Avance no seu ritmo até a certificação
-            </Heading>
-          </div>
+      {/* Full-width separator */}
+      <div className="h-px bg-border" />
 
-          {/* Grid de cards — 2 colunas × N linhas, cada célula com border-b + border-r */}
-          <div className="grid grid-cols-1 md:grid-cols-2">
-            {MOCK_TRAILS.map((t, i) => {
-              const totalRows = Math.ceil(MOCK_TRAILS.length / 2)
-              const row = Math.floor(i / 2)
-              const isLastRow = row === totalRows - 1
-              return (
-              <div
-                key={t.id}
-                className={[
-                  'px-10',
-                  !isLastRow ? 'border-b border-border' : '',
-                  i % 2 === 0 ? 'md:border-r md:border-border' : '',
-                ].join(' ')}
-              >
-                <TrailCard
-                  trail={{
-                    id: t.id,
-                    title: t.title,
-                    description: t.description,
-                    contentsCount: t.totalItems,
-                    duration: t.totalDuration,
-                    progress: t.progress,
-                    status: t.status,
-                    contents: t.contents,
-                    href: `/design-system/screens/academy/trail/${t.id}`,
-                  }}
-                />
-              </div>
-              )
-            })}
-          </div>
-
+      {/* 3. Trail cards */}
+      <div className="px-6 pt-10 pb-16">
+        <div className="max-w-[860px] mx-auto flex flex-col gap-6">
+          {MOCK_TRAILS.map((t) => (
+            <TrailCard
+              key={t.id}
+              trail={{
+                id: t.id,
+                title: t.title,
+                description: t.description,
+                contentsCount: t.totalItems,
+                duration: t.totalDuration,
+                progress: t.progress,
+                status: t.status,
+                contents: t.contents,
+                href: `/design-system/screens/academy/trail/${t.id}`,
+              }}
+            />
+          ))}
         </div>
       </div>
 
