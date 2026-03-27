@@ -1,6 +1,21 @@
+'use client'
+
 import Link from 'next/link'
-import { ArrowRight, PlayCircle, Headphones, FileText, BookOpen, Award } from 'lucide-react'
+import {
+  ArrowRight,
+  PlayCircle,
+  Headphones,
+  FileText,
+  BookOpen,
+  Award,
+  CheckCircle2,
+  Clock,
+} from 'lucide-react'
 import type { ContentItem } from '../home/mock-data'
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 type TrailStatus = 'nao-iniciada' | 'em-andamento' | 'concluida' | 'em-breve'
 
@@ -20,6 +35,10 @@ type TrailCardProps = {
   trail: Trail
 }
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
 const typeIcon = {
   video: PlayCircle,
   podcast: Headphones,
@@ -35,11 +54,20 @@ const fallbackImages: Record<string, string[]> = {
   trilha: ['/assets/PANTANAL-BG.jpg'],
 }
 
-const statusLabel: Record<TrailStatus, string> = {
-  'nao-iniciada': 'Não iniciada',
-  'em-andamento': 'Em andamento',
-  'concluida': 'Concluída',
-  'em-breve': 'Em breve',
+/** One image per trail — cycles through biomes */
+const trailImages = [
+  '/assets/MATA-ATLANTICA-BG.jpg',
+  '/assets/CAATINGA-BG.jpg',
+  '/assets/SERRA-SUL-BG.jpg',
+  '/assets/PANTANAL-BG.jpg',
+  '/assets/PAMPA-BG.jpg',
+]
+
+const statusConfig: Record<TrailStatus, { label: string; icon: typeof Award }> = {
+  'nao-iniciada': { label: 'Não iniciada', icon: Clock },
+  'em-andamento': { label: 'Em andamento', icon: PlayCircle },
+  'concluida': { label: 'Concluída', icon: Award },
+  'em-breve': { label: 'Em breve', icon: Clock },
 }
 
 function getThumb(item: ContentItem): string {
@@ -48,130 +76,157 @@ function getThumb(item: ContentItem): string {
   return list[item.id.charCodeAt(0) % list.length]
 }
 
-function getFeaturedThumb(contents: ContentItem[]): ContentItem | undefined {
-  return (
-    contents.find((c) => c.progress > 0 && c.progress < 100) ??
-    contents.find((c) => c.status === 'nao-iniciado') ??
-    contents[0]
-  )
-}
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export function TrailCard({ trail }: TrailCardProps) {
-  const { title, description, contentsCount, duration, progress, status, href, contents = [] } = trail
-  const isConcluida = status === 'concluida'
+  const {
+    id,
+    title,
+    description,
+    contentsCount,
+    duration,
+    progress,
+    status,
+    href,
+    contents = [],
+  } = trail
 
-  const featuredItem = getFeaturedThumb(contents)
-  const otherThumbs = contents.filter((c) => c.id !== featuredItem?.id).slice(0, 4)
+  const isConcluida = status === 'concluida'
+  const isNaoIniciada = status === 'nao-iniciada'
+  const statusInfo = status ? statusConfig[status] : null
+
+  // Pick a biome image for the main thumb based on trail id
+  const trailIndex = parseInt(id.replace(/\D/g, ''), 10) || 0
+  const mainImage = trailImages[trailIndex % trailImages.length]
+
+  // Show up to 5 content thumbnails
+  const thumbContents = contents.slice(0, 5)
 
   return (
-    <Link href={href} className="group flex flex-col gap-4 py-8 cursor-pointer">
+    <Link href={href} className="group block">
+      {/* White card — glassmorphism via backdrop-blur on bg-card/95.
+          No border-radius, no shadows — per design system. */}
+      <div className="relative overflow-hidden bg-planton-forest">
 
-      {/* Linha 1: Título + Status */}
-      <div className="flex items-start justify-between gap-4">
-        <h3 className="font-heading text-2xl font-normal leading-snug text-foreground group-hover:text-planton-accent transition-colors duration-150">
-          {title}
-        </h3>
-        {status && (
-          <span className={`inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-[0.10em] shrink-0 pt-0.5 ${isConcluida ? 'text-planton-accent' : 'text-planton-muted'}`}>
-            {isConcluida && <Award className="h-3 w-3" />}
-            {statusLabel[status]}
-          </span>
-        )}
-      </div>
+        {/* Content: left info + right thumb */}
+        <div className="flex flex-col md:flex-row">
 
-      {/* Linha 2: Thumb esquerda + metadados direita */}
-      <div className="flex gap-5">
+          {/* ─── Left: Info ─── */}
+          <div className="flex-1 flex flex-col p-6 md:p-8">
 
-        {/* Thumb principal — proporção 4:5 */}
-        {featuredItem && (
-          <div className="relative shrink-0 overflow-hidden rounded-sm" style={{ width: 160, height: 200 }}>
+            {/* Status badge */}
+            {statusInfo && (
+              <div className="mb-3">
+                <span
+                  className={[
+                    'inline-flex items-center gap-1.5 font-mono text-[0.625rem] uppercase tracking-[0.10em]',
+                    isConcluida
+                      ? 'text-planton-accent'
+                      : status === 'em-andamento'
+                        ? 'text-planton-accent/80'
+                        : 'text-planton-cream/50',
+                  ].join(' ')}
+                >
+                  <statusInfo.icon className="h-3 w-3" />
+                  {statusInfo.label}
+                </span>
+              </div>
+            )}
+
+            {/* Title */}
+            <h3 className="font-heading text-xl md:text-3xl font-normal leading-tight text-planton-cream group-hover:text-planton-accent transition-colors duration-200">
+              {title}
+            </h3>
+
+            {/* Description */}
+            {description && (
+              <p className="mt-2 font-sans text-sm leading-relaxed text-planton-cream/80 line-clamp-2 max-w-md">
+                {description}
+              </p>
+            )}
+
+            {/* Content thumbs list */}
+            {thumbContents.length > 0 && (
+              <div className="flex gap-1.5 items-center mt-4">
+                {thumbContents.map((item) => {
+                  const Icon = typeIcon[item.type] ?? BookOpen
+                  const isCompleted = item.status === 'concluido'
+                  return (
+                    <div
+                      key={item.id}
+                      className="relative overflow-hidden shrink-0"
+                      style={{ width: 44, height: 44 }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={getThumb(item)}
+                        alt=""
+                        className="w-full h-full object-cover brightness-75"
+                        draggable={false}
+                      />
+                      <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        {isCompleted ? (
+                          <CheckCircle2 className="h-3.5 w-3.5 text-planton-accent" />
+                        ) : (
+                          <Icon className="h-3 w-3 text-white/80" />
+                        )}
+                      </span>
+                    </div>
+                  )
+                })}
+                {contentsCount > thumbContents.length && (
+                  <span className="font-mono text-[10px] text-planton-cream/50 pl-1">
+                    +{contentsCount - thumbContents.length}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Progress bar — only when progress > 0 */}
+            {progress !== undefined && progress > 0 && (
+              <div className="flex items-center gap-3 mt-4 max-w-xs">
+                <div className="flex-1 h-px bg-planton-accent/20 overflow-hidden">
+                  <div
+                    className="h-full bg-planton-accent transition-all duration-500"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <span className="font-mono text-[0.625rem] text-planton-cream/50 shrink-0">
+                  {progress}%
+                </span>
+              </div>
+            )}
+
+            {/* Bottom: meta only */}
+            <div className="mt-auto pt-5">
+              <span className="font-mono text-[0.625rem] text-planton-cream/40">
+                {contentsCount} conteúdo{contentsCount !== 1 ? 's' : ''}  ·  {duration}
+              </span>
+            </div>
+          </div>
+
+          {/* ─── Right: Thumbnail with CTA overlay ─── */}
+          <div className="hidden md:block relative w-[275px] lg:w-[325px] shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={getThumb(featuredItem)}
+              src={mainImage}
               alt=""
-              className="w-full h-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
+              className="absolute inset-0 w-full h-full object-cover brightness-[0.85] group-hover:brightness-100 group-hover:scale-[1.03] transition-all duration-500"
               draggable={false}
             />
-            <span className="absolute inset-0 flex items-center justify-center bg-black/20">
-              {(() => {
-                const Icon = typeIcon[featuredItem.type] ?? BookOpen
-                return <Icon className="h-6 w-6 text-white/80" />
-              })()}
-            </span>
-            {featuredItem.progress > 0 && featuredItem.progress < 100 && (
-              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/20">
-                <div className="h-full bg-planton-accent" style={{ width: `${featuredItem.progress}%` }} />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Metadados */}
-        <div className="flex flex-col gap-3 flex-1 min-w-0 justify-center">
-
-          {/* Descrição */}
-          {description && (
-            <p className="font-sans text-sm leading-relaxed text-planton-muted line-clamp-2">
-              {description}
-            </p>
-          )}
-
-          {/* Thumbs dos outros conteúdos */}
-          {otherThumbs.length > 0 && (
-            <div className="flex gap-1.5 items-center">
-              {otherThumbs.map((item) => {
-                const Icon = typeIcon[item.type] ?? BookOpen
-                return (
-                  <div
-                    key={item.id}
-                    className="relative overflow-hidden rounded-sm shrink-0"
-                    style={{ width: 88, height: 50 }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={getThumb(item)}
-                      alt=""
-                      className="w-full h-full object-cover brightness-75"
-                      draggable={false}
-                    />
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/20">
-                      <Icon className="h-3 w-3 text-white/75" />
-                    </span>
-                  </div>
-                )
-              })}
-              {contentsCount > otherThumbs.length + 1 && (
-                <span className="font-mono text-[10px] text-planton-muted pl-0.5">
-                  +{contentsCount - otherThumbs.length - 1}
-                </span>
-              )}
+            {/* CTA overlay — centered on thumb */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="inline-flex items-center gap-2 border border-white/70 bg-white/10 px-4 py-2 font-mono text-xs text-white uppercase tracking-widest backdrop-blur-sm transition-colors duration-200 group-hover:bg-white/20">
+                {isConcluida ? 'Rever' : isNaoIniciada ? 'Começar' : 'Continuar'}
+                <ArrowRight className="h-3 w-3" />
+              </span>
             </div>
-          )}
-
-          {/* Meta + progress */}
-          <div className="flex items-center gap-4">
-            <span className="font-mono text-[0.625rem] text-planton-muted shrink-0">
-              {contentsCount} conteúdo{contentsCount !== 1 ? 's' : ''}  ·  {duration}
-            </span>
-            {progress !== undefined && progress > 0 && (
-              <div className="flex items-center gap-2 flex-1">
-                <div className="flex-1 h-[2px] bg-border rounded-full overflow-hidden">
-                  <div className="h-full bg-planton-accent rounded-full" style={{ width: `${progress}%` }} />
-                </div>
-                <span className="font-mono text-[0.625rem] text-planton-muted shrink-0">{progress}%</span>
-              </div>
-            )}
           </div>
-
-          {/* CTA */}
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs text-planton-accent group-hover:gap-3 transition-all duration-150">
-            Ver trilha
-            <ArrowRight className="h-3.5 w-3.5" />
-          </span>
 
         </div>
       </div>
-
     </Link>
   )
 }
