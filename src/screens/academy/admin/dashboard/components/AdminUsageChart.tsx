@@ -87,7 +87,7 @@ export function AdminUsageChart() {
             <ChartTooltip
               cursor={false}
               content={
-                <ChartTooltipContent labelFormatter={(value) => value} indicator="dot" />
+                <ChartTooltipContent labelFormatter={(value) => value as string} indicator="dot" />
               }
             />
             <Area
