@@ -74,7 +74,7 @@ export function AcademyFooter({ variant = 'default' }: AcademyFooterProps) {
 
   return (
     <>
-      <footer className="border-t border-border bg-background">
+      <footer className="relative border-t border-border bg-background">
         <div className="max-w-[1920px] mx-auto px-4 py-4 md:py-0 md:h-[67px] flex flex-col md:flex-row items-center justify-between gap-3 md:gap-0">
           {/* Logo */}
           <Link href="/design-system/screens">
@@ -88,8 +88,8 @@ export function AcademyFooter({ variant = 'default' }: AcademyFooterProps) {
             />
           </Link>
 
-          {/* Links */}
-          <div className="flex items-center gap-6 text-xs text-muted-foreground">
+          {/* Links — centro absoluto no desktop */}
+          <div className="flex items-center gap-6 text-xs text-muted-foreground md:absolute md:left-1/2 md:-translate-x-1/2">
             {linkButtons.map(({ label, action }) => (
               <button
                 key={label}
