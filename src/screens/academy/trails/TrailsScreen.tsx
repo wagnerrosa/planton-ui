@@ -35,25 +35,33 @@ export function TrailsScreen() {
       <div className="h-px bg-border" />
 
       {/* 3. Trail cards */}
-      <div className="px-6 pt-10 pb-16">
-        <div className="max-w-[960px] mx-auto flex flex-col gap-6">
-          {MOCK_TRAILS.map((t) => (
-            <TrailCard
-              key={t.id}
-              trail={{
-                id: t.id,
-                title: t.title,
-                description: t.description,
-                contentsCount: t.totalItems,
-                duration: t.totalDuration,
-                progress: t.progress,
-                status: t.status,
-                contents: t.contents,
-                href: `/design-system/screens/academy/trail/${t.id}`,
-              }}
-            />
-          ))}
+      <div className="flex">
+        {/* Left gutter */}
+        <div className="hidden md:block w-16 shrink-0 border-r border-border" />
+
+        <div className="flex-1 px-6 pt-10 pb-16">
+          <div className="max-w-[960px] mx-auto flex flex-col gap-6">
+            {MOCK_TRAILS.map((t) => (
+              <TrailCard
+                key={t.id}
+                trail={{
+                  id: t.id,
+                  title: t.title,
+                  description: t.description,
+                  contentsCount: t.totalItems,
+                  duration: t.totalDuration,
+                  progress: t.progress,
+                  status: t.status,
+                  contents: t.contents,
+                  href: `/design-system/screens/academy/trail/${t.id}`,
+                }}
+              />
+            ))}
+          </div>
         </div>
+
+        {/* Right gutter */}
+        <div className="hidden md:block w-16 shrink-0 border-l border-border" />
       </div>
 
       <AcademyFooter />
