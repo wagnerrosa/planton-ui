@@ -25,9 +25,15 @@ const screens = [
     items: [
       { href: '/design-system/screens/academy/login',           label: 'Login',    description: 'Tela de autenticação' },
       { href: '/design-system/screens/academy/home',            label: 'Home',     description: 'Listagem de trilhas e cursos' },
-      { href: '/design-system/screens/academy/trilhas',         label: 'Trilhas',  description: 'Listagem de trilhas disponíveis' },
-      { href: '/design-system/screens/academy/trail/trail-1',   label: 'Trilha',   description: 'Player de trilha com sidebar de conteúdos' },
+      { href: '/design-system/screens/academy/trilhas',         label: 'Trilhas',  description: 'Listagem de trilhas disponíveis com gutters laterais' },
+      { href: '/design-system/screens/academy/trail/trail-1',   label: 'Trilha',   description: 'Player de trilha com sidebar de conteúdos e certificado' },
       { href: '/design-system/screens/academy/content/c1',      label: 'Conteúdo', description: 'Tela individual de conteúdo' },
+    ],
+  },
+  {
+    product: 'Gestor Master',
+    items: [
+      { href: '/design-system/screens/academy/gm', label: 'Dashboard GM', description: 'KPIs da empresa, colaboradores, trilhas e chart de engajamento' },
     ],
   },
   {
@@ -39,6 +45,13 @@ const screens = [
       { href: '/design-system/screens/academy/admin/vouchers',    label: 'Vouchers',   description: 'Gestão de vouchers de ativação' },
       { href: '/design-system/screens/academy/admin/content',     label: 'Conteúdo',   description: 'Catálogo de conteúdos' },
       { href: '/design-system/screens/academy/admin/trails',      label: 'Trilhas',    description: 'CRUD de trilhas com criação em etapas' },
+    ],
+  },
+  {
+    product: 'Patterns',
+    items: [
+      { href: '/design-system/screens/academy/patterns/ai-tutor',  label: 'AI Tutor',  description: 'Assistente de IA flutuante com painel de chat (glassmorphism)' },
+      { href: '/design-system/screens/academy/patterns/trail-card', label: 'TrailCard', description: 'Card de trilha duas colunas com imagem bioma e CTA overlay' },
     ],
   },
 ]

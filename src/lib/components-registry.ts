@@ -6,6 +6,7 @@ import {
   Layers,
   PanelsTopLeft,
   MousePointer,
+  BarChart2,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -104,6 +105,15 @@ export const componentCategories: ComponentCategory[] = [
       { slug: 'carousel', name: 'Carousel', description: 'Horizontal carousel with navigation and snap.', filePath: 'src/components/shadcn/carousel.tsx' },
       { slug: 'content-row', name: 'ContentRow', description: 'Horizontal carousel (Embla) of ContentCards with title, trail link and navigation. Controls responsive card width.', filePath: 'src/screens/academy/home/components/ContentRow.tsx' },
       { slug: 'sidebar', name: 'Sidebar', description: 'Structural sidebar component with mobile support (sheet) and expanded/collapsed states.', filePath: 'src/components/shadcn/sidebar.tsx' },
+      { slug: 'stacking-cards', name: 'StackingCards', description: 'Scroll-triggered stacking card effect via Framer Motion. Container (StackingCards) + item (StackingCardItem) with progressive scale-down as the user scrolls.', filePath: 'src/components/ui/StackingCards.tsx' },
+    ],
+  },
+  {
+    slug: 'data-viz',
+    label: 'Data & Charts',
+    icon: BarChart2,
+    components: [
+      { slug: 'chart', name: 'Chart', description: 'Recharts wrapper with design system integration. ChartContainer, ChartConfig, ChartTooltipContent and ChartLegendContent with automatic light/dark theme support via CSS variables.', filePath: 'src/components/shadcn/chart.tsx' },
     ],
   },
 ]

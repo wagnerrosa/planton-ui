@@ -18,6 +18,9 @@ Este repositório centraliza tokens de design, componentes e padrões de tela us
 | next-themes | dark mode |
 | react-hook-form + zod | formulários |
 | sonner | toasts |
+| recharts | charts (engajamento, usage) |
+| framer-motion | animações (StackingCards) |
+| hls.js | streaming HLS (Mux videos) |
 
 ---
 
@@ -72,10 +75,11 @@ src/
 │   │   ├── Card.tsx
 │   │   ├── ComponentPage.tsx
 │   │   ├── CourseGrid.tsx
+│   │   ├── StackingCards.tsx           # Efeito de empilhamento scroll-triggered (Framer Motion)
 │   │   ├── Surface.tsx
 │   │   ├── ThemeProvider.tsx
 │   │   └── ThemeToggle.tsx
-│   └── shadcn/                         # Componentes shadcn/ui
+│   └── shadcn/                         # Componentes shadcn/ui (inclui chart.tsx para Recharts)
 │
 ├── hooks/
 │   └── use-mobile.tsx                  # Hook para detecção de viewport mobile
@@ -90,7 +94,19 @@ src/
 │       │   ├── LoginScreen.tsx         # Tela de login estática (legado)
 │       │   └── steps/                  # 12 step components do fluxo (onboarding movido para Home)
 │       ├── components/
-│       │   └── AcademyHero.tsx         # Hero compartilhado (vídeo Mux + slides + dots de progresso)
+│       │   ├── AcademyHero.tsx         # Hero compartilhado (vídeo Mux + slides + dots de progresso)
+│       │   └── AITutor/               # Tutor IA flutuante
+│       │       ├── index.tsx           # Controlador principal (estado, roteamento por pathname)
+│       │       ├── FloatingButton.tsx  # Botão flutuante bottom-right (glassmorphism)
+│       │       ├── TutorPanel.tsx      # Painel 380px (frosted glass, header/messages/input)
+│       │       ├── TutorHeader.tsx     # Header com avatar + logo + close
+│       │       ├── TutorAvatar.tsx     # Avatar reutilizável (sm/md/lg)
+│       │       ├── MessagesList.tsx    # Lista de mensagens + quick prompts + WhatsApp
+│       │       ├── MessageBubble.tsx   # Bolha individual (text/list/highlight blocks)
+│       │       ├── InputArea.tsx       # Input de mensagem + send button
+│       │       ├── TypingIndicator.tsx # Indicador de digitação
+│       │       ├── types.ts           # Tipos (Message, ContentBlock, QuickPrompt)
+│       │       └── mock-data.ts       # Quick prompts + respostas mock (keyword matching)
 │       ├── home/
 │       │   ├── HomeScreen.tsx          # Home do Academy (hero + busca + filtros + conteúdos por tipo)
 │       │   ├── mock-data.ts            # Dados mockados (trilhas, conteúdos, slides de hero)
@@ -107,12 +123,23 @@ src/
 │       │       ├── ContinueTrailsCard.tsx  # Lista de trilhas em andamento com progress bars
 │       │       └── OnboardingDialog.tsx    # Dialog de boas-vindas com vídeo (abre ao entrar na Home)
 │       ├── trails/
-│       │   ├── TrailsScreen.tsx        # Listagem de todas as trilhas (hero + grid 2 colunas)
-│       │   └── TrailCard.tsx           # Card de trilha para a tela de Trilhas
+│       │   ├── TrailsScreen.tsx        # Listagem de trilhas (hero + gutters laterais + cards)
+│       │   └── TrailCard.tsx           # Card de trilha 2 colunas (info + imagem bioma + CTA overlay)
 │       ├── trail/
-│       │   └── TrailScreen.tsx         # Tela de trilha (sidebar + player de conteúdo)
-│       └── content/
-│           └── ContentScreen.tsx       # Player de conteúdo (vídeo/podcast/artigo)
+│       │   ├── TrailScreen.tsx         # Tela de trilha (sidebar + player de conteúdo)
+│       │   └── CertificatePreview.tsx  # Preview do certificado (16:9, container queries, fundo teal)
+│       ├── content/
+│       │   └── ContentScreen.tsx       # Player de conteúdo (vídeo/podcast/artigo)
+│       ├── admin/                      # Painel Super Admin
+│       │   └── dashboard/
+│       │       ├── AdminDashboardScreen.tsx   # Dashboard plataforma (KPIs, clientes, vouchers, conteúdo, trilhas)
+│       │       └── components/
+│       │           └── AdminUsageChart.tsx    # Chart de engajamento (Recharts AreaChart, escala plataforma)
+│       └── gm/                         # Painel Gestor Master
+│           ├── GMDashboardScreen.tsx    # Dashboard empresa (KPIs, plano, colaboradores, trilhas, chart)
+│           ├── components/
+│           │   └── GMUsageChart.tsx     # Chart de engajamento (Recharts AreaChart, escala empresa)
+│           └── mock-data.ts            # Dados mockados do painel GM
 │
 └── styles/
     ├── theme.css                       # Tokens de design (cores, bordas, superfícies)
@@ -382,15 +409,46 @@ Acesse: `http://localhost:3000/design-system/screens/academy/trilhas`
 ┌──────────────────────────────────────────────────────────┐
 │  1. AcademyHero (slides das trilhas)                     │
 ├──────────────────────────────────────────────────────────┤
-│  2. Container com borda                                   │
-│     ├─ Header: "Avance no seu ritmo até a certificação"  │
-│     └─ Grid 2 colunas × N linhas de TrailCards          │
-└──────────────────────────────────────────────────────────┘
+│  2. Intro centralizada                                    │
+│     "Avance no seu ritmo até a certificação"             │
+├──────────────────────────────────────────────────────────┤
+│  3. Separator full-bleed                                  │
+├──┬───────────────────────────────────────────────────┬──┤
+│  │  4. Grid de TrailCards (max-w-960px)              │  │
+│  │     - TrailCard 1                                 │  │
+│  │     - TrailCard 2                                 │  │
+│  │     - ...                                         │  │
+│G │                                                   │G │
+│U │                                                   │U │
+│T │                                                   │T │
+│T │                                                   │T │
+│E │                                                   │E │
+│R │                                                   │R │
+└──┴───────────────────────────────────────────────────┴──┘
 ```
 
-- Grid com bordas internas: `border-b` entre linhas, `border-r` na coluna esquerda
+- **Gutters laterais:** `w-16` (64px), `border-r`/`border-l border-border`, alinhados com a largura do botão hamburger da navbar. Somem no mobile (`hidden md:block`).
 - Cada `TrailCard` linka para `/design-system/screens/academy/trail/[id]`
 - Dados dos slides: `TRAILS_HERO_SLIDES` em `mock-data.ts`
+
+#### TrailCard (trails/)
+
+Card de trilha com layout de duas colunas (flex row em `md+`):
+
+**Coluna esquerda (info):**
+- Badge de status com ícone (Clock/PlayCircle/Award) e label mono (0.625rem)
+- Título em heading xl/3xl, hover accent
+- Descrição com `line-clamp-2`, max-w-448px
+- Thumbnails dos conteúdos: 5 miniaturas 44x44px com ícone de tipo + badge CheckCircle2 para concluídos + contador `+N`
+- Progress bar com percentual (mono, 0.625rem), visível apenas se `progress > 0`
+- Meta footer: contagem de conteúdos + duração (mono)
+
+**Coluna direita (imagem bioma):**
+- Imagem full-height (275-325px), 5 biomas rotativos por ID (Mata Atlântica, Caatinga, Serra Sul, Pantanal, Pampa)
+- **CTA overlay button** centralizado sobre a imagem: texto varia por status ("Começar"/"Continuar"/"Rever"), borda `white/70`, `backdrop-blur`
+- Hover: brightness 0.85→1.0, scale 1.03
+
+Fundo `bg-planton-forest`, sem border-radius, sem shadows.
 
 ---
 
@@ -402,6 +460,7 @@ Tela de trilha com sidebar lateral (340px) e área de conteúdo.
 - **Tipos de conteúdo:** `video` (MuxPlayer, aspect-ratio 16/9), `artigo` (texto centralizado), `podcast` (player de áudio em fundo colorido), `guia` (botão Abrir PDF no bloco de metadados)
 - **Quiz:** navegação por questões com RadioGroup, progresso em `font-mono`, estado bloqueado/disponível/concluído
 - **Certificado:** bloqueado até aprovação no quiz; ações de download PDF e compartilhar no LinkedIn
+- **CertificatePreview:** preview visual do certificado em 16:9 com container queries (cqw/cqh). Fundo `#145559` (teal), 3 faixas horizontais separadas por linhas: (1) logo Planton + selo B Corp + metadados mono, (2) nome do aluno em heading accent, (3) info da trilha + textura cidade. Texto responsivo via container queries.
 - **Progress bar:** usa `bg-planton-accent/10` no track para visibilidade em 0%
 
 Acesse: `http://localhost:3000/design-system/screens/academy/trail/[id]`
@@ -550,7 +609,68 @@ Todos os dados são simulados no frontend , nenhuma API é chamada.
 | Voucher | `PLANTON-2026-EXPIRADO` | Código expirado |
 | Código OTP | `123456` | Verificação concluída → acesso liberado |
 
-> **Em construção:** novos padrões serão adicionados conforme o desenvolvimento do Planton Academy V2, incluindo painel do Gestor Master e painel do Super Admin.
+---
+
+### Tutor IA (`academy/components/AITutor/`)
+
+Assistente de IA integrado que aparece como botão flutuante nas telas do Academy.
+
+- **FloatingButton:** fixo bottom-right (`z-60`), pill glassmorphism (`backdrop-blur-2xl backdrop-saturate-150 bg-background/60`). Label "Tutor IA" + separator + "Powered by Genius" + favicon Planton. Hover: scale 1.02. Some quando o painel está aberto.
+- **TutorPanel:** 380px largura, max 580px altura. Frosted glass (`backdrop-blur-2xl border-white/15`). Animação sweep na abertura (scale 0.95→1.0).
+- **Mensagens:** 3 tipos de content block (text, list, highlight). Quick prompts pré-definidos. Respostas mock com keyword matching + delay 1200ms.
+- **WhatsApp:** gera link com resumo das últimas 6 mensagens para escalar conversa com agente real.
+- **Roteamento:** só aparece em rotas `/home`, `/trilhas`, `/trail/`, `/content/` via `usePathname()`.
+- **Avatar:** componente reutilizável em 3 tamanhos (sm/md/lg) com favicon Planton.
+
+---
+
+### Gestor Master (`academy/gm/`)
+
+Dashboard da empresa para o Gestor Master.
+
+Acesse: `http://localhost:3000/design-system/screens/academy/gm`
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  1. Header (empresa + breadcrumb)                         │
+├──────────────────────────────────────────────────────────┤
+│  2. KPI Cards (4): usuários, ativos, horas, certificados │
+├──────────────────────────────────────────────────────────┤
+│  3. Timeline do plano (progress bar + dias restantes)     │
+├──────────────────────────────────────────────────────────┤
+│  4. Tabela colaboradores (busca + filtro status +         │
+│     paginação + detalhe com KPIs individuais)             │
+├────────────────────────────┬─────────────────────────────┤
+│  5. Top trilhas            │  6. Chart de engajamento     │
+└────────────────────────────┴─────────────────────────────┘
+```
+
+- **GMUsageChart:** AreaChart (Recharts) com dual metric (usuários ativos + horas assistidas) ao longo de 12 meses. Filtro por semestre. Gradientes com cores do design system.
+- **Colaboradores:** tabela com zebra stripes, headers mono, busca, filtro de status (Ativo/Convite enviado/Nunca acessou), paginação (5/página), click-to-detail com KPIs e conteúdos do colaborador.
+- **Timeline:** progress bar com urgência visual (vermelho se ≤30 dias restantes).
+- **Dialog de convite:** formulário para convidar novo colaborador.
+- Skeleton loading (800ms delay) em todas as seções.
+
+---
+
+### Super Admin (`academy/admin/`)
+
+Dashboard da plataforma para o Super Admin.
+
+- **AdminUsageChart:** mesmo padrão do GMUsageChart mas escala plataforma (10-15x maior).
+- **Tabelas:** clientes, vouchers, conteúdos, trilhas — todas com zebra stripes, headers em `font-mono` (Geist Mono), pagination mono, actions dropdown.
+
+---
+
+### Padrão de tabelas
+
+As tabelas (`src/components/shadcn/table.tsx`) usam:
+
+- **Zebra stripes:** `[&_tr:nth-child(even)]:bg-muted/30` no `TableBody`
+- **Headers em Geist Mono:** `font-mono` no `TableHead` (visual técnico/estruturado)
+- **Body em Instrument Sans:** `font-sans` no `TableCell`
+- **Hover:** `hover:bg-muted/40` com transição suave
+- **Pagination:** números em `font-mono`
 
 ---
 
@@ -624,9 +744,16 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system/screens` | Índice de telas |
 | `/design-system/screens/academy/login` | Fluxo de autenticação multi-step |
 | `/design-system/screens/academy/home` | Home do Academy (hero + trilhas + conteúdos) |
-| `/design-system/screens/academy/trilhas` | Listagem de trilhas (hero + grid 2 colunas) |
-| `/design-system/screens/academy/trail/[id]` | Tela de trilha com sidebar e player de conteúdo |
+| `/design-system/screens/academy/trilhas` | Listagem de trilhas (hero + gutters + cards) |
+| `/design-system/screens/academy/trail/[id]` | Tela de trilha com sidebar, player e certificado |
 | `/design-system/screens/academy/content/[id]` | Player de conteúdo (vídeo, podcast, artigo) |
+| `/design-system/screens/academy/gm` | Dashboard do Gestor Master (empresa) |
+| `/design-system/screens/academy/admin` | Dashboard do Super Admin (plataforma) |
+| `/design-system/screens/academy/admin/clients` | Tabela de clientes (empresas) |
+| `/design-system/screens/academy/admin/clients/[id]` | Detalhe de cliente |
+| `/design-system/screens/academy/admin/vouchers` | Tabela de vouchers |
+| `/design-system/screens/academy/admin/content` | Tabela de conteúdos |
+| `/design-system/screens/academy/admin/trails` | Tabela de trilhas |
 
 ---
 
@@ -634,7 +761,7 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 
 O projeto é deployado no **Vercel**. As rotas do design system são geradas estaticamente (`○ Static`).
 
-> **Nota:** este repositório contém apenas o design system. O Planton Academy V2 em produção terá rotas dinâmicas com autenticação, painéis por empresa e dados em tempo real.
+> **Nota:** este repositório contém o design system e protótipos de tela. O Planton Academy V2 em produção terá rotas dinâmicas com autenticação, APIs reais e dados em tempo real. Todos os dados exibidos nas telas são mockados.
 
 ```bash
 npm run build   # verificar antes do deploy
