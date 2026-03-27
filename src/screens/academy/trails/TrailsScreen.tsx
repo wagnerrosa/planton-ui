@@ -36,7 +36,7 @@ export function TrailsScreen() {
 
       {/* 3. Trail cards */}
       <div className="px-6 pt-10 pb-16">
-        <div className="max-w-[860px] mx-auto flex flex-col gap-6">
+        <div className="max-w-[960px] mx-auto flex flex-col gap-6">
           {MOCK_TRAILS.map((t) => (
             <TrailCard
               key={t.id}

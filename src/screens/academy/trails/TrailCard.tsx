@@ -108,7 +108,7 @@ export function TrailCard({ trail }: TrailCardProps) {
     <Link href={href} className="group block">
       {/* White card — glassmorphism via backdrop-blur on bg-card/95.
           No border-radius, no shadows — per design system. */}
-      <div className="relative overflow-hidden border border-border bg-card/95 backdrop-blur-xl backdrop-saturate-150 transition-colors duration-200 group-hover:border-planton-accent/30">
+      <div className="relative overflow-hidden bg-planton-forest">
 
         {/* Content: left info + right thumb */}
         <div className="flex flex-col md:flex-row">
@@ -126,7 +126,7 @@ export function TrailCard({ trail }: TrailCardProps) {
                       ? 'text-planton-accent'
                       : status === 'em-andamento'
                         ? 'text-planton-accent/80'
-                        : 'text-muted-foreground',
+                        : 'text-planton-cream/50',
                   ].join(' ')}
                 >
                   <statusInfo.icon className="h-3 w-3" />
@@ -136,13 +136,13 @@ export function TrailCard({ trail }: TrailCardProps) {
             )}
 
             {/* Title */}
-            <h3 className="font-heading text-xl md:text-2xl font-normal leading-tight text-foreground group-hover:text-planton-accent transition-colors duration-200">
+            <h3 className="font-heading text-xl md:text-3xl font-normal leading-tight text-planton-cream group-hover:text-planton-accent transition-colors duration-200">
               {title}
             </h3>
 
             {/* Description */}
             {description && (
-              <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground line-clamp-2 max-w-md">
+              <p className="mt-2 font-sans text-sm leading-relaxed text-planton-cream/80 line-clamp-2 max-w-md">
                 {description}
               </p>
             )}
@@ -177,7 +177,7 @@ export function TrailCard({ trail }: TrailCardProps) {
                   )
                 })}
                 {contentsCount > thumbContents.length && (
-                  <span className="font-mono text-[10px] text-muted-foreground pl-1">
+                  <span className="font-mono text-[10px] text-planton-cream/50 pl-1">
                     +{contentsCount - thumbContents.length}
                   </span>
                 )}
@@ -187,13 +187,13 @@ export function TrailCard({ trail }: TrailCardProps) {
             {/* Progress bar — only when progress > 0 */}
             {progress !== undefined && progress > 0 && (
               <div className="flex items-center gap-3 mt-4 max-w-xs">
-                <div className="flex-1 h-px bg-planton-accent/15 overflow-hidden">
+                <div className="flex-1 h-px bg-planton-accent/20 overflow-hidden">
                   <div
                     className="h-full bg-planton-accent transition-all duration-500"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <span className="font-mono text-[0.625rem] text-muted-foreground shrink-0">
+                <span className="font-mono text-[0.625rem] text-planton-cream/50 shrink-0">
                   {progress}%
                 </span>
               </div>
@@ -201,14 +201,14 @@ export function TrailCard({ trail }: TrailCardProps) {
 
             {/* Bottom: meta only */}
             <div className="mt-auto pt-5">
-              <span className="font-mono text-[0.625rem] text-muted-foreground">
+              <span className="font-mono text-[0.625rem] text-planton-cream/40">
                 {contentsCount} conteúdo{contentsCount !== 1 ? 's' : ''}  ·  {duration}
               </span>
             </div>
           </div>
 
           {/* ─── Right: Thumbnail with CTA overlay ─── */}
-          <div className="hidden md:block relative w-[220px] lg:w-[260px] shrink-0">
+          <div className="hidden md:block relative w-[275px] lg:w-[325px] shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={mainImage}
