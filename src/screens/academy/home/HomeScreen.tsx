@@ -7,6 +7,8 @@ import { AcademyFooter } from '@/components/navigation/AcademyFooter'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { AcademyHero } from '../components/AcademyHero'
+import { HeroConfigProvider, useHeroConfig } from '../components/HeroConfigContext'
+import { HeroConfigDialog } from '../components/HeroConfigDialog'
 import { ContentRow } from './components/ContentRow'
 import { CertificationBanner } from './components/CertificationBanner'
 import { SearchBar } from './components/SearchBar'
@@ -14,14 +16,14 @@ import { FilterChips, type FilterState } from './components/FilterChips'
 import { ContentGrid } from './components/ContentGrid'
 import { OnboardingDialog } from './components/OnboardingDialog'
 import {
-  HOME_HERO_SLIDES,
   CONTINUE_WATCHING_ITEMS,
   CONTENT_ITEMS,
 } from './mock-data'
 
 const EMPTY_FILTERS: FilterState = { types: [], tags: [], statuses: [] }
 
-export function HomeScreen() {
+function HomeScreenInner() {
+  const { slides, openDialog } = useHeroConfig()
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
 
@@ -33,7 +35,6 @@ export function HomeScreen() {
     filters.tags.length > 0 ||
     filters.statuses.length > 0
 
-  // Filtered results
   const filteredItems = useMemo(() => {
     if (!hasActiveFilters) return []
 
@@ -64,7 +65,6 @@ export function HomeScreen() {
     return items
   }, [search, filters, hasActiveFilters])
 
-  // Content by type (when no search/filter active)
   const videoItems = CONTENT_ITEMS.filter((c) => c.type === 'video')
   const artigoItems = CONTENT_ITEMS.filter((c) => c.type === 'artigo')
   const podcastItems = CONTENT_ITEMS.filter((c) => c.type === 'podcast')
@@ -75,7 +75,6 @@ export function HomeScreen() {
     setFilters(EMPTY_FILTERS)
   }
 
-  // Build active filter label
   function getActiveLabel(): string {
     const parts: string[] = []
     if (search.trim()) parts.push(`"${search.trim()}"`)
@@ -92,7 +91,7 @@ export function HomeScreen() {
       <AcademyNavbarSync breadcrumbs={[{ label: 'Home' }]} />
 
       {/* 1. Hero */}
-      <AcademyHero slides={HOME_HERO_SLIDES} />
+      <AcademyHero slides={slides} onConfigClick={openDialog} />
 
       <div className="relative">
         {/* 2. Continue assistindo + Banner de certificação */}
@@ -138,7 +137,6 @@ export function HomeScreen() {
       <div>
         {hasActiveFilters ? (
           <div className="max-w-[1920px] mx-auto px-6 pt-8 pb-16 flex flex-col gap-12">
-            {/* Filtered results header */}
             <div className="flex items-center gap-3 flex-wrap">
               <Body size="sm" muted>
                 Resultados para: {getActiveLabel()}
@@ -181,6 +179,15 @@ export function HomeScreen() {
       <AcademyFooter />
 
       <OnboardingDialog />
+      <HeroConfigDialog />
     </div>
+  )
+}
+
+export function HomeScreen() {
+  return (
+    <HeroConfigProvider>
+      <HomeScreenInner />
+    </HeroConfigProvider>
   )
 }

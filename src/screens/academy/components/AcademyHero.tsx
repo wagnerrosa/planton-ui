@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Hls from 'hls.js'
 import Link from 'next/link'
-import { Play } from 'lucide-react'
+import { Play, Settings2 } from 'lucide-react'
 import { Button } from '@/components/primitives/Button'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
@@ -37,12 +37,13 @@ export type AcademyHeroSlide = {
 
 type AcademyHeroProps = {
   slides?: AcademyHeroSlide[]
+  onConfigClick?: () => void
 }
 
 const ROTATION_INTERVAL = 7000
 const TRANSITION_DURATION = 400
 
-export function AcademyHero({ slides }: AcademyHeroProps) {
+export function AcademyHero({ slides, onConfigClick }: AcademyHeroProps) {
   const safeSlides = slides ?? []
   const [activeIndex, setActiveIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -118,6 +119,16 @@ export function AcademyHero({ slides }: AcademyHeroProps) {
 
   return (
     <div className="relative w-full overflow-hidden bg-black h-[75vh] min-h-[520px]">
+      {onConfigClick && (
+        <button
+          type="button"
+          onClick={onConfigClick}
+          aria-label="Configurar Hero"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/40 backdrop-blur-sm text-white/70 hover:text-white hover:bg-black/60 transition-colors"
+        >
+          <Settings2 size={18} />
+        </button>
+      )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         key={`thumb-${activeSlide.id}`}
