@@ -48,6 +48,18 @@ const screens = [
     ],
   },
   {
+    product: 'Mostra Sua Pegada',
+    items: [
+      { href: '/design-system/screens/mostra/login',            label: 'Login',        description: 'Tela de autenticação do admin' },
+      { href: '/design-system/screens/mostra/dashboard',        label: 'Dashboard',    description: 'KPIs, gráficos de solicitantes e pendências' },
+      { href: '/design-system/screens/mostra/empresas',         label: 'Empresas',     description: 'Listagem de empresas com filtros e detalhes' },
+      { href: '/design-system/screens/mostra/fornecedores',     label: 'Fornecedores', description: 'Listagem de fornecedores e consultorias' },
+      { href: '/design-system/screens/mostra/cadastro-manual',  label: 'Cadastro Manual', description: 'Formulário de cadastro empresa/fornecedor' },
+      { href: '/design-system/screens/mostra/configuracoes',    label: 'Configurações', description: 'Setores, clientes e consultorias' },
+      { href: '/design-system/screens/mostra/relatorio',        label: 'Relatório',    description: 'Downloads de relatórios em Excel' },
+    ],
+  },
+  {
     product: 'Patterns',
     items: [
       { href: '/design-system/screens/academy/patterns/ai-tutor',  label: 'AI Tutor',  description: 'Assistente de IA flutuante com painel de chat (glassmorphism)' },
