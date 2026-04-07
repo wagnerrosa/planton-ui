@@ -313,7 +313,7 @@ export function ConfiguracoesScreen() {
     <>
       <MostraNavbarSync breadcrumbs={[{ label: 'Configurações do Programa' }]} />
 
-      <div className="p-6 space-y-10 max-w-2xl">
+      <div className="px-6 pb-6 pt-10 space-y-10 max-w-2xl">
         <Heading as="h1" size="heading-lg">Configurações do Programa</Heading>
 
         {/* Setores Controversos */}

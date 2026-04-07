@@ -359,7 +359,7 @@ export function CadastroManualScreen() {
     <>
       <MostraNavbarSync breadcrumbs={[{ label: 'Cadastro Manual' }]} />
 
-      <div className="p-6 space-y-6 max-w-4xl">
+      <div className="px-6 pb-6 pt-10 space-y-6 max-w-4xl">
         <Heading as="h1" size="heading-lg">Cadastro Manual</Heading>
 
         <Alert variant="info">

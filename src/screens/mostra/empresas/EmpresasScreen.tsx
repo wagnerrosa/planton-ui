@@ -15,7 +15,7 @@ import { EmpresaDetailSheet } from './components/EmpresaDetailSheet'
 import { EmpresaEditDialog } from './components/EmpresaEditDialog'
 import {
   EMPRESAS,
-  PAGE_SIZE,
+  EMPRESA_STATUS_CONFIG,
   formatDateBR,
   type Empresa,
   type EmpresaStatus,
@@ -30,6 +30,8 @@ const STATUS_FILTERS: { label: string; value: EmpresaStatus | 'all' }[] = [
   { label: 'Não Elegível', value: 'nao-elegivel' },
   { label: 'Cadastrado', value: 'cadastrado' },
 ]
+
+const PAGE_SIZE = 10
 
 export function EmpresasScreen() {
   const [activeFilter, setActiveFilter] = useState<EmpresaStatus | 'all'>('all')
@@ -106,7 +108,7 @@ export function EmpresasScreen() {
     <>
       <MostraNavbarSync breadcrumbs={[{ label: 'Empresas Participantes' }]} />
 
-      <div className="p-6 space-y-6">
+      <div className="px-6 pb-6 pt-10 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <Heading as="h1" size="heading-lg">Empresas Participantes</Heading>

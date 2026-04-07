@@ -105,7 +105,7 @@ export function FornecedoresScreen() {
     <>
       <MostraNavbarSync breadcrumbs={[{ label: 'Fornecedores / Consultorias' }]} />
 
-      <div className="p-6 space-y-6">
+      <div className="px-6 pb-6 pt-10 space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <Heading as="h1" size="heading-lg">Fornecedores / Consultorias</Heading>

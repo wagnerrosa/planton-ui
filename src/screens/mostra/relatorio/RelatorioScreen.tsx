@@ -95,7 +95,7 @@ export function RelatorioScreen() {
     <>
       <MostraNavbarSync breadcrumbs={[{ label: 'Relatório Geral' }]} />
 
-      <div className="p-6 space-y-6 max-w-3xl">
+      <div className="px-6 pb-6 pt-10 space-y-6 max-w-3xl">
         <Heading as="h1" size="heading-lg">Relatório Geral</Heading>
 
         <Alert variant="info">

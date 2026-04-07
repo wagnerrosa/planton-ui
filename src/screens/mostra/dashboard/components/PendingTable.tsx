@@ -12,7 +12,7 @@ export function PendingTable({ loading = false }: PendingTableProps) {
   return (
     <div className="border border-border">
       <div className="px-6 pt-6 pb-4 border-b border-border">
-        <Heading as="h2" size="heading-md">Pendências — Aguardando ação manual</Heading>
+        <Heading as="h2" size="heading-md">Pendências - Aguardando ação manual</Heading>
       </div>
       <Table>
         <TableHeader>
