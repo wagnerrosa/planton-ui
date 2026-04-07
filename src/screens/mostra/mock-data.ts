@@ -99,7 +99,7 @@ export type RecusaDataPoint = {
 export const EMPRESA_STATUS_CONFIG: Record<EmpresaStatus, { label: string; color: string }> = {
   'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-info-surface text-info border-info-border' },
   'aguardando-revisao-manual': { label: 'Aguardando Revisão', color: 'bg-warning-surface text-warning border-warning-border' },
-  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-info-surface text-info border-info-border' },
+  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-warning-surface text-warning border-warning-border' },
   'elegivel': { label: 'Elegível', color: 'bg-success-surface text-success border-success-border' },
   'nao-elegivel': { label: 'Não Elegível', color: 'bg-destructive-surface text-destructive border-destructive-border' },
   'cadastrado': { label: 'Cadastrado', color: 'bg-success text-success-foreground' },
@@ -107,7 +107,7 @@ export const EMPRESA_STATUS_CONFIG: Record<EmpresaStatus, { label: string; color
 
 export const FORNECEDOR_STATUS_CONFIG: Record<FornecedorStatus, { label: string; color: string }> = {
   'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-info-surface text-info border-info-border' },
-  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-info-surface text-info border-info-border' },
+  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-warning-surface text-warning border-warning-border' },
   'elegivel': { label: 'Elegível', color: 'bg-success-surface text-success border-success-border' },
   'nao-elegivel': { label: 'Não Elegível', color: 'bg-destructive-surface text-destructive border-destructive-border' },
   'cadastrado': { label: 'Cadastrado', color: 'bg-success text-success-foreground' },
