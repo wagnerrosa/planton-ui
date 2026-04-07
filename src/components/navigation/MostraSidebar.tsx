@@ -23,38 +23,60 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
 const BASE = '/design-system/screens/mostra'
 
-const NAV_ITEMS = [
-  { href: `${BASE}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
-  { href: `${BASE}/empresas`, label: 'Empresas', icon: Building2 },
-  { href: `${BASE}/fornecedores`, label: 'Fornecedores', icon: Truck },
-  { href: `${BASE}/cadastro-manual`, label: 'Cadastro Manual', icon: ClipboardList },
-  { href: `${BASE}/configuracoes`, label: 'Configurações', icon: Settings },
-  { href: `${BASE}/relatorio`, label: 'Relatório', icon: FileBarChart },
+const NAV_GROUPS = [
+  {
+    label: 'Visão Geral',
+    items: [
+      { href: `${BASE}/dashboard`, label: 'Dashboard', icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: 'Cadastros',
+    items: [
+      { href: `${BASE}/empresas`, label: 'Empresas', icon: Building2 },
+      { href: `${BASE}/fornecedores`, label: 'Fornecedores', icon: Truck },
+      { href: `${BASE}/cadastro-manual`, label: 'Cadastro Manual', icon: ClipboardList },
+    ],
+  },
+  {
+    label: 'Configurações',
+    items: [
+      { href: `${BASE}/configuracoes`, label: 'Configurações', icon: Settings },
+      { href: `${BASE}/relatorio`, label: 'Relatório', icon: FileBarChart },
+    ],
+  },
 ]
 
 function SidebarNav({ onLinkClick }: { onLinkClick?: () => void }) {
   const pathname = usePathname()
 
   return (
-    <nav className="px-3 py-4 flex flex-col gap-1">
-      {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-        const isActive = pathname === href || pathname.startsWith(href + '/')
-        return (
-          <Link
-            key={href}
-            href={href}
-            onClick={onLinkClick}
-            className={`flex items-center gap-2.5 px-2 py-2 text-sm font-sans transition-colors ${
-              isActive
-                ? 'bg-sidebar-accent text-planton-accent'
-                : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-            }`}
-          >
-            <Icon size={15} />
-            {label}
-          </Link>
-        )
-      })}
+    <nav className="px-3 py-4 flex flex-col gap-4">
+      {NAV_GROUPS.map((group) => (
+        <div key={group.label} className="flex flex-col gap-0.5">
+          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
+            {group.label}
+          </span>
+          {group.items.map(({ href, label, icon: Icon }) => {
+            const isActive = pathname === href || pathname.startsWith(href + '/')
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={onLinkClick}
+                className={`flex items-center gap-2.5 px-2 py-2 text-sm font-sans transition-colors ${
+                  isActive
+                    ? 'bg-sidebar-accent text-planton-accent'
+                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                }`}
+              >
+                <Icon size={15} />
+                {label}
+              </Link>
+            )
+          })}
+        </div>
+      ))}
     </nav>
   )
 }

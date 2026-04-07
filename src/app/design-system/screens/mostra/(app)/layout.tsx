@@ -19,6 +19,7 @@ import { SidebarProvider } from '@/components/shadcn/sidebar'
 import { MostraSidebar } from '@/components/navigation/MostraSidebar'
 import { MostraNavbar } from '@/components/navigation/MostraNavbar'
 import { MostraNavbarProvider, useMostraNavbar } from '@/components/navigation/MostraNavbarContext'
+import { MostraFooter } from '@/components/navigation/MostraFooter'
 
 function MostraLayoutInner({ children }: { children: React.ReactNode }) {
   const { breadcrumbs, userName } = useMostraNavbar()
@@ -38,8 +39,11 @@ function MostraLayoutInner({ children }: { children: React.ReactNode }) {
         {/* Sidebar + conteúdo */}
         <div className="flex flex-1 overflow-hidden">
           <MostraSidebar />
-          <main ref={mainRef} className="flex-1 overflow-auto">
-            {children}
+          <main ref={mainRef} className="flex-1 overflow-auto flex flex-col">
+            <div className="flex-1">
+              {children}
+            </div>
+            <MostraFooter />
           </main>
         </div>
       </div>

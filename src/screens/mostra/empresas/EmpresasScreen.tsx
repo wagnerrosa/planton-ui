@@ -7,9 +7,8 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Input } from '@/components/shadcn/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
-import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/shadcn/pagination'
 import { StatusBadge } from '../components/StatusBadge'
 import { EmpresaDetailSheet } from './components/EmpresaDetailSheet'
 import { EmpresaEditDialog } from './components/EmpresaEditDialog'
@@ -31,7 +30,7 @@ const STATUS_FILTERS: { label: string; value: EmpresaStatus | 'all' }[] = [
   { label: 'Cadastrado', value: 'cadastrado' },
 ]
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 5
 
 export function EmpresasScreen() {
   const [activeFilter, setActiveFilter] = useState<EmpresaStatus | 'all'>('all')
@@ -112,9 +111,9 @@ export function EmpresasScreen() {
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <Heading as="h1" size="heading-lg">Empresas Participantes</Heading>
-          <Button variant="primary" size="sm" className="flex items-center gap-2 shrink-0">
+          <Button variant="primary" size="sm" href="/design-system/screens/mostra/cadastro-manual?tab=empresa" className="shrink-0">
             <Plus size={14} />
-            Cadastrar empresa
+            Cadastrar Empresa
           </Button>
         </div>
 
@@ -153,6 +152,7 @@ export function EmpresasScreen() {
         {/* Table */}
         <div className="border border-border">
           <Table>
+
             <TableHeader>
               <TableRow>
                 <TableHead>Nome / CNPJ</TableHead>
@@ -238,38 +238,13 @@ export function EmpresasScreen() {
               )}
             </TableBody>
           </Table>
-        </div>
-
-        {/* Footer */}
-        <div className="flex items-center justify-between">
-          <Body size="sm" className="text-muted-foreground">
-            Exibindo {filtered.length} de {empresas.length} registros
-          </Body>
-          {totalPages > 1 && (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    aria-disabled={page === 1}
-                    className={page === 1 ? 'pointer-events-none opacity-40' : ''}
-                  />
-                </PaginationItem>
-                <PaginationItem>
-                  <span className="px-3 py-2 text-sm">
-                    {page} / {totalPages}
-                  </span>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    aria-disabled={page === totalPages}
-                    className={page === totalPages ? 'pointer-events-none opacity-40' : ''}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
+          <TablePagination
+            page={page}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            itemLabel={`de ${empresas.length} empresas`}
+            onPageChange={setPage}
+          />
         </div>
       </div>
 

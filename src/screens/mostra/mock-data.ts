@@ -91,7 +91,7 @@ export type RecusaDataPoint = {
 export const EMPRESA_STATUS_CONFIG: Record<EmpresaStatus, { label: string; color: string }> = {
   'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-info-surface text-info border-info-border' },
   'aguardando-revisao-manual': { label: 'Aguardando Revisão', color: 'bg-warning-surface text-warning border-warning-border' },
-  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-secondary text-secondary-foreground' },
+  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-info-surface text-info border-info-border' },
   'elegivel': { label: 'Elegível', color: 'bg-success-surface text-success border-success-border' },
   'nao-elegivel': { label: 'Não Elegível', color: 'bg-destructive-surface text-destructive border-destructive-border' },
   'cadastrado': { label: 'Cadastrado', color: 'bg-success text-success-foreground' },
@@ -99,7 +99,7 @@ export const EMPRESA_STATUS_CONFIG: Record<EmpresaStatus, { label: string; color
 
 export const FORNECEDOR_STATUS_CONFIG: Record<FornecedorStatus, { label: string; color: string }> = {
   'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-info-surface text-info border-info-border' },
-  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-secondary text-secondary-foreground' },
+  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-info-surface text-info border-info-border' },
   'elegivel': { label: 'Elegível', color: 'bg-success-surface text-success border-success-border' },
   'nao-elegivel': { label: 'Não Elegível', color: 'bg-destructive-surface text-destructive border-destructive-border' },
   'cadastrado': { label: 'Cadastrado', color: 'bg-success text-success-foreground' },
@@ -172,6 +172,30 @@ export const PENDENCIAS: PendenciaItem[] = [
     tipo: 'empresa',
     status: 'aguardando-contrato',
     dataSolicitacao: '2026-04-03',
+  },
+  {
+    id: 'p5',
+    nome: 'AgroVerde Alimentos',
+    cnpj: '44.111.222/0001-33',
+    tipo: 'empresa',
+    status: 'aguardando-revisao-manual',
+    dataSolicitacao: '2026-04-04',
+  },
+  {
+    id: 'p6',
+    nome: 'GreenAudit Consultoria',
+    cnpj: '22.111.333/0001-99',
+    tipo: 'fornecedor',
+    status: 'aguardando-contrato',
+    dataSolicitacao: '2026-04-04',
+  },
+  {
+    id: 'p7',
+    nome: 'BioMed Saúde',
+    cnpj: '66.333.444/0001-55',
+    tipo: 'empresa',
+    status: 'aguardando-revisao-manual',
+    dataSolicitacao: '2026-04-05',
   },
 ]
 
@@ -252,6 +276,72 @@ export const EMPRESAS: Empresa[] = [
     status: 'cadastrado',
     dataEntrada: '2026-02-20',
   },
+  {
+    id: 'e7',
+    nome: 'AgroVerde Alimentos',
+    cnpj: '44.111.222/0001-33',
+    setor: 'Agronegócio',
+    responsavel: 'Lucia Barbosa',
+    cargo: 'Diretora de ESG',
+    email: 'lucia@agroverde.com.br',
+    status: 'processo-iniciado',
+    dataEntrada: '2026-04-04',
+  },
+  {
+    id: 'e8',
+    nome: 'ClearWater Saneamento',
+    cnpj: '55.222.333/0001-44',
+    setor: 'Saneamento',
+    responsavel: 'Ricardo Nunes',
+    cargo: 'Gerente de Sustentabilidade',
+    email: 'ricardo@clearwater.com.br',
+    status: 'elegivel',
+    dataEntrada: '2026-03-28',
+  },
+  {
+    id: 'e9',
+    nome: 'BioMed Saúde',
+    cnpj: '66.333.444/0001-55',
+    setor: 'Saúde',
+    responsavel: 'Camila Torres',
+    cargo: 'CEO',
+    email: 'camila@biomed.com.br',
+    status: 'aguardando-contrato',
+    dataEntrada: '2026-04-05',
+  },
+  {
+    id: 'e10',
+    nome: 'LogiSustenta',
+    cnpj: '77.444.555/0001-66',
+    setor: 'Logística',
+    responsavel: 'Bruno Cardoso',
+    cargo: 'Sócio-fundador',
+    email: 'bruno@logisustenta.com.br',
+    status: 'cadastrado',
+    dataEntrada: '2026-02-10',
+  },
+  {
+    id: 'e11',
+    nome: 'Renovar Energia',
+    cnpj: '88.555.666/0001-77',
+    setor: 'Energia',
+    responsavel: 'Patricia Moreira',
+    cargo: 'Diretora de Operações',
+    email: 'patricia@renovarenergia.com',
+    status: 'processo-iniciado',
+    dataEntrada: '2026-04-06',
+  },
+  {
+    id: 'e12',
+    nome: 'Ciclo Verde Reciclagem',
+    cnpj: '99.666.777/0001-88',
+    setor: 'Reciclagem',
+    responsavel: 'Gustavo Pinto',
+    cargo: 'Gerente Geral',
+    email: 'gustavo@cicloverde.com.br',
+    status: 'nao-elegivel',
+    dataEntrada: '2026-03-01',
+  },
 ]
 
 // --------------- Fornecedores ---------------
@@ -304,6 +394,65 @@ export const FORNECEDORES: Fornecedor[] = [
     status: 'cadastrado',
     dataEntrada: '2026-02-15',
   },
+  {
+    id: 'f5',
+    nome: 'GreenAudit Consultoria',
+    cnpj: '22.111.333/0001-99',
+    site: 'www.greenaudit.com.br',
+    responsavel: 'Fernanda Lopes',
+    cargo: 'Sócia',
+    email: 'fernanda@greenaudit.com.br',
+    clientesIndicados: ['NaturaDrop S.A.', 'AgroVerde Alimentos'],
+    status: 'processo-iniciado',
+    dataEntrada: '2026-04-04',
+  },
+  {
+    id: 'f6',
+    nome: 'SolarTech Energia',
+    cnpj: '33.222.444/0001-11',
+    site: 'www.solartech.com.br',
+    responsavel: 'Eduardo Campos',
+    cargo: 'Diretor Técnico',
+    email: 'eduardo@solartech.com.br',
+    clientesIndicados: ['Renovar Energia'],
+    status: 'elegivel',
+    dataEntrada: '2026-03-22',
+  },
+  {
+    id: 'f7',
+    nome: 'AquaPura Tratamento',
+    cnpj: '44.333.555/0001-22',
+    responsavel: 'Vanessa Rocha',
+    cargo: 'Gerente de Projetos',
+    email: 'vanessa@aquapura.com.br',
+    clientesIndicados: [],
+    status: 'aguardando-contrato',
+    dataEntrada: '2026-04-05',
+  },
+  {
+    id: 'f8',
+    nome: 'CircularHub',
+    cnpj: '55.444.666/0001-33',
+    site: 'www.circularhub.com.br',
+    responsavel: 'Rafael Cunha',
+    cargo: 'CEO',
+    email: 'rafael@circularhub.com.br',
+    clientesIndicados: ['Ciclo Verde Reciclagem', 'BioMed Saúde'],
+    status: 'cadastrado',
+    dataEntrada: '2026-02-08',
+  },
+  {
+    id: 'f9',
+    nome: 'EcoMetrics Analytics',
+    cnpj: '66.555.777/0001-44',
+    site: 'www.ecometrics.com.br',
+    responsavel: 'Isabela Mendes',
+    cargo: 'Head de Dados',
+    email: 'isabela@ecometrics.com.br',
+    clientesIndicados: ['LogiSustenta', 'ClearWater Saneamento'],
+    status: 'nao-elegivel',
+    dataEntrada: '2026-03-12',
+  },
 ]
 
 // --------------- Configurações ---------------
@@ -329,7 +478,7 @@ export const CONSULTORIAS_PARCEIRAS = [
 
 // --------------- Constants ---------------
 
-export const PAGE_SIZE = 10
+export const PAGE_SIZE = 5
 
 // --------------- Utils ---------------
 

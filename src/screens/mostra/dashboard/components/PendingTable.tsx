@@ -1,14 +1,19 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
+import { useState } from 'react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
 import { Heading } from '@/components/primitives/Heading'
 import { Skeleton } from '@/components/shadcn/skeleton'
 import { StatusBadge } from '../../components/StatusBadge'
-import { PENDENCIAS, formatDateBR } from '../../mock-data'
+import { PENDENCIAS, PAGE_SIZE, formatDateBR } from '../../mock-data'
 
 type PendingTableProps = {
   loading?: boolean
 }
 
 export function PendingTable({ loading = false }: PendingTableProps) {
+  const [page, setPage] = useState(1)
+  const totalPages = Math.max(1, Math.ceil(PENDENCIAS.length / PAGE_SIZE))
+  const paginated = PENDENCIAS.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+
   return (
     <div className="border border-border">
       <div className="px-6 pt-6 pb-4 border-b border-border">
@@ -36,14 +41,14 @@ export function PendingTable({ loading = false }: PendingTableProps) {
                 <TableCell><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
               </TableRow>
             ))
-          ) : PENDENCIAS.length === 0 ? (
+          ) : paginated.length === 0 ? (
             <TableRow>
               <TableCell colSpan={4} className="text-center py-12 text-planton-muted font-sans text-sm">
                 Nenhuma pendência encontrada
               </TableCell>
             </TableRow>
           ) : (
-            PENDENCIAS.map((item) => (
+            paginated.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>
                   <div className="font-medium font-sans text-sm">{item.nome}</div>
@@ -63,6 +68,13 @@ export function PendingTable({ loading = false }: PendingTableProps) {
           )}
         </TableBody>
       </Table>
+      <TablePagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={PENDENCIAS.length}
+        itemLabel="pendências"
+        onPageChange={setPage}
+      />
     </div>
   )
 }

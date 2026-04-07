@@ -1,20 +1,22 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Upload, Info } from 'lucide-react'
+import { Upload, Info, Plus, Check, X, Pencil, Trash2 } from 'lucide-react'
 import { MostraNavbarSync } from '@/components/navigation/MostraNavbarSync'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Input } from '@/components/shadcn/input'
 import { Label } from '@/components/shadcn/label'
-import { Textarea } from '@/components/shadcn/textarea'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/shadcn/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
 import { Alert, AlertDescription } from '@/components/shadcn/alert'
+import { Separator } from '@/components/shadcn/separator'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/shadcn/table'
 
 // ─── Schemas ───────────────────────────────────────────────────────────────
 
@@ -42,7 +44,7 @@ const fornecedorSchema = z.object({
   email: z.string().email('E-mail inválido'),
   cargo: z.string().min(2, 'Cargo obrigatório'),
   telefone: z.string().optional(),
-  clientesIndicados: z.string().optional(),
+  clientesIndicados: z.array(z.object({ nome: z.string(), cnpj: z.string() })).optional(),
   statusInicial: z.enum(['elegivel', 'cadastrado', 'aguardando-contrato'] as const, {
     error: 'Selecione um status inicial',
   }),
@@ -51,6 +53,182 @@ const fornecedorSchema = z.object({
 
 type EmpresaForm = z.infer<typeof empresaSchema>
 type FornecedorForm = z.infer<typeof fornecedorSchema>
+
+// ─── Clientes Indicados Table ────────────────────────────────────────────────
+
+type ClienteItem = { nome: string; cnpj: string }
+
+function ClientesIndicadosTable({
+  items,
+  onChange,
+}: {
+  items: ClienteItem[]
+  onChange: (items: ClienteItem[]) => void
+}) {
+  const [adding, setAdding] = useState(false)
+  const [addNome, setAddNome] = useState('')
+  const [addCnpj, setAddCnpj] = useState('')
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [editNome, setEditNome] = useState('')
+  const [editCnpj, setEditCnpj] = useState('')
+  const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(null)
+
+  function commitAdd() {
+    const nome = addNome.trim()
+    const cnpj = addCnpj.trim()
+    if (nome && cnpj) onChange([...items, { nome, cnpj }])
+    setAddNome('')
+    setAddCnpj('')
+    setAdding(false)
+  }
+
+  function startEdit(i: number) {
+    setConfirmDeleteIndex(null)
+    setEditingIndex(i)
+    setEditNome(items[i].nome)
+    setEditCnpj(items[i].cnpj)
+  }
+
+  function commitEdit() {
+    if (editingIndex !== null) {
+      const nome = editNome.trim()
+      const cnpj = editCnpj.trim()
+      if (nome && cnpj) {
+        onChange(items.map((item, idx) => (idx === editingIndex ? { nome, cnpj } : item)))
+      }
+    }
+    setEditingIndex(null)
+  }
+
+  function cancelEdit() {
+    setEditingIndex(null)
+  }
+
+  function executeDelete() {
+    if (confirmDeleteIndex !== null) {
+      onChange(items.filter((_, idx) => idx !== confirmDeleteIndex))
+    }
+    setConfirmDeleteIndex(null)
+  }
+
+  return (
+    <div className="border border-border overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nome</TableHead>
+            <TableHead>CNPJ</TableHead>
+            <TableHead className="w-32 text-right pr-4">
+              {!adding && (
+                <button
+                  onClick={() => setAdding(true)}
+                  className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Plus size={12} />
+                  Adicionar
+                </button>
+              )}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item, i) => (
+            <TableRow key={i}>
+              {editingIndex === i ? (
+                <>
+                  <TableCell className="py-2">
+                    <Input
+                      value={editNome}
+                      onChange={(e) => setEditNome(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') cancelEdit() }}
+                      className="h-7 text-sm"
+                      autoFocus
+                    />
+                  </TableCell>
+                  <TableCell className="py-2">
+                    <Input
+                      value={editCnpj}
+                      onChange={(e) => setEditCnpj(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') cancelEdit() }}
+                      className="h-7 text-sm font-mono"
+                    />
+                  </TableCell>
+                  <TableCell className="py-2 text-right pr-4">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={commitEdit} className="p-1 text-emerald-600 hover:text-emerald-700"><Check size={14} /></button>
+                      <button onClick={cancelEdit} className="p-1 text-muted-foreground hover:text-foreground"><X size={14} /></button>
+                    </div>
+                  </TableCell>
+                </>
+              ) : confirmDeleteIndex === i ? (
+                <>
+                  <TableCell className="text-sm text-muted-foreground line-through">{item.nome}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground line-through font-mono">{item.cnpj}</TableCell>
+                  <TableCell className="py-2 text-right pr-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="text-xs text-muted-foreground">Excluir?</span>
+                      <button onClick={executeDelete} className="p-1 text-destructive hover:text-destructive/80"><Check size={14} /></button>
+                      <button onClick={() => setConfirmDeleteIndex(null)} className="p-1 text-muted-foreground hover:text-foreground"><X size={14} /></button>
+                    </div>
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell className="text-sm">{item.nome}</TableCell>
+                  <TableCell className="text-sm font-mono text-muted-foreground">{item.cnpj}</TableCell>
+                  <TableCell className="text-right pr-4">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={() => startEdit(i)} className="p-1 text-muted-foreground hover:text-foreground"><Pencil size={13} /></button>
+                      <button onClick={() => { setEditingIndex(null); setConfirmDeleteIndex(i) }} className="p-1 text-muted-foreground hover:text-destructive"><Trash2 size={13} /></button>
+                    </div>
+                  </TableCell>
+                </>
+              )}
+            </TableRow>
+          ))}
+
+          {adding && (
+            <TableRow>
+              <TableCell className="py-2">
+                <Input
+                  value={addNome}
+                  onChange={(e) => setAddNome(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') commitAdd(); if (e.key === 'Escape') { setAdding(false); setAddNome(''); setAddCnpj('') } }}
+                  placeholder="Nome da empresa"
+                  className="h-7 text-sm"
+                  autoFocus
+                />
+              </TableCell>
+              <TableCell className="py-2">
+                <Input
+                  value={addCnpj}
+                  onChange={(e) => setAddCnpj(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') commitAdd(); if (e.key === 'Escape') { setAdding(false); setAddNome(''); setAddCnpj('') } }}
+                  placeholder="00.000.000/0000-00"
+                  className="h-7 text-sm font-mono"
+                />
+              </TableCell>
+              <TableCell className="py-2 text-right pr-4">
+                <div className="flex items-center justify-end gap-1">
+                  <button onClick={commitAdd} className="p-1 text-emerald-600 hover:text-emerald-700"><Check size={14} /></button>
+                  <button onClick={() => { setAdding(false); setAddNome(''); setAddCnpj('') }} className="p-1 text-muted-foreground hover:text-foreground"><X size={14} /></button>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+
+          {items.length === 0 && !adding && (
+            <TableRow>
+              <TableCell colSpan={3} className="py-6 text-center">
+                <Body size="sm" className="text-muted-foreground">Nenhum cliente indicado.</Body>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
 
 // ─── File Upload Zone ───────────────────────────────────────────────────────
 
@@ -122,7 +300,7 @@ function EmpresaFormTab() {
           </div>
           <div className="space-y-1.5">
             <Label>CNPJ *</Label>
-            <Input placeholder="00.000.000/0000-00" className="font-mono" {...register('cnpj')} />
+            <Input placeholder="00.000.000/0000-00" {...register('cnpj')} />
             {errors.cnpj && <p className="text-xs text-destructive">{errors.cnpj.message}</p>}
           </div>
           <div className="space-y-1.5">
@@ -139,6 +317,8 @@ function EmpresaFormTab() {
           </div>
         </div>
       </div>
+
+      <Separator />
 
       {/* Responsável pelo cadastro */}
       <div className="space-y-4">
@@ -168,24 +348,28 @@ function EmpresaFormTab() {
         </div>
       </div>
 
+      <Separator />
+
       {/* Documentos */}
       <div className="space-y-4">
         <Heading as="h2" size="heading-md">Documentos</Heading>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FileUploadZone
             label="Logotipo"
-            hint="PNG | AI | PDF"
-            accept=".png,.ai,.pdf"
+            hint="PNG | JPG | SVG"
+            accept=".png,.jpg,.jpeg,.svg"
             onChange={(file) => setValue('logotipo', file)}
           />
           <FileUploadZone
             label="Documento de pegada de carbono"
-            hint="Clique para enviar o arquivo aqui"
-            accept=".pdf"
+            hint="PDF, JPG, DOC"
+            accept=".pdf,.jpg,.jpeg,.doc"
             onChange={(file) => setValue('pegadaCarbono', file)}
           />
         </div>
       </div>
+
+      <Separator />
 
       {/* Status inicial */}
       <div className="space-y-4">
@@ -253,7 +437,7 @@ function FornecedorFormTab() {
           </div>
           <div className="space-y-1.5">
             <Label>CNPJ *</Label>
-            <Input placeholder="00.000.000/0000-00" className="font-mono" {...register('cnpj')} />
+            <Input placeholder="00.000.000/0000-00" {...register('cnpj')} />
             {errors.cnpj && <p className="text-xs text-destructive">{errors.cnpj.message}</p>}
           </div>
           <div className="col-span-full space-y-1.5">
@@ -263,6 +447,8 @@ function FornecedorFormTab() {
           </div>
         </div>
       </div>
+
+      <Separator />
 
       {/* Responsável */}
       <div className="space-y-4">
@@ -292,54 +478,54 @@ function FornecedorFormTab() {
         </div>
       </div>
 
+      <Separator />
+
       {/* Clientes indicados */}
       <div className="space-y-4">
         <Heading as="h2" size="heading-md">Clientes indicados</Heading>
-        <div className="space-y-1.5">
-          <Label>Empresas <span className="text-muted-foreground">(separadas por vírgula)</span></Label>
-          <Textarea
-            placeholder="Ex: Natura Cosméticos — 74.678.000.073-71"
-            className="min-h-[80px]"
-            {...register('clientesIndicados')}
-          />
-          <p className="text-xs text-muted-foreground">+ Adicionar outro cliente</p>
-        </div>
-      </div>
-
-      {/* Logotipo */}
-      <div className="space-y-4">
-        <Heading as="h2" size="heading-md">Logotipo</Heading>
-        <FileUploadZone
-          label=""
-          hint="PNG | AI | PDF"
-          accept=".png,.ai,.pdf"
-          onChange={(file) => setValue('logotipo', file)}
+        <ClientesIndicadosTable
+          items={watch('clientesIndicados') ?? []}
+          onChange={(val) => setValue('clientesIndicados', val)}
         />
       </div>
 
-      {/* Status inicial */}
-      <div className="space-y-4">
-        <Heading as="h2" size="heading-md">Status inicial</Heading>
-        <div className="max-w-xs space-y-1.5">
-          <Label>Status *</Label>
-          <Select
-            value={statusValue}
-            onValueChange={(val) =>
-              setValue('statusInicial', val as FornecedorForm['statusInicial'], { shouldValidate: true })
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Selecionar um status..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="elegivel">Elegível</SelectItem>
-              <SelectItem value="cadastrado">Cadastrado</SelectItem>
-              <SelectItem value="aguardando-contrato">Aguardando Contrato Personalizado</SelectItem>
-            </SelectContent>
-          </Select>
-          {errors.statusInicial && (
-            <p className="text-xs text-destructive">{errors.statusInicial.message}</p>
-          )}
+      <Separator />
+
+      {/* Logotipo + Status inicial */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-4">
+          <Heading as="h2" size="heading-md">Logotipo</Heading>
+          <FileUploadZone
+            label=""
+            hint="PNG | JPG | SVG"
+            accept=".png,.jpg,.jpeg,.svg"
+            onChange={(file) => setValue('logotipo', file)}
+          />
+        </div>
+
+        <div className="space-y-4">
+          <Heading as="h2" size="heading-md">Status inicial</Heading>
+          <div className="space-y-1.5">
+            <Label>Status *</Label>
+            <Select
+              value={statusValue}
+              onValueChange={(val) =>
+                setValue('statusInicial', val as FornecedorForm['statusInicial'], { shouldValidate: true })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecionar um status..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="elegivel">Elegível</SelectItem>
+                <SelectItem value="cadastrado">Cadastrado</SelectItem>
+                <SelectItem value="aguardando-contrato">Aguardando Contrato Personalizado</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.statusInicial && (
+              <p className="text-xs text-destructive">{errors.statusInicial.message}</p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -369,7 +555,7 @@ export function CadastroManualScreen() {
           </AlertDescription>
         </Alert>
 
-        <Tabs defaultValue="empresa">
+        <Tabs defaultValue={useSearchParams().get('tab') === 'fornecedor' ? 'fornecedor' : 'empresa'}>
           <TabsList className="mb-6">
             <TabsTrigger value="empresa">Cadastro Empresa</TabsTrigger>
             <TabsTrigger value="fornecedor">Cadastro Fornecedor</TabsTrigger>
