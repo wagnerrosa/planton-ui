@@ -65,49 +65,89 @@ export function EmpresaEditDialog({ empresa, open, onOpenChange, onSave }: Empre
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Editar Empresa</DialogTitle>
+          <DialogTitle>Editar empresa</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 space-y-1.5">
-              <Label>Nome</Label>
-              <Input {...register('nome', { required: true })} />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col gap-4 py-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="empresa-nome">Nome da empresa</Label>
+              <Input
+                id="empresa-nome"
+                placeholder="Ex: Verde Embalagens Ltda"
+                {...register('nome', { required: true })}
+              />
             </div>
-            <div className="space-y-1.5">
-              <Label>CNPJ</Label>
-              <Input {...register('cnpj', { required: true })} className="font-mono" />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="empresa-cnpj">CNPJ</Label>
+                <Input
+                  id="empresa-cnpj"
+                  placeholder="00.000.000/0001-00"
+                  className="font-mono"
+                  {...register('cnpj', { required: true })}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="empresa-setor">Setor</Label>
+                <Input
+                  id="empresa-setor"
+                  placeholder="Ex: Embalagens"
+                  {...register('setor', { required: true })}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Setor</Label>
-              <Input {...register('setor', { required: true })} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="empresa-responsavel">Nome do responsável</Label>
+                <Input
+                  id="empresa-responsavel"
+                  placeholder="Ex: Ana Souza"
+                  {...register('responsavel', { required: true })}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="empresa-cargo">Cargo</Label>
+                <Input
+                  id="empresa-cargo"
+                  placeholder="Ex: Diretora de Sustentabilidade"
+                  {...register('cargo', { required: true })}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Responsável</Label>
-              <Input {...register('responsavel', { required: true })} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="empresa-email">E-mail</Label>
+                <Input
+                  id="empresa-email"
+                  type="email"
+                  placeholder="contato@empresa.com.br"
+                  {...register('email', { required: true })}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="empresa-telefone">Telefone</Label>
+                <Input
+                  id="empresa-telefone"
+                  placeholder="(00) 00000-0000"
+                  {...register('telefone')}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Cargo</Label>
-              <Input {...register('cargo', { required: true })} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>E-mail</Label>
-              <Input type="email" {...register('email', { required: true })} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Telefone</Label>
-              <Input {...register('telefone')} />
-            </div>
-            <div className="col-span-2 space-y-1.5">
-              <Label>Status</Label>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="empresa-status">Status</Label>
               <Select
                 value={statusValue}
                 onValueChange={(val) => setValue('status', val as EmpresaStatus)}
               >
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger id="empresa-status">
+                  <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.entries(EMPRESA_STATUS_CONFIG) as [EmpresaStatus, { label: string }][]).map(
@@ -123,11 +163,11 @@ export function EmpresaEditDialog({ empresa, open, onOpenChange, onSave }: Empre
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button variant="primary" onClick={() => handleSubmit(onSubmit)()}>
-              Salvar
+            <Button type="submit">
+              Salvar empresa
             </Button>
           </DialogFooter>
         </form>

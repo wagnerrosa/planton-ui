@@ -33,6 +33,7 @@ export type Empresa = {
   logoUrl?: string
   documentoUrl?: string
   chatHistory?: ChatMessage[]
+  statusHistory?: StatusHistoryItem[]
 }
 
 export type Fornecedor = {
@@ -48,6 +49,7 @@ export type Fornecedor = {
   status: FornecedorStatus
   dataEntrada: string
   logoUrl?: string
+  statusHistory?: StatusHistoryItem[]
 }
 
 export type ChatMessage = {
@@ -55,6 +57,12 @@ export type ChatMessage = {
   autor: string
   mensagem: string
   data: string
+}
+
+export type StatusHistoryItem = {
+  status: EmpresaStatus | FornecedorStatus
+  data: string
+  nota?: string
 }
 
 export type PendenciaItem = {
@@ -213,9 +221,22 @@ export const EMPRESAS: Empresa[] = [
     telefone: '(11) 99999-0001',
     status: 'aguardando-revisao-manual',
     dataEntrada: '2026-04-01',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-04-01', nota: 'Cadastro iniciado via formulário.' },
+      { status: 'aguardando-revisao-manual', data: '2026-04-02', nota: 'Documentação enviada. Aguardando revisão manual.' },
+    ],
     chatHistory: [
-      { id: 'c1', autor: 'Sistema', mensagem: 'Cadastro iniciado via formulário.', data: '2026-04-01' },
-      { id: 'c2', autor: 'Admin', mensagem: 'Documentação recebida. Em análise.', data: '2026-04-02' },
+      { id: 'c1', autor: 'IA', mensagem: 'Olá! Vou ajudar você a cadastrar sua empresa no programa Mostra Sua Pegada. Qual é o nome da empresa?', data: '2026-04-01' },
+      { id: 'c2', autor: 'Empresa', mensagem: 'Verde Embalagens Ltda.', data: '2026-04-01' },
+      { id: 'c3', autor: 'IA', mensagem: 'Perfeito! Qual o CNPJ da Verde Embalagens Ltda?', data: '2026-04-01' },
+      { id: 'c4', autor: 'Empresa', mensagem: '12.345.678/0001-90', data: '2026-04-01' },
+      { id: 'c5', autor: 'IA', mensagem: 'Ótimo. Qual o setor de atuação da empresa?', data: '2026-04-01' },
+      { id: 'c6', autor: 'Empresa', mensagem: 'Embalagens.', data: '2026-04-01' },
+      { id: 'c7', autor: 'IA', mensagem: 'Certo. Agora preciso dos dados do responsável. Qual o nome completo?', data: '2026-04-01' },
+      { id: 'c8', autor: 'Empresa', mensagem: 'Ana Souza, Diretora de Sustentabilidade.', data: '2026-04-01' },
+      { id: 'c9', autor: 'IA', mensagem: 'E o e-mail e telefone de contato?', data: '2026-04-01' },
+      { id: 'c10', autor: 'Empresa', mensagem: 'ana.souza@verdeemb.com.br e (11) 99999-0001.', data: '2026-04-01' },
+      { id: 'c11', autor: 'IA', mensagem: 'Cadastro concluído! Seus dados foram enviados para revisão manual. Em breve você receberá um retorno.', data: '2026-04-01' },
     ],
   },
   {
@@ -228,8 +249,22 @@ export const EMPRESAS: Empresa[] = [
     email: 'carlos@naturadrop.com',
     status: 'aguardando-revisao-manual',
     dataEntrada: '2026-04-02',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-04-02', nota: 'Cadastro iniciado via formulário.' },
+      { status: 'aguardando-revisao-manual', data: '2026-04-02', nota: 'Dados submetidos. Aguardando revisão.' },
+    ],
     chatHistory: [
-      { id: 'c3', autor: 'Sistema', mensagem: 'Cadastro iniciado.', data: '2026-04-02' },
+      { id: 'c12', autor: 'IA', mensagem: 'Olá! Vou ajudar a cadastrar sua empresa. Qual o nome?', data: '2026-04-02' },
+      { id: 'c13', autor: 'Empresa', mensagem: 'NaturaDrop S.A.', data: '2026-04-02' },
+      { id: 'c14', autor: 'IA', mensagem: 'Qual o CNPJ?', data: '2026-04-02' },
+      { id: 'c15', autor: 'Empresa', mensagem: '98.765.432/0001-11', data: '2026-04-02' },
+      { id: 'c16', autor: 'IA', mensagem: 'Setor de atuação?', data: '2026-04-02' },
+      { id: 'c17', autor: 'Empresa', mensagem: 'Cosméticos.', data: '2026-04-02' },
+      { id: 'c18', autor: 'IA', mensagem: 'Nome do responsável e cargo?', data: '2026-04-02' },
+      { id: 'c19', autor: 'Empresa', mensagem: 'Carlos Lima, CEO.', data: '2026-04-02' },
+      { id: 'c20', autor: 'IA', mensagem: 'E-mail de contato?', data: '2026-04-02' },
+      { id: 'c21', autor: 'Empresa', mensagem: 'carlos@naturadrop.com', data: '2026-04-02' },
+      { id: 'c22', autor: 'IA', mensagem: 'Tudo certo! Cadastro enviado para análise.', data: '2026-04-02' },
     ],
   },
   {
@@ -358,6 +393,11 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['EcoTex Têxtil', 'SustentaBio'],
     status: 'aguardando-contrato',
     dataEntrada: '2026-04-03',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-04-03', nota: 'Sistema automático' },
+      { status: 'elegivel', data: '2026-04-03', nota: 'Sistema automático' },
+      { status: 'aguardando-contrato', data: '2026-04-04', nota: 'Sistema automático' },
+    ],
   },
   {
     id: 'f2',
@@ -370,6 +410,10 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['Verde Embalagens Ltda'],
     status: 'elegivel',
     dataEntrada: '2026-03-20',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-03-20', nota: 'Sistema automático' },
+      { status: 'elegivel', data: '2026-03-20', nota: 'Sistema automático' },
+    ],
   },
   {
     id: 'f3',
@@ -381,6 +425,10 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['Plasteco Indústria'],
     status: 'nao-elegivel',
     dataEntrada: '2026-03-05',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-03-05', nota: 'Sistema automático' },
+      { status: 'nao-elegivel', data: '2026-03-06', nota: 'Setor incompatível com critérios do programa' },
+    ],
   },
   {
     id: 'f4',
@@ -393,6 +441,12 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['GreenCarbon Consultancy', 'EcoTex Têxtil'],
     status: 'cadastrado',
     dataEntrada: '2026-02-15',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-02-15', nota: 'Sistema automático' },
+      { status: 'elegivel', data: '2026-02-15', nota: 'Sistema automático' },
+      { status: 'aguardando-contrato', data: '2026-02-20', nota: 'Sistema automático' },
+      { status: 'cadastrado', data: '2026-03-01', nota: 'Contrato assinado e cadastro finalizado' },
+    ],
   },
   {
     id: 'f5',
@@ -405,6 +459,9 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['NaturaDrop S.A.', 'AgroVerde Alimentos'],
     status: 'processo-iniciado',
     dataEntrada: '2026-04-04',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-04-04', nota: 'Sistema automático' },
+    ],
   },
   {
     id: 'f6',
@@ -417,6 +474,10 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['Renovar Energia'],
     status: 'elegivel',
     dataEntrada: '2026-03-22',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-03-22', nota: 'Sistema automático' },
+      { status: 'elegivel', data: '2026-03-22', nota: 'Sistema automático' },
+    ],
   },
   {
     id: 'f7',
@@ -428,6 +489,11 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: [],
     status: 'aguardando-contrato',
     dataEntrada: '2026-04-05',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-04-05', nota: 'Sistema automático' },
+      { status: 'elegivel', data: '2026-04-05', nota: 'Sistema automático' },
+      { status: 'aguardando-contrato', data: '2026-04-06', nota: 'Sistema automático' },
+    ],
   },
   {
     id: 'f8',
@@ -440,6 +506,12 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['Ciclo Verde Reciclagem', 'BioMed Saúde'],
     status: 'cadastrado',
     dataEntrada: '2026-02-08',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-02-08', nota: 'Sistema automático' },
+      { status: 'elegivel', data: '2026-02-08', nota: 'Sistema automático' },
+      { status: 'aguardando-contrato', data: '2026-02-12', nota: 'Sistema automático' },
+      { status: 'cadastrado', data: '2026-02-20', nota: 'Contrato assinado e cadastro finalizado' },
+    ],
   },
   {
     id: 'f9',
@@ -452,6 +524,10 @@ export const FORNECEDORES: Fornecedor[] = [
     clientesIndicados: ['LogiSustenta', 'ClearWater Saneamento'],
     status: 'nao-elegivel',
     dataEntrada: '2026-03-12',
+    statusHistory: [
+      { status: 'processo-iniciado', data: '2026-03-12', nota: 'Sistema automático' },
+      { status: 'nao-elegivel', data: '2026-03-13', nota: 'Documentação insuficiente para elegibilidade' },
+    ],
   },
 ]
 

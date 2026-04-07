@@ -1,13 +1,14 @@
 'use client'
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/shadcn/sheet'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar'
 import { Button } from '@/components/primitives/Button'
 import { Body } from '@/components/primitives/Body'
 import { Heading } from '@/components/primitives/Heading'
 import { Separator } from '@/components/shadcn/separator'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Field } from '../../components/Field'
-import { formatDateBR, type Empresa, type EmpresaStatus } from '../../mock-data'
+import { formatDateBR, EMPRESA_STATUS_CONFIG, type Empresa, type EmpresaStatus } from '../../mock-data'
 
 type EmpresaDetailSheetProps = {
   empresa: Empresa | null
@@ -32,13 +33,21 @@ export function EmpresaDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-lg overflow-y-auto flex flex-col gap-0 p-0">
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto flex flex-col gap-0 p-0">
         {/* Header */}
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <SheetTitle className="text-left text-base font-semibold">{empresa.nome}</SheetTitle>
-              <Body size="sm" className="text-muted-foreground font-mono mt-0.5">{empresa.cnpj}</Body>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10 rounded-sm shrink-0">
+                <AvatarImage src={empresa.logoUrl} alt={empresa.nome} />
+                <AvatarFallback className="rounded-sm text-sm font-mono">
+                  {empresa.nome.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <SheetTitle className="text-left text-base font-semibold">{empresa.nome}</SheetTitle>
+                <Body size="sm" className="text-muted-foreground font-mono mt-0.5">{empresa.cnpj}</Body>
+              </div>
             </div>
             <StatusBadge status={empresa.status} tipo="empresa" />
           </div>
@@ -134,22 +143,64 @@ export function EmpresaDetailSheet({
             <Field label="Data de entrada" value={formatDateBR(empresa.dataEntrada)} />
           </div>
 
-          {/* Chat History */}
+          {/* Histórico de Status */}
+          {empresa.statusHistory && empresa.statusHistory.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-3">
+                <Heading as="h3" size="heading-md">Histórico de Status</Heading>
+                <div className="relative flex flex-col gap-0">
+                  {empresa.statusHistory.map((item, idx) => {
+                    const isLast = idx === empresa.statusHistory!.length - 1
+                    return (
+                      <div key={idx} className="flex gap-3">
+                        {/* linha vertical + bolinha */}
+                        <div className="flex flex-col items-center">
+                          <div className={`w-2.5 h-2.5 rounded-full border-2 mt-0.5 shrink-0 ${isLast ? 'border-foreground bg-foreground' : 'border-muted-foreground bg-background'}`} />
+                          {!isLast && <div className="w-px flex-1 bg-border mt-1" />}
+                        </div>
+                        {/* conteúdo */}
+                        <div className={`pb-4 ${isLast ? '' : ''}`}>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-sm font-medium">{EMPRESA_STATUS_CONFIG[item.status].label}</span>
+                            <span className="text-xs text-muted-foreground font-mono">{formatDateBR(item.data)}</span>
+                          </div>
+                          {item.nota && (
+                            <Body size="sm" className="text-muted-foreground mt-0.5">{item.nota}</Body>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Chat de Cadastro */}
           {empresa.chatHistory && empresa.chatHistory.length > 0 && (
             <>
               <Separator />
               <div className="space-y-3">
-                <Heading as="h3" size="heading-md">Histórico de Contato</Heading>
-                <div className="space-y-2">
-                  {empresa.chatHistory.map((msg) => (
-                    <div key={msg.id} className="border border-border p-3 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Body size="sm" className="font-medium">{msg.autor}</Body>
-                        <Body size="sm" className="text-muted-foreground">{formatDateBR(msg.data)}</Body>
+                <Heading as="h3" size="heading-md">Chat de Cadastro</Heading>
+                <div className="border border-border h-64 overflow-y-auto flex flex-col gap-2 p-3">
+                  {empresa.chatHistory.map((msg) => {
+                    const isIA = msg.autor === 'IA' || msg.autor === 'Sistema'
+                    return (
+                      <div key={msg.id} className={`flex flex-col gap-0.5 ${isIA ? 'items-start' : 'items-end'}`}>
+                        <div className={`max-w-[80%] px-3 py-2 text-sm leading-relaxed ${
+                          isIA
+                            ? 'bg-muted text-foreground rounded-sm rounded-tl-none'
+                            : 'bg-foreground text-background rounded-sm rounded-tr-none'
+                        }`}>
+                          {msg.mensagem}
+                        </div>
+                        <Body size="sm" className="text-muted-foreground px-1">
+                          {msg.autor} · {formatDateBR(msg.data)}
+                        </Body>
                       </div>
-                      <Body size="sm">{msg.mensagem}</Body>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </>

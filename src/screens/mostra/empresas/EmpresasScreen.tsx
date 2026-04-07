@@ -7,7 +7,7 @@ import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Input } from '@/components/shadcn/input'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination, tableLinkClass } from '@/components/shadcn/table'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { StatusBadge } from '../components/StatusBadge'
@@ -189,7 +189,7 @@ export function EmpresasScreen() {
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <div className="font-medium text-sm">{empresa.nome}</div>
+                            <span className={tableLinkClass + ' font-medium text-sm'}>{empresa.nome}</span>
                             <div className="text-xs text-muted-foreground font-mono">{empresa.cnpj}</div>
                           </div>
                         </div>

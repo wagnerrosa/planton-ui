@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/shadcn/dialog'
 import { Button } from '@/components/primitives/Button'
+import { Body } from '@/components/primitives/Body'
 import { Input } from '@/components/shadcn/input'
 import { Label } from '@/components/shadcn/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
@@ -70,53 +71,99 @@ export function FornecedorEditDialog({ fornecedor, open, onOpenChange, onSave }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Editar Fornecedor</DialogTitle>
+          <DialogTitle>Editar fornecedor</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 space-y-1.5">
-              <Label>Nome</Label>
-              <Input {...register('nome', { required: true })} />
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex flex-col gap-4 py-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="forn-nome">Nome do fornecedor</Label>
+              <Input
+                id="forn-nome"
+                placeholder="Ex: BioClean Produtos"
+                {...register('nome', { required: true })}
+              />
             </div>
-            <div className="space-y-1.5">
-              <Label>CNPJ</Label>
-              <Input {...register('cnpj', { required: true })} className="font-mono" />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="forn-cnpj">CNPJ</Label>
+                <Input
+                  id="forn-cnpj"
+                  placeholder="00.000.000/0001-00"
+                  className="font-mono"
+                  {...register('cnpj', { required: true })}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="forn-site">Site</Label>
+                <Input
+                  id="forn-site"
+                  placeholder="www.empresa.com.br"
+                  {...register('site')}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Site</Label>
-              <Input {...register('site')} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="forn-responsavel">Nome do responsável</Label>
+                <Input
+                  id="forn-responsavel"
+                  placeholder="Ex: Juliana Ramos"
+                  {...register('responsavel', { required: true })}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="forn-cargo">Cargo</Label>
+                <Input
+                  id="forn-cargo"
+                  placeholder="Ex: Gerente Comercial"
+                  {...register('cargo', { required: true })}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Responsável</Label>
-              <Input {...register('responsavel', { required: true })} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="forn-email">E-mail</Label>
+                <Input
+                  id="forn-email"
+                  type="email"
+                  placeholder="contato@fornecedor.com.br"
+                  {...register('email', { required: true })}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="forn-telefone">Telefone</Label>
+                <Input
+                  id="forn-telefone"
+                  placeholder="(00) 00000-0000"
+                  {...register('telefone')}
+                />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label>Cargo</Label>
-              <Input {...register('cargo', { required: true })} />
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="forn-clientes">Clientes indicados</Label>
+              <Input
+                id="forn-clientes"
+                placeholder="Ex: Empresa A, Empresa B"
+                {...register('clientesIndicados')}
+              />
+              <Body muted className="text-xs">Separe múltiplos clientes por vírgula</Body>
             </div>
-            <div className="space-y-1.5">
-              <Label>E-mail</Label>
-              <Input type="email" {...register('email', { required: true })} />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Telefone</Label>
-              <Input {...register('telefone')} />
-            </div>
-            <div className="col-span-2 space-y-1.5">
-              <Label>Clientes Indicados <span className="text-muted-foreground">(separados por vírgula)</span></Label>
-              <Input {...register('clientesIndicados')} placeholder="Ex: Empresa A, Empresa B" />
-            </div>
-            <div className="col-span-2 space-y-1.5">
-              <Label>Status</Label>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="forn-status">Status</Label>
               <Select
                 value={statusValue}
                 onValueChange={(val) => setValue('status', val as FornecedorStatus)}
               >
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger id="forn-status">
+                  <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.entries(FORNECEDOR_STATUS_CONFIG) as [FornecedorStatus, { label: string }][]).map(
@@ -132,11 +179,11 @@ export function FornecedorEditDialog({ fornecedor, open, onOpenChange, onSave }:
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button variant="primary" onClick={() => handleSubmit(onSubmit)()}>
-              Salvar
+            <Button type="submit">
+              Salvar fornecedor
             </Button>
           </DialogFooter>
         </form>
