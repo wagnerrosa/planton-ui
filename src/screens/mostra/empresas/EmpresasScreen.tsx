@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { MoreHorizontal, Plus, Search } from 'lucide-react'
+import { MoreHorizontal, Plus, Search, ChevronDown } from 'lucide-react'
 import { MostraNavbarSync } from '@/components/navigation/MostraNavbarSync'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
@@ -9,20 +9,18 @@ import { Button } from '@/components/primitives/Button'
 import { Input } from '@/components/shadcn/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination, tableLinkClass } from '@/components/shadcn/table'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { StatusBadge } from '../components/StatusBadge'
 import { EmpresaDetailSheet } from './components/EmpresaDetailSheet'
-import { EmpresaEditDialog } from './components/EmpresaEditDialog'
+import { EmpresaFormSheet } from './components/EmpresaFormSheet'
 import {
   EMPRESAS,
-  EMPRESA_STATUS_CONFIG,
   formatDateBR,
   type Empresa,
   type EmpresaStatus,
 } from '../mock-data'
 
-const STATUS_FILTERS: { label: string; value: EmpresaStatus | 'all' }[] = [
-  { label: 'Todos', value: 'all' },
+const STATUS_OPTIONS: { label: string; value: EmpresaStatus }[] = [
   { label: 'Processo Iniciado', value: 'processo-iniciado' },
   { label: 'Ag. Revisão', value: 'aguardando-revisao-manual' },
   { label: 'Ag. Contrato', value: 'aguardando-contrato' },
@@ -34,7 +32,7 @@ const STATUS_FILTERS: { label: string; value: EmpresaStatus | 'all' }[] = [
 const PAGE_SIZE = 5
 
 export function EmpresasScreen() {
-  const [activeFilter, setActiveFilter] = useState<EmpresaStatus | 'all'>('all')
+  const [statusFilters, setStatusFilters] = useState<EmpresaStatus[]>([])
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [selectedEmpresa, setSelectedEmpresa] = useState<Empresa | null>(null)
@@ -42,21 +40,24 @@ export function EmpresasScreen() {
   const [sheetOpen, setSheetOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [empresas, setEmpresas] = useState<Empresa[]>(EMPRESAS)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
     return empresas.filter((e) => {
-      const matchStatus = activeFilter === 'all' || e.status === activeFilter
+      const matchStatus = statusFilters.length === 0 || statusFilters.includes(e.status)
       const q = search.trim().toLowerCase()
       const matchSearch = !q || e.cnpj.toLowerCase().includes(q) || e.nome.toLowerCase().includes(q)
       return matchStatus && matchSearch
     })
-  }, [empresas, activeFilter, search])
+  }, [empresas, statusFilters, search])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
-  function handleFilterChange(value: EmpresaStatus | 'all') {
-    setActiveFilter(value)
+  function toggleStatusFilter(value: EmpresaStatus) {
+    setStatusFilters((prev) =>
+      prev.includes(value) ? prev.filter((s) => s !== value) : [...prev, value]
+    )
     setPage(1)
   }
 
@@ -81,28 +82,18 @@ export function EmpresasScreen() {
 
   function handleDelete(id: string) {
     setEmpresas((prev) => prev.filter((e) => e.id !== id))
+    setConfirmDeleteId(null)
   }
 
   function handleSave(updated: Empresa) {
     setEmpresas((prev) => prev.map((e) => (e.id === updated.id ? updated : e)))
   }
 
-  function getActionsForStatus(empresa: Empresa) {
-    const actions: { label: string; onClick: () => void }[] = []
-
-    if (empresa.status === 'aguardando-revisao-manual') {
-      actions.push({ label: 'Marcar como Elegível', onClick: () => handleStatusChange(empresa.id, 'elegivel') })
-      actions.push({ label: 'Marcar como Não Elegível', onClick: () => handleStatusChange(empresa.id, 'nao-elegivel') })
-    }
-    if (empresa.status === 'elegivel') {
-      actions.push({ label: 'Aguardar Contrato', onClick: () => handleStatusChange(empresa.id, 'aguardando-contrato') })
-    }
-    if (empresa.status === 'aguardando-contrato') {
-      actions.push({ label: 'Marcar como Cadastrado', onClick: () => handleStatusChange(empresa.id, 'cadastrado') })
-    }
-
-    return actions
-  }
+  const statusFilterLabel = statusFilters.length === 0
+    ? 'Status'
+    : statusFilters.length === 1
+      ? STATUS_OPTIONS.find((o) => o.value === statusFilters[0])?.label ?? 'Status'
+      : `${statusFilters.length} status`
 
   return (
     <>
@@ -110,35 +101,10 @@ export function EmpresasScreen() {
 
       <div className="px-6 pb-6 pt-10 space-y-6">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <Heading as="h1" size="heading-lg">Empresas Participantes</Heading>
-          <Button variant="primary" size="sm" href="/design-system/screens/mostra/cadastro-manual?tab=empresa" className="shrink-0">
-            <Plus size={14} />
-            Cadastrar Empresa
-          </Button>
-        </div>
+        <Heading as="h1" size="heading-lg">Empresas Participantes</Heading>
 
-        {/* Filters + Search */}
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          {/* Status tabs */}
-          <div className="flex flex-wrap gap-1">
-            {STATUS_FILTERS.map((f) => (
-              <button
-                key={f.value}
-                onClick={() => handleFilterChange(f.value)}
-                className={
-                  'px-3 py-1 text-xs font-medium border transition-colors ' +
-                  (activeFilter === f.value
-                    ? 'bg-foreground text-background border-foreground'
-                    : 'bg-background text-muted-foreground border-border hover:border-foreground hover:text-foreground')
-                }
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Search */}
+        {/* Search + Cadastrar */}
+        <div className="flex items-center gap-3">
           <div className="relative w-full md:w-64">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -148,18 +114,54 @@ export function EmpresasScreen() {
               className="pl-8 h-8 text-sm"
             />
           </div>
+          <Button variant="primary" size="sm" className="shrink-0" onClick={() => { setEditingEmpresa(null); setEditOpen(true) }}>
+            <Plus size={14} />
+            Cadastrar Empresa
+          </Button>
         </div>
 
         {/* Table */}
         <div className="border border-border">
           <Table>
-
             <TableHeader>
               <TableRow>
                 <TableHead>Nome / CNPJ</TableHead>
                 <TableHead>Setor</TableHead>
                 <TableHead>Responsável</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex items-center gap-1 hover:text-foreground transition-colors">
+                        <span className={statusFilters.length > 0 ? 'text-foreground font-semibold' : ''}>
+                          {statusFilterLabel}
+                        </span>
+                        <ChevronDown size={12} className="opacity-60" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-52">
+                      {STATUS_OPTIONS.map((option) => (
+                        <DropdownMenuCheckboxItem
+                          key={option.value}
+                          checked={statusFilters.includes(option.value)}
+                          onCheckedChange={() => toggleStatusFilter(option.value)}
+                        >
+                          {option.label}
+                        </DropdownMenuCheckboxItem>
+                      ))}
+                      {statusFilters.length > 0 && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-muted-foreground text-xs justify-center"
+                            onClick={() => { setStatusFilters([]); setPage(1) }}
+                          >
+                            Limpar filtro
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead className="w-10" />
               </TableRow>
@@ -172,9 +174,7 @@ export function EmpresasScreen() {
                   </TableCell>
                 </TableRow>
               ) : (
-                paginated.map((empresa) => {
-                  const statusActions = getActionsForStatus(empresa)
-                  return (
+                paginated.map((empresa) => (
                     <TableRow
                       key={empresa.id}
                       className="cursor-pointer hover:bg-muted/30"
@@ -210,42 +210,48 @@ export function EmpresasScreen() {
                         </Body>
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
+                        <DropdownMenu
+                          onOpenChange={(open) => { if (!open) setConfirmDeleteId(null) }}
+                        >
                           <DropdownMenuTrigger asChild>
                             <button className="p-1 hover:bg-muted rounded-sm">
                               <MoreHorizontal size={16} />
                             </button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-52">
-                            <DropdownMenuItem onClick={() => openDetail(empresa)}>
-                              Ver detalhes
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => openEdit(empresa)}>
-                              Editar dados
-                            </DropdownMenuItem>
-                            {statusActions.length > 0 && (
+                            {confirmDeleteId === empresa.id ? (
                               <>
+                                <div className="px-2 py-1.5 text-xs text-muted-foreground">Confirmar exclusão?</div>
                                 <DropdownMenuSeparator />
-                                {statusActions.map((action) => (
-                                  <DropdownMenuItem key={action.label} onClick={action.onClick}>
-                                    {action.label}
-                                  </DropdownMenuItem>
-                                ))}
+                                <DropdownMenuItem
+                                  className="text-destructive focus:text-destructive"
+                                  onClick={() => handleDelete(empresa.id)}
+                                >
+                                  Sim, excluir
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setConfirmDeleteId(null)}>
+                                  Cancelar
+                                </DropdownMenuItem>
+                              </>
+                            ) : (
+                              <>
+                                <DropdownMenuItem onClick={() => openDetail(empresa)}>
+                                  Ver detalhes
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  className="text-destructive focus:text-destructive"
+                                  onClick={() => setConfirmDeleteId(empresa.id)}
+                                >
+                                  Excluir
+                                </DropdownMenuItem>
                               </>
                             )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => handleDelete(empresa.id)}
-                            >
-                              Excluir
-                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
-                  )
-                })
+                  ))
               )}
             </TableBody>
           </Table>
@@ -276,12 +282,13 @@ export function EmpresasScreen() {
         }}
       />
 
-      {/* Edit Dialog */}
-      <EmpresaEditDialog
+      {/* Edit / New Sheet */}
+      <EmpresaFormSheet
         empresa={editingEmpresa}
         open={editOpen}
         onOpenChange={setEditOpen}
         onSave={handleSave}
+        isNew={editingEmpresa === null}
       />
     </>
   )

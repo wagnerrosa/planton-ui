@@ -4,9 +4,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar'
 import { Button } from '@/components/primitives/Button'
 import { Body } from '@/components/primitives/Body'
-import { Heading } from '@/components/primitives/Heading'
 import { Separator } from '@/components/shadcn/separator'
 import { StatusBadge } from '../../components/StatusBadge'
+import { StatusSelect } from '../../components/StatusSelect'
 import { Field } from '../../components/Field'
 import { formatDateBR, FORNECEDOR_STATUS_CONFIG, type Fornecedor, type FornecedorStatus } from '../../mock-data'
 
@@ -27,14 +27,9 @@ export function FornecedorDetailSheet({
 }: FornecedorDetailSheetProps) {
   if (!fornecedor) return null
 
-  const isProcessoIniciado = fornecedor.status === 'processo-iniciado'
-  const isElegivel = fornecedor.status === 'elegivel'
-  const isAguardandoContrato = fornecedor.status === 'aguardando-contrato'
-  const hasActions = isProcessoIniciado || isElegivel || isAguardandoContrato
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto flex flex-col gap-0 p-0">
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto flex flex-col gap-0 p-0 [&>button]:hidden">
         {/* Header */}
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
           <div className="flex items-start justify-between gap-3">
@@ -50,47 +45,24 @@ export function FornecedorDetailSheet({
                 <Body size="sm" className="text-muted-foreground font-mono mt-0.5">{fornecedor.cnpj}</Body>
               </div>
             </div>
-            <StatusBadge status={fornecedor.status} tipo="fornecedor" />
-          </div>
-        </SheetHeader>
-
-        {/* Actions por status */}
-        {hasActions && (
-          <div className="px-6 py-3 border-b border-border bg-muted/20">
-            <Body size="sm" className="text-muted-foreground mb-2 uppercase tracking-wider">Ações</Body>
-            <div className="flex flex-wrap gap-2">
-              {isProcessoIniciado && (
-                <>
-                  <Button size="sm" variant="primary" onClick={() => onStatusChange('elegivel')}>
-                    Marcar como Elegível
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => onStatusChange('nao-elegivel')}>
-                    Marcar como Não Elegível
-                  </Button>
-                </>
-              )}
-              {isElegivel && (
-                <Button size="sm" variant="secondary" onClick={() => onStatusChange('aguardando-contrato')}>
-                  Aguardar Contrato
-                </Button>
-              )}
-              {isAguardandoContrato && (
-                <Button size="sm" variant="primary" onClick={() => onStatusChange('cadastrado')}>
-                  Marcar como Cadastrado
-                </Button>
-              )}
+            <div className="flex items-center gap-2">
+              <StatusSelect
+                currentStatus={fornecedor.status}
+                tipo="fornecedor"
+                onStatusChange={onStatusChange}
+              />
               <Button size="sm" variant="ghost" onClick={onEdit}>
-                Editar dados
+                Editar
               </Button>
             </div>
           </div>
-        )}
+        </SheetHeader>
 
         {/* Body */}
         <div className="flex-1 px-6 py-5 space-y-5">
           {/* Dados do fornecedor */}
           <div className="space-y-3">
-            <Heading as="h3" size="heading-md">Dados do Fornecedor</Heading>
+            <span className="text-sm font-semibold font-sans block">Dados do Fornecedor</span>
             <div className="grid grid-cols-2 gap-3">
               <Field label="CNPJ" value={fornecedor.cnpj} />
               <Field label="Site" value={fornecedor.site} />
@@ -101,7 +73,7 @@ export function FornecedorDetailSheet({
 
           {/* Responsável */}
           <div className="space-y-3">
-            <Heading as="h3" size="heading-md">Responsável</Heading>
+            <span className="text-sm font-semibold font-sans block">Responsável</span>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Nome" value={fornecedor.responsavel} />
               <Field label="Cargo" value={fornecedor.cargo} />
@@ -114,7 +86,7 @@ export function FornecedorDetailSheet({
 
           {/* Clientes indicados */}
           <div className="space-y-3">
-            <Heading as="h3" size="heading-md">Clientes Indicados</Heading>
+            <span className="text-sm font-semibold font-sans block">Clientes Indicados</span>
             {fornecedor.clientesIndicados.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {fornecedor.clientesIndicados.map((cliente) => (
@@ -155,7 +127,7 @@ export function FornecedorDetailSheet({
             <>
               <Separator />
               <div className="space-y-3">
-                <Heading as="h3" size="heading-md">Histórico de Status</Heading>
+                <span className="text-sm font-semibold font-sans block">Histórico de Status</span>
                 <div className="flex flex-col gap-0">
                   {fornecedor.statusHistory.map((item, idx) => {
                     const isLast = idx === fornecedor.statusHistory!.length - 1

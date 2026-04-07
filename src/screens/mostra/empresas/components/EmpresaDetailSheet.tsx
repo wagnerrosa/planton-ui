@@ -4,9 +4,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar'
 import { Button } from '@/components/primitives/Button'
 import { Body } from '@/components/primitives/Body'
-import { Heading } from '@/components/primitives/Heading'
 import { Separator } from '@/components/shadcn/separator'
 import { StatusBadge } from '../../components/StatusBadge'
+import { StatusSelect } from '../../components/StatusSelect'
 import { Field } from '../../components/Field'
 import { formatDateBR, EMPRESA_STATUS_CONFIG, type Empresa, type EmpresaStatus } from '../../mock-data'
 
@@ -27,13 +27,9 @@ export function EmpresaDetailSheet({
 }: EmpresaDetailSheetProps) {
   if (!empresa) return null
 
-  const isAguardandoRevisao = empresa.status === 'aguardando-revisao-manual'
-  const isAguardandoContrato = empresa.status === 'aguardando-contrato'
-  const isElegivel = empresa.status === 'elegivel'
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto flex flex-col gap-0 p-0">
+      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto flex flex-col gap-0 p-0 [&>button]:hidden">
         {/* Header */}
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-border">
           <div className="flex items-start justify-between gap-3">
@@ -49,47 +45,24 @@ export function EmpresaDetailSheet({
                 <Body size="sm" className="text-muted-foreground font-mono mt-0.5">{empresa.cnpj}</Body>
               </div>
             </div>
-            <StatusBadge status={empresa.status} tipo="empresa" />
-          </div>
-        </SheetHeader>
-
-        {/* Actions por status */}
-        {(isAguardandoRevisao || isAguardandoContrato || isElegivel) && (
-          <div className="px-6 py-3 border-b border-border bg-muted/20">
-            <Body size="sm" className="text-muted-foreground mb-2 uppercase tracking-wider">Ações</Body>
-            <div className="flex flex-wrap gap-2">
-              {isAguardandoRevisao && (
-                <>
-                  <Button size="sm" variant="primary" onClick={() => onStatusChange('elegivel')}>
-                    Marcar como Elegível
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => onStatusChange('nao-elegivel')}>
-                    Marcar como Não Elegível
-                  </Button>
-                </>
-              )}
-              {isElegivel && (
-                <Button size="sm" variant="secondary" onClick={() => onStatusChange('aguardando-contrato')}>
-                  Aguardar Contrato
-                </Button>
-              )}
-              {isAguardandoContrato && (
-                <Button size="sm" variant="primary" onClick={() => onStatusChange('cadastrado')}>
-                  Marcar como Cadastrado
-                </Button>
-              )}
+            <div className="flex items-center gap-2">
+              <StatusSelect
+                currentStatus={empresa.status}
+                tipo="empresa"
+                onStatusChange={onStatusChange}
+              />
               <Button size="sm" variant="ghost" onClick={onEdit}>
-                Editar dados
+                Editar
               </Button>
             </div>
           </div>
-        )}
+        </SheetHeader>
 
         {/* Body */}
         <div className="flex-1 px-6 py-5 space-y-5">
           {/* Dados da empresa */}
           <div className="space-y-3">
-            <Heading as="h3" size="heading-md">Dados da Empresa</Heading>
+            <span className="text-sm font-semibold font-sans block">Dados da Empresa</span>
             <div className="grid grid-cols-2 gap-3">
               <Field label="CNPJ" value={empresa.cnpj} />
               <Field label="Setor" value={empresa.setor} />
@@ -100,7 +73,7 @@ export function EmpresaDetailSheet({
 
           {/* Responsável */}
           <div className="space-y-3">
-            <Heading as="h3" size="heading-md">Responsável</Heading>
+            <span className="text-sm font-semibold font-sans block">Responsável</span>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Nome" value={empresa.responsavel} />
               <Field label="Cargo" value={empresa.cargo} />
@@ -110,32 +83,32 @@ export function EmpresaDetailSheet({
           </div>
 
           {/* Documentos */}
-          {(empresa.logoUrl || empresa.documentoUrl) && (
-            <>
-              <Separator />
-              <div className="space-y-3">
-                <Heading as="h3" size="heading-md">Documentos</Heading>
-                <div className="grid grid-cols-2 gap-3">
-                  {empresa.logoUrl && (
-                    <div className="space-y-0.5">
-                      <Body size="sm" className="text-muted-foreground uppercase tracking-wider">Logotipo</Body>
-                      <a href={empresa.logoUrl} target="_blank" rel="noreferrer" className="text-sm text-primary underline underline-offset-2">
-                        Ver arquivo
-                      </a>
-                    </div>
-                  )}
-                  {empresa.documentoUrl && (
-                    <div className="space-y-0.5">
-                      <Body size="sm" className="text-muted-foreground uppercase tracking-wider">Pegada de Carbono</Body>
-                      <a href={empresa.documentoUrl} target="_blank" rel="noreferrer" className="text-sm text-primary underline underline-offset-2">
-                        Ver arquivo
-                      </a>
-                    </div>
-                  )}
-                </div>
+          <Separator />
+          <div className="space-y-3">
+            <span className="text-sm font-semibold font-sans block">Documentos</span>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-0.5">
+                <Body size="sm" className="text-muted-foreground uppercase tracking-wider">Logotipo</Body>
+                {empresa.logoUrl ? (
+                  <a href={empresa.logoUrl} target="_blank" rel="noreferrer" className="text-sm text-primary underline underline-offset-2">
+                    Ver arquivo
+                  </a>
+                ) : (
+                  <Body size="sm">—</Body>
+                )}
               </div>
-            </>
-          )}
+              <div className="space-y-0.5">
+                <Body size="sm" className="text-muted-foreground uppercase tracking-wider">Pegada de Carbono</Body>
+                {empresa.documentoUrl ? (
+                  <a href={empresa.documentoUrl} target="_blank" rel="noreferrer" className="text-sm text-primary underline underline-offset-2">
+                    Ver arquivo
+                  </a>
+                ) : (
+                  <Body size="sm">—</Body>
+                )}
+              </div>
+            </div>
+          </div>
 
           {/* Datas */}
           <Separator />
@@ -148,7 +121,7 @@ export function EmpresaDetailSheet({
             <>
               <Separator />
               <div className="space-y-3">
-                <Heading as="h3" size="heading-md">Histórico de Status</Heading>
+                <span className="text-sm font-semibold font-sans block">Histórico de Status</span>
                 <div className="relative flex flex-col gap-0">
                   {empresa.statusHistory.map((item, idx) => {
                     const isLast = idx === empresa.statusHistory!.length - 1
@@ -182,7 +155,7 @@ export function EmpresaDetailSheet({
             <>
               <Separator />
               <div className="space-y-3">
-                <Heading as="h3" size="heading-md">Chat de Cadastro</Heading>
+                <span className="text-sm font-semibold font-sans block">Chat de Cadastro</span>
                 <div className="border border-border h-64 overflow-y-auto flex flex-col gap-2 p-3">
                   {empresa.chatHistory.map((msg) => {
                     const isIA = msg.autor === 'IA' || msg.autor === 'Sistema'

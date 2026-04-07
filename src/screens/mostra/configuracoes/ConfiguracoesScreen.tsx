@@ -329,39 +329,7 @@ export function ConfiguracoesScreen() {
             addPlaceholder="Nome do setor"
           />
         </Section>
-
-        <Separator />
-
-        {/* Empresas Clientes */}
-        <Section
-          title="Lista de Empresas Clientes"
-          description="Fornecedoras que já são clientes da Planton. Esta informação aparece no cadastro dos fornecedores. Alterações aplicadas imediatamente nos novos cadastros."
-        >
-          <TableList
-            items={clientes}
-            columnLabel="Empresa"
-            {...listHandlers(setClientes)}
-            addPlaceholder="Nome da empresa cliente"
-          />
-        </Section>
-
-        <Separator />
-
-        {/* Consultorias Parceiras */}
-        <Section
-          title="Lista de Consultorias Parceiras"
-          description="Empresas parceiras que podem participar do programa. Esta informação é exibida para os fornecedores durante o processo de cadastro."
-        >
-          <TableList
-            items={consultorias}
-            columnLabel="Consultoria"
-            {...listHandlers(setConsultorias)}
-            addPlaceholder="Nome da consultoria parceira"
-          />
-        </Section>
-
-        <Separator />
-
+        {/* <Separator /> */}
         {/* Email de notificação */}
         <EmailNotificacaoSection />
       </div>

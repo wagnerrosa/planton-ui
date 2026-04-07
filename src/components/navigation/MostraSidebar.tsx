@@ -5,8 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
   Building2,
-  Truck,
-  ClipboardList,
+  Leaf,
   Settings,
   FileBarChart,
   LogOut,
@@ -34,8 +33,7 @@ const NAV_GROUPS = [
     label: 'Cadastros',
     items: [
       { href: `${BASE}/empresas`, label: 'Empresas', icon: Building2 },
-      { href: `${BASE}/fornecedores`, label: 'Fornecedores', icon: Truck },
-      { href: `${BASE}/cadastro-manual`, label: 'Cadastro Manual', icon: ClipboardList },
+      { href: `${BASE}/fornecedores`, label: 'Fornecedores', icon: Leaf },
     ],
   },
   {

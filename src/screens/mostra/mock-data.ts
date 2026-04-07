@@ -125,25 +125,25 @@ export const MOSTRA_KPIS: MostraKpi[] = [
 // --------------- Chart Data ---------------
 
 export const SOLICITANTES_POR_MES: ChartDataPoint[] = [
-  { mes: 'Jan', empresas: 3, fornecedores: 4 },
-  { mes: 'Fev', empresas: 5, fornecedores: 6 },
-  { mes: 'Mar', empresas: 4, fornecedores: 8 },
-  { mes: 'Abr', empresas: 7, fornecedores: 5 },
-  { mes: 'Mai', empresas: 9, fornecedores: 11 },
-  { mes: 'Jun', empresas: 6, fornecedores: 9 },
-  { mes: 'Jul', empresas: 8, fornecedores: 7 },
-  { mes: 'Ago', empresas: 11, fornecedores: 13 },
-  { mes: 'Set', empresas: 10, fornecedores: 12 },
-  { mes: 'Out', empresas: 14, fornecedores: 15 },
-  { mes: 'Nov', empresas: 12, fornecedores: 14 },
-  { mes: 'Dez', empresas: 18, fornecedores: 21 },
+  { mes: 'Jan', empresas: 8, fornecedores: 1 },
+  { mes: 'Fev', empresas: 12, fornecedores: 1 },
+  { mes: 'Mar', empresas: 15, fornecedores: 2 },
+  { mes: 'Abr', empresas: 18, fornecedores: 1 },
+  { mes: 'Mai', empresas: 22, fornecedores: 2 },
+  { mes: 'Jun', empresas: 19, fornecedores: 1 },
+  { mes: 'Jul', empresas: 25, fornecedores: 2 },
+  { mes: 'Ago', empresas: 28, fornecedores: 2 },
+  { mes: 'Set', empresas: 32, fornecedores: 3 },
+  { mes: 'Out', empresas: 38, fornecedores: 2 },
+  { mes: 'Nov', empresas: 42, fornecedores: 3 },
+  { mes: 'Dez', empresas: 48, fornecedores: 2 },
 ]
 
 export const MOTIVOS_RECUSA: RecusaDataPoint[] = [
-  { motivo: 'Não Compatível', quantidade: 38, fill: 'var(--destructive)' },
-  { motivo: 'Não Adequado', quantidade: 27, fill: 'var(--planton-muted)' },
-  { motivo: 'Sem Adequação', quantidade: 21, fill: 'var(--info)' },
-  { motivo: 'Outros', quantidade: 14, fill: 'var(--planton-accent)' },
+  { motivo: 'Não Compatível', quantidade: 38, fill: 'var(--planton-forest)' },
+  { motivo: 'Não Adequado', quantidade: 27, fill: 'var(--planton-accent)' },
+  { motivo: 'Sem Adequação', quantidade: 21, fill: 'var(--planton-cream)' },
+  { motivo: 'Outros', quantidade: 14, fill: 'var(--info)' },
 ]
 
 // --------------- Pendências ---------------

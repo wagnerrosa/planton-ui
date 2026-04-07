@@ -13,10 +13,10 @@ import { Heading } from '@/components/primitives/Heading'
 import { MOTIVOS_RECUSA } from '../../mock-data'
 
 const chartConfig = {
-  'Não Compatível': { label: 'Não Compatível', color: 'var(--destructive)' },
-  'Não Adequado': { label: 'Não Adequado', color: 'var(--planton-muted)' },
-  'Sem Adequação': { label: 'Sem Adequação', color: 'var(--info)' },
-  'Outros': { label: 'Outros', color: 'var(--planton-accent)' },
+  'Não Compatível': { label: 'Não Compatível', color: 'var(--planton-forest)' },
+  'Não Adequado': { label: 'Não Adequado', color: 'var(--planton-accent)' },
+  'Sem Adequação': { label: 'Sem Adequação', color: 'var(--planton-cream)' },
+  'Outros': { label: 'Outros', color: 'var(--info)' },
 } satisfies ChartConfig
 
 export function MostraConversionChart() {
