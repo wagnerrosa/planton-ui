@@ -10,34 +10,43 @@ import { Input } from '@/components/shadcn/input'
 import { Alert, AlertDescription } from '@/components/shadcn/alert'
 import { Separator } from '@/components/shadcn/separator'
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/shadcn/table'
+import {
   SETORES_CONTROVERSOS,
   EMPRESAS_CLIENTES,
   CONSULTORIAS_PARCEIRAS,
 } from '../mock-data'
 
-// ─── Inline CRUD List ───────────────────────────────────────────────────────
+// ─── Table CRUD List ─────────────────────────────────────────────────────────
 
-type InlineListProps = {
+type TableListProps = {
   items: string[]
+  columnLabel: string
   onAdd: (value: string) => void
   onEdit: (index: number, value: string) => void
   onRemove: (index: number) => void
   addPlaceholder?: string
-  renderItem?: (item: string) => React.ReactNode
 }
 
-function InlineList({
+function TableList({
   items,
+  columnLabel,
   onAdd,
   onEdit,
   onRemove,
   addPlaceholder = 'Adicionar...',
-  renderItem,
-}: InlineListProps) {
+}: TableListProps) {
   const [adding, setAdding] = useState(false)
   const [addValue, setAddValue] = useState('')
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [editValue, setEditValue] = useState('')
+  const [confirmDeleteIndex, setConfirmDeleteIndex] = useState<number | null>(null)
 
   function commitAdd() {
     const trimmed = addValue.trim()
@@ -47,6 +56,7 @@ function InlineList({
   }
 
   function startEdit(index: number) {
+    setConfirmDeleteIndex(null)
     setEditingIndex(index)
     setEditValue(items[index])
   }
@@ -65,85 +75,135 @@ function InlineList({
     setEditValue('')
   }
 
-  return (
-    <div className="space-y-2">
-      {/* Items list */}
-      {items.map((item, i) => (
-        <div key={i} className="flex items-center gap-2 group">
-          {editingIndex === i ? (
-            <>
-              <Input
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') commitEdit()
-                  if (e.key === 'Escape') cancelEdit()
-                }}
-                className="h-8 text-sm flex-1"
-                autoFocus
-              />
-              <button onClick={commitEdit} className="p-1 text-emerald-600 hover:text-emerald-700">
-                <Check size={14} />
-              </button>
-              <button onClick={cancelEdit} className="p-1 text-muted-foreground hover:text-foreground">
-                <X size={14} />
-              </button>
-            </>
-          ) : (
-            <>
-              <div className="flex-1 text-sm py-1">
-                {renderItem ? renderItem(item) : item}
-              </div>
-              <button
-                onClick={() => startEdit(i)}
-                className="p-1 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <Pencil size={13} />
-              </button>
-              <button
-                onClick={() => onRemove(i)}
-                className="p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <Trash2 size={13} />
-              </button>
-            </>
-          )}
-        </div>
-      ))}
+  function confirmDelete(index: number) {
+    setEditingIndex(null)
+    setConfirmDeleteIndex(index)
+  }
 
-      {/* Add row */}
-      {adding ? (
-        <div className="flex items-center gap-2">
-          <Input
-            value={addValue}
-            onChange={(e) => setAddValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') commitAdd()
-              if (e.key === 'Escape') { setAdding(false); setAddValue('') }
-            }}
-            placeholder={addPlaceholder}
-            className="h-8 text-sm flex-1"
-            autoFocus
-          />
-          <button onClick={commitAdd} className="p-1 text-emerald-600 hover:text-emerald-700">
-            <Check size={14} />
-          </button>
-          <button
-            onClick={() => { setAdding(false); setAddValue('') }}
-            className="p-1 text-muted-foreground hover:text-foreground"
-          >
-            <X size={14} />
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => setAdding(true)}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
-        >
-          <Plus size={13} />
-          Adicionar
-        </button>
-      )}
+  function executeDelete() {
+    if (confirmDeleteIndex !== null) onRemove(confirmDeleteIndex)
+    setConfirmDeleteIndex(null)
+  }
+
+  return (
+    <div className="rounded-md border border-border overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>{columnLabel}</TableHead>
+            <TableHead className="w-32 text-right pr-4">
+              {!adding && (
+                <button
+                  onClick={() => setAdding(true)}
+                  className="inline-flex items-center gap-1 text-xs font-normal text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Plus size={12} />
+                  Adicionar
+                </button>
+              )}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {items.map((item, i) => (
+            <TableRow key={i}>
+              {editingIndex === i ? (
+                <>
+                  <TableCell className="py-2">
+                    <Input
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') commitEdit()
+                        if (e.key === 'Escape') cancelEdit()
+                      }}
+                      className="h-7 text-sm"
+                      autoFocus
+                    />
+                  </TableCell>
+                  <TableCell className="py-2 text-right pr-4">
+                    <div className="flex items-center justify-end gap-1">
+                      <button onClick={commitEdit} className="p-1 text-emerald-600 hover:text-emerald-700">
+                        <Check size={14} />
+                      </button>
+                      <button onClick={cancelEdit} className="p-1 text-muted-foreground hover:text-foreground">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </TableCell>
+                </>
+              ) : confirmDeleteIndex === i ? (
+                <>
+                  <TableCell className="font-sans text-sm text-muted-foreground line-through">{item}</TableCell>
+                  <TableCell className="py-2 text-right pr-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="text-xs text-muted-foreground">Excluir?</span>
+                      <button onClick={executeDelete} className="p-1 text-destructive hover:text-destructive/80">
+                        <Check size={14} />
+                      </button>
+                      <button onClick={() => setConfirmDeleteIndex(null)} className="p-1 text-muted-foreground hover:text-foreground">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell className="font-sans text-sm">{item}</TableCell>
+                  <TableCell className="text-right pr-4">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => startEdit(i)}
+                        className="p-1 text-muted-foreground hover:text-foreground"
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        onClick={() => confirmDelete(i)}
+                        className="p-1 text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </TableCell>
+                </>
+              )}
+            </TableRow>
+          ))}
+
+          {/* Add row */}
+          {adding && (
+            <TableRow>
+              <TableCell className="py-2">
+                <Input
+                  value={addValue}
+                  onChange={(e) => setAddValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') commitAdd()
+                    if (e.key === 'Escape') { setAdding(false); setAddValue('') }
+                  }}
+                  placeholder={addPlaceholder}
+                  className="h-7 text-sm"
+                  autoFocus
+                />
+              </TableCell>
+              <TableCell className="py-2 text-right pr-4">
+                <div className="flex items-center justify-end gap-1">
+                  <button onClick={commitAdd} className="p-1 text-emerald-600 hover:text-emerald-700">
+                    <Check size={14} />
+                  </button>
+                  <button
+                    onClick={() => { setAdding(false); setAddValue('') }}
+                    className="p-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   )
 }
@@ -262,8 +322,9 @@ export function ConfiguracoesScreen() {
           description="Empresas nestes setores são automaticamente marcadas como &quot;Aguardando Revisão Manual&quot;. Alterações válidas para o próximo cadastro."
           alert="Alterações serão aplicadas no próximo cadastro. Registros existentes não são afetados retroativamente."
         >
-          <InlineList
+          <TableList
             items={setores}
+            columnLabel="Setor"
             {...listHandlers(setSetores)}
             addPlaceholder="Nome do setor"
           />
@@ -276,15 +337,11 @@ export function ConfiguracoesScreen() {
           title="Lista de Empresas Clientes"
           description="Fornecedoras que já são clientes da Planton. Esta informação aparece no cadastro dos fornecedores. Alterações aplicadas imediatamente nos novos cadastros."
         >
-          <InlineList
+          <TableList
             items={clientes}
+            columnLabel="Empresa"
             {...listHandlers(setClientes)}
             addPlaceholder="Nome da empresa cliente"
-            renderItem={(item) => (
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium">{item}</span>
-              </div>
-            )}
           />
         </Section>
 
@@ -295,8 +352,9 @@ export function ConfiguracoesScreen() {
           title="Lista de Consultorias Parceiras"
           description="Empresas parceiras que podem participar do programa. Esta informação é exibida para os fornecedores durante o processo de cadastro."
         >
-          <InlineList
+          <TableList
             items={consultorias}
+            columnLabel="Consultoria"
             {...listHandlers(setConsultorias)}
             addPlaceholder="Nome da consultoria parceira"
           />
