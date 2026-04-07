@@ -6,11 +6,28 @@ import { MostraNavbarSync } from '@/components/navigation/MostraNavbarSync'
 import { Heading } from '@/components/primitives/Heading'
 import { Body } from '@/components/primitives/Body'
 import { Skeleton } from '@/components/shadcn/skeleton'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/shadcn/select'
 import { MostraStatsCard } from '../components/MostraStatsCard'
 import { MostraUsageChart } from './components/MostraUsageChart'
 import { MostraConversionChart } from './components/MostraConversionChart'
 import { PendingTable } from './components/PendingTable'
 import { MOSTRA_KPIS } from '../mock-data'
+
+const MESES = [
+  { value: 'todos', label: 'Todos os meses' },
+  { value: '01', label: 'Janeiro' },
+  { value: '02', label: 'Fevereiro' },
+  { value: '03', label: 'Março' },
+  { value: '04', label: 'Abril' },
+  { value: '05', label: 'Maio' },
+  { value: '06', label: 'Junho' },
+  { value: '07', label: 'Julho' },
+  { value: '08', label: 'Agosto' },
+  { value: '09', label: 'Setembro' },
+  { value: '10', label: 'Outubro' },
+  { value: '11', label: 'Novembro' },
+  { value: '12', label: 'Dezembro' },
+]
 
 const KPI_ICONS = [
   <Users key="u" size={16} />,
@@ -21,6 +38,7 @@ const KPI_ICONS = [
 
 export function DashboardScreen() {
   const [loading, setLoading] = useState(true)
+  const [mes, setMes] = useState('todos')
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 800)
@@ -33,9 +51,21 @@ export function DashboardScreen() {
 
       <div className="px-6 pb-6 pt-10 space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-1">
-          <Heading as="h1" size="heading-lg">Dashboard</Heading>
-          <Body muted>Visão geral do programa Mostra Sua Pegada</Body>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <Heading as="h1" size="heading-lg">Dashboard</Heading>
+            <Body muted>Visão geral do programa Mostra Sua Pegada</Body>
+          </div>
+          <Select value={mes} onValueChange={setMes}>
+            <SelectTrigger className="w-44 h-8 text-sm shrink-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {MESES.map((m) => (
+                <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* KPI Cards */}

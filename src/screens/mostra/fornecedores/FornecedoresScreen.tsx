@@ -8,6 +8,7 @@ import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Input } from '@/components/shadcn/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { StatusBadge } from '../components/StatusBadge'
 import { FornecedorDetailSheet } from './components/FornecedorDetailSheet'
@@ -175,8 +176,18 @@ export function FornecedoresScreen() {
                       onClick={() => openDetail(fornecedor)}
                     >
                       <TableCell>
-                        <div className="font-medium text-sm">{fornecedor.nome}</div>
-                        <div className="text-xs text-muted-foreground font-mono">{fornecedor.cnpj}</div>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8 rounded-sm shrink-0">
+                            <AvatarImage src={fornecedor.logoUrl} alt={fornecedor.nome} />
+                            <AvatarFallback className="rounded-sm text-xs font-mono">
+                              {fornecedor.nome.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium text-sm">{fornecedor.nome}</div>
+                            <div className="text-xs text-muted-foreground font-mono">{fornecedor.cnpj}</div>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Body size="sm" className="text-muted-foreground">

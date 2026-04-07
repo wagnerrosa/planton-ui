@@ -8,6 +8,7 @@ import { Body } from '@/components/primitives/Body'
 import { Button } from '@/components/primitives/Button'
 import { Input } from '@/components/shadcn/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TablePagination } from '@/components/shadcn/table'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/shadcn/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/shadcn/dropdown-menu'
 import { StatusBadge } from '../components/StatusBadge'
 import { EmpresaDetailSheet } from './components/EmpresaDetailSheet'
@@ -180,8 +181,18 @@ export function EmpresasScreen() {
                       onClick={() => openDetail(empresa)}
                     >
                       <TableCell>
-                        <div className="font-medium text-sm">{empresa.nome}</div>
-                        <div className="text-xs text-muted-foreground font-mono">{empresa.cnpj}</div>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8 rounded-sm shrink-0">
+                            <AvatarImage src={empresa.logoUrl} alt={empresa.nome} />
+                            <AvatarFallback className="rounded-sm text-xs font-mono">
+                              {empresa.nome.slice(0, 2).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium text-sm">{empresa.nome}</div>
+                            <div className="text-xs text-muted-foreground font-mono">{empresa.cnpj}</div>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell>
                         <Body size="sm">{empresa.setor}</Body>
