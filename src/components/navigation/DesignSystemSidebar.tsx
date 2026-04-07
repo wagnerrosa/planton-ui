@@ -146,62 +146,6 @@ export function DesignSystemSidebar() {
             Overview
           </Link>
 
-          {/* Mostra Sua Pegada Screens */}
-          <div className="flex flex-col gap-0.5 mt-2 pt-2 border-t border-sidebar-border">
-            <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
-              Mostra Sua Pegada
-            </span>
-
-            <Link
-              href="/design-system/screens/mostra/login"
-              className={itemClass(pathname === '/design-system/screens/mostra/login')}
-            >
-              <span className="text-xs">Login</span>
-            </Link>
-
-            <Link
-              href="/design-system/screens/mostra/(app)/dashboard"
-              className={itemClass(pathname.startsWith('/design-system/screens/mostra/(app)'))}
-            >
-              <span className="text-xs">Dashboard</span>
-            </Link>
-
-            <Link
-              href="/design-system/screens/mostra/(app)/empresas"
-              className={itemClass(pathname === '/design-system/screens/mostra/(app)/empresas')}
-            >
-              <span className="text-xs">Empresas</span>
-            </Link>
-
-            <Link
-              href="/design-system/screens/mostra/(app)/fornecedores"
-              className={itemClass(pathname === '/design-system/screens/mostra/(app)/fornecedores')}
-            >
-              <span className="text-xs">Fornecedores</span>
-            </Link>
-
-            <Link
-              href="/design-system/screens/mostra/(app)/cadastro-manual"
-              className={itemClass(pathname === '/design-system/screens/mostra/(app)/cadastro-manual')}
-            >
-              <span className="text-xs">Cadastro Manual</span>
-            </Link>
-
-            <Link
-              href="/design-system/screens/mostra/(app)/configuracoes"
-              className={itemClass(pathname === '/design-system/screens/mostra/(app)/configuracoes')}
-            >
-              <span className="text-xs">Configurações</span>
-            </Link>
-
-            <Link
-              href="/design-system/screens/mostra/(app)/relatorio"
-              className={itemClass(pathname === '/design-system/screens/mostra/(app)/relatorio')}
-            >
-              <span className="text-xs">Relatório</span>
-            </Link>
-          </div>
-
         </div>
 
       </nav>

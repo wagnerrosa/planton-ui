@@ -6,6 +6,7 @@ import { Body } from '@/components/primitives/Body'
 import { Heading } from '@/components/primitives/Heading'
 import { Separator } from '@/components/shadcn/separator'
 import { StatusBadge } from '../../components/StatusBadge'
+import { Field } from '../../components/Field'
 import { formatDateBR, type Fornecedor, type FornecedorStatus } from '../../mock-data'
 
 type FornecedorDetailSheetProps = {
@@ -14,16 +15,6 @@ type FornecedorDetailSheetProps = {
   onOpenChange: (open: boolean) => void
   onStatusChange: (status: FornecedorStatus) => void
   onEdit: () => void
-}
-
-function Field({ label, value }: { label: string; value?: string }) {
-  if (!value) return null
-  return (
-    <div className="space-y-0.5">
-      <Body size="sm" className="text-muted-foreground uppercase tracking-wider">{label}</Body>
-      <Body size="sm">{value}</Body>
-    </div>
-  )
 }
 
 export function FornecedorDetailSheet({

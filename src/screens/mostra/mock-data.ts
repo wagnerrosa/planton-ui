@@ -89,20 +89,20 @@ export type RecusaDataPoint = {
 // --------------- Status Labels & Colors ---------------
 
 export const EMPRESA_STATUS_CONFIG: Record<EmpresaStatus, { label: string; color: string }> = {
-  'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' },
-  'aguardando-revisao-manual': { label: 'Aguardando Revisão', color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' },
-  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' },
-  'elegivel': { label: 'Elegível', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' },
-  'nao-elegivel': { label: 'Não Elegível', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' },
-  'cadastrado': { label: 'Cadastrado', color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300' },
+  'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-info-surface text-info border-info-border' },
+  'aguardando-revisao-manual': { label: 'Aguardando Revisão', color: 'bg-warning-surface text-warning border-warning-border' },
+  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-secondary text-secondary-foreground' },
+  'elegivel': { label: 'Elegível', color: 'bg-success-surface text-success border-success-border' },
+  'nao-elegivel': { label: 'Não Elegível', color: 'bg-destructive-surface text-destructive border-destructive-border' },
+  'cadastrado': { label: 'Cadastrado', color: 'bg-success text-success-foreground' },
 }
 
 export const FORNECEDOR_STATUS_CONFIG: Record<FornecedorStatus, { label: string; color: string }> = {
-  'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' },
-  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' },
-  'elegivel': { label: 'Elegível', color: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' },
-  'nao-elegivel': { label: 'Não Elegível', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' },
-  'cadastrado': { label: 'Cadastrado', color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300' },
+  'processo-iniciado': { label: 'Processo Iniciado', color: 'bg-info-surface text-info border-info-border' },
+  'aguardando-contrato': { label: 'Aguardando Contrato', color: 'bg-secondary text-secondary-foreground' },
+  'elegivel': { label: 'Elegível', color: 'bg-success-surface text-success border-success-border' },
+  'nao-elegivel': { label: 'Não Elegível', color: 'bg-destructive-surface text-destructive border-destructive-border' },
+  'cadastrado': { label: 'Cadastrado', color: 'bg-success text-success-foreground' },
 }
 
 // --------------- KPIs ---------------
@@ -326,6 +326,10 @@ export const CONSULTORIAS_PARCEIRAS = [
   'GreenCarbon Consultancy',
   'SustentaBio',
 ]
+
+// --------------- Constants ---------------
+
+export const PAGE_SIZE = 10
 
 // --------------- Utils ---------------
 

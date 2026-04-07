@@ -6,6 +6,7 @@ import { Body } from '@/components/primitives/Body'
 import { Heading } from '@/components/primitives/Heading'
 import { Separator } from '@/components/shadcn/separator'
 import { StatusBadge } from '../../components/StatusBadge'
+import { Field } from '../../components/Field'
 import { formatDateBR, type Empresa, type EmpresaStatus } from '../../mock-data'
 
 type EmpresaDetailSheetProps = {
@@ -14,16 +15,6 @@ type EmpresaDetailSheetProps = {
   onOpenChange: (open: boolean) => void
   onStatusChange: (status: EmpresaStatus) => void
   onEdit: () => void
-}
-
-function Field({ label, value }: { label: string; value?: string }) {
-  if (!value) return null
-  return (
-    <div className="space-y-0.5">
-      <Body size="sm" className="text-muted-foreground uppercase tracking-wider">{label}</Body>
-      <Body size="sm">{value}</Body>
-    </div>
-  )
 }
 
 export function EmpresaDetailSheet({

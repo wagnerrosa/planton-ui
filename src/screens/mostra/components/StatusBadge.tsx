@@ -22,7 +22,7 @@ export function StatusBadge({ status, tipo = 'empresa' }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center px-2 py-0.5 font-mono text-[11px] uppercase tracking-[0.06em] font-medium',
+        'inline-flex items-center px-2 py-0.5 font-mono text-xs uppercase tracking-wide font-medium',
         config.color
       )}
     >

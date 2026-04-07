@@ -15,6 +15,7 @@ import { FornecedorDetailSheet } from './components/FornecedorDetailSheet'
 import { FornecedorEditDialog } from './components/FornecedorEditDialog'
 import {
   FORNECEDORES,
+  PAGE_SIZE,
   formatDateBR,
   type Fornecedor,
   type FornecedorStatus,
@@ -28,8 +29,6 @@ const STATUS_FILTERS: { label: string; value: FornecedorStatus | 'all' }[] = [
   { label: 'Não Elegível', value: 'nao-elegivel' },
   { label: 'Cadastrado', value: 'cadastrado' },
 ]
-
-const PAGE_SIZE = 10
 
 export function FornecedoresScreen() {
   const [activeFilter, setActiveFilter] = useState<FornecedorStatus | 'all'>('all')

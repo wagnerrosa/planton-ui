@@ -11,7 +11,7 @@ type MostraStatsCardProps = {
 }
 
 const trendConfig = {
-  up: { icon: TrendingUp, color: 'text-emerald-600 dark:text-emerald-400' },
+  up: { icon: TrendingUp, color: 'text-success' },
   down: { icon: TrendingDown, color: 'text-destructive' },
   neutral: { icon: Minus, color: 'text-planton-muted' },
 }

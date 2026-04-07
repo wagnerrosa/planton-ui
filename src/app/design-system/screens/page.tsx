@@ -21,7 +21,7 @@ const LOGIN_STEPS = [
 
 const screens = [
   {
-    product: 'Academy',
+    product: 'Academy - Aluno',
     items: [
       { href: '/design-system/screens/academy/login',           label: 'Login',    description: 'Tela de autenticação' },
       { href: '/design-system/screens/academy/home',            label: 'Home',     description: 'Listagem de trilhas e cursos' },
@@ -31,13 +31,13 @@ const screens = [
     ],
   },
   {
-    product: 'Gestor Master',
+    product: 'Academy - Gestor Master',
     items: [
       { href: '/design-system/screens/academy/gm', label: 'Dashboard GM', description: 'KPIs da empresa, colaboradores, trilhas e chart de engajamento' },
     ],
   },
   {
-    product: 'Super Admin',
+    product: 'Academy - Super Admin',
     items: [
       { href: '/design-system/screens/academy/admin',             label: 'Dashboard',  description: 'KPIs globais e resumo da plataforma' },
       { href: '/design-system/screens/academy/admin/clients',     label: 'Clientes',   description: 'Gestão de empresas e membros' },
@@ -45,6 +45,13 @@ const screens = [
       { href: '/design-system/screens/academy/admin/vouchers',    label: 'Vouchers',   description: 'Gestão de vouchers de ativação' },
       { href: '/design-system/screens/academy/admin/content',     label: 'Conteúdo',   description: 'Catálogo de conteúdos' },
       { href: '/design-system/screens/academy/admin/trails',      label: 'Trilhas',    description: 'CRUD de trilhas com criação em etapas' },
+    ],
+  },
+  {
+    product: 'Academy - Patterns',
+    items: [
+      { href: '/design-system/screens/academy/patterns/ai-tutor',  label: 'AI Tutor',  description: 'Assistente de IA flutuante com painel de chat (glassmorphism)' },
+      { href: '/design-system/screens/academy/patterns/trail-card', label: 'TrailCard', description: 'Card de trilha duas colunas com imagem bioma e CTA overlay' },
     ],
   },
   {
@@ -57,13 +64,6 @@ const screens = [
       { href: '/design-system/screens/mostra/cadastro-manual',  label: 'Cadastro Manual', description: 'Formulário de cadastro empresa/fornecedor' },
       { href: '/design-system/screens/mostra/configuracoes',    label: 'Configurações', description: 'Setores, clientes e consultorias' },
       { href: '/design-system/screens/mostra/relatorio',        label: 'Relatório',    description: 'Downloads de relatórios em Excel' },
-    ],
-  },
-  {
-    product: 'Patterns',
-    items: [
-      { href: '/design-system/screens/academy/patterns/ai-tutor',  label: 'AI Tutor',  description: 'Assistente de IA flutuante com painel de chat (glassmorphism)' },
-      { href: '/design-system/screens/academy/patterns/trail-card', label: 'TrailCard', description: 'Card de trilha duas colunas com imagem bioma e CTA overlay' },
     ],
   },
 ]

@@ -15,7 +15,7 @@ import { EmpresaDetailSheet } from './components/EmpresaDetailSheet'
 import { EmpresaEditDialog } from './components/EmpresaEditDialog'
 import {
   EMPRESAS,
-  EMPRESA_STATUS_CONFIG,
+  PAGE_SIZE,
   formatDateBR,
   type Empresa,
   type EmpresaStatus,
@@ -30,8 +30,6 @@ const STATUS_FILTERS: { label: string; value: EmpresaStatus | 'all' }[] = [
   { label: 'Não Elegível', value: 'nao-elegivel' },
   { label: 'Cadastrado', value: 'cadastrado' },
 ]
-
-const PAGE_SIZE = 10
 
 export function EmpresasScreen() {
   const [activeFilter, setActiveFilter] = useState<EmpresaStatus | 'all'>('all')
