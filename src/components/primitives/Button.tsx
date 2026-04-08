@@ -1,18 +1,32 @@
 'use client'
 
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 type ButtonVariant = 'primary' | 'primary-dark' | 'secondary' | 'outline' | 'ghost' | 'icon'
 type ButtonSize = 'default' | 'sm'
 
-type ButtonProps = {
+type BaseButtonProps = {
   variant?: ButtonVariant
   size?: ButtonSize
-  children: React.ReactNode
-  onClick?: () => void
-  href?: string
-  disabled?: boolean
+  children: ReactNode
   className?: string
+}
+
+type ButtonAsLinkProps = BaseButtonProps &
+  AnchorHTMLAttributes<HTMLAnchorElement> & {
+    href: string
+  }
+
+type ButtonAsButtonProps = BaseButtonProps &
+  ButtonHTMLAttributes<HTMLButtonElement> & {
+    href?: undefined
+  }
+
+type ButtonProps = ButtonAsLinkProps | ButtonAsButtonProps
+
+function isLinkButton(props: ButtonProps): props is ButtonAsLinkProps {
+  return typeof props.href === 'string'
 }
 
 /** Variantes com efeito sweep (fundo desliza no hover) */
@@ -32,15 +46,13 @@ const sizeClasses: Record<ButtonSize, string> = {
   sm:      'px-4 py-2 text-xs',
 }
 
-export function Button({
-  variant = 'primary',
-  size = 'default',
-  children,
-  onClick,
-  href,
-  disabled,
-  className,
-}: ButtonProps) {
+export function Button(props: ButtonProps) {
+  const {
+    variant = 'primary',
+    size = 'default',
+    children,
+    className,
+  } = props
   const hasSweep = SWEEP_VARIANTS.includes(variant)
 
   const baseClasses = cn(
@@ -66,16 +78,34 @@ export function Button({
     <>{children}</>
   )
 
-  if (href) {
+  if (isLinkButton(props)) {
+    const {
+      variant: _variant,
+      size: _size,
+      children: _children,
+      className: _className,
+      href,
+      ...anchorProps
+    } = props
+
     return (
-      <a href={href} className={cn(hasSweep && 'group', baseClasses)}>
+      <a href={href} className={cn(hasSweep && 'group', baseClasses)} {...anchorProps}>
         {innerContent}
       </a>
     )
   }
 
+  const {
+    variant: _variant,
+    size: _size,
+    children: _children,
+    className: _className,
+    href: _href,
+    ...buttonProps
+  } = props
+
   return (
-    <button onClick={onClick} disabled={disabled} className={cn(hasSweep && 'group', baseClasses)}>
+    <button className={cn(hasSweep && 'group', baseClasses)} {...buttonProps}>
       {innerContent}
     </button>
   )

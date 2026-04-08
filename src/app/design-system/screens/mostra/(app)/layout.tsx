@@ -22,7 +22,7 @@ import { MostraNavbarProvider, useMostraNavbar } from '@/components/navigation/M
 import { MostraFooter } from '@/components/navigation/MostraFooter'
 
 function MostraLayoutInner({ children }: { children: React.ReactNode }) {
-  const { breadcrumbs, userName } = useMostraNavbar()
+  const { breadcrumbs } = useMostraNavbar()
   const mainRef = useRef<HTMLElement>(null)
   const pathname = usePathname()
 
@@ -34,7 +34,7 @@ function MostraLayoutInner({ children }: { children: React.ReactNode }) {
     <SidebarProvider defaultOpen={true}>
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
         {/* Navbar — full width */}
-        <MostraNavbar userName={userName} breadcrumbs={breadcrumbs} />
+        <MostraNavbar breadcrumbs={breadcrumbs} />
 
         {/* Sidebar + conteúdo */}
         <div className="flex flex-1 overflow-hidden">
