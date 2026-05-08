@@ -15,70 +15,174 @@ type LogoAsset = {
   bg: 'light' | 'dark'
 }
 
-const brandLogos: { group: string; description: string; items: LogoAsset[] }[] = [
+type LogoSubgroup = {
+  subgroup: string
+  items: LogoAsset[]
+}
+
+type LogoGroup = {
+  group: string
+  description: string
+  subgroups: LogoSubgroup[]
+}
+
+const brandLogos: LogoGroup[] = [
   {
     group: 'Horizontal',
     description: 'Primary version. Use as the default whenever there is enough horizontal space.',
-    items: [
+    subgroups: [
       {
-        name: 'Horizontal - Forest',
-        description: 'Horizontal logo in forest green. For light backgrounds.',
-        usage: 'Light backgrounds (white, card)',
-        file: 'public/Logo_Planton_01.svg',
-        bg: 'light',
+        subgroup: 'Filled (primary)',
+        items: [
+          {
+            name: 'Horizontal Filled - Forest',
+            description: 'Filled icon in forest green. Default logo for light backgrounds.',
+            usage: 'Light backgrounds (white, card)',
+            file: 'public/logos_planton/planton_horizontal_forest.svg',
+            bg: 'light',
+          },
+          {
+            name: 'Horizontal Filled - Accent',
+            description: 'Filled icon in lime green. Default logo for dark backgrounds.',
+            usage: 'Dark backgrounds (forest, dark)',
+            file: 'public/Logo_Planton_01.svg',
+            bg: 'dark',
+          },
+          {
+            name: 'Horizontal Filled - White',
+            description: 'Filled icon in white. For dark or photo backgrounds.',
+            usage: 'Dark or image backgrounds',
+            file: 'public/logos_planton/planton_horizontal_branco.svg',
+            bg: 'dark',
+          },
+        ],
       },
       {
-        name: 'Horizontal - Accent',
-        description: 'Horizontal logo in accent green (lime). For dark backgrounds.',
-        usage: 'Dark backgrounds (forest, dark)',
-        file: 'public/logos_planton/planton_horizontal_aberto_accent.svg',
-        bg: 'dark',
+        subgroup: 'Outline',
+        items: [
+          {
+            name: 'Horizontal Outline - Forest',
+            description: 'Outline icon in forest green. Alternative for light backgrounds.',
+            usage: 'Light backgrounds (white, card)',
+            file: 'public/logos_planton/planton_horizontal_aberto_forest.svg',
+            bg: 'light',
+          },
+          {
+            name: 'Horizontal Outline - Accent',
+            description: 'Outline icon in lime green. Alternative for dark backgrounds.',
+            usage: 'Dark backgrounds (forest, dark)',
+            file: 'public/logos_planton/planton_horizontal_aberto_accent.svg',
+            bg: 'dark',
+          },
+          {
+            name: 'Horizontal Outline - White',
+            description: 'Outline icon in white. Alternative for dark or photo backgrounds.',
+            usage: 'Dark or image backgrounds',
+            file: 'public/logos_planton/planton_horizontal_aberto_branco.svg',
+            bg: 'dark',
+          },
+        ],
       },
     ],
   },
   {
     group: 'Vertical',
     description: 'Use when horizontal space is limited (e.g. mobile, narrow sidebars).',
-    items: [
+    subgroups: [
       {
-        name: 'Vertical',
-        description: 'Icon + name stacked vertically.',
-        usage: 'Limited horizontal space',
-        file: 'public/logos_planton/planton_vertical.svg',
-        bg: 'light',
+        subgroup: 'Filled (primary)',
+        items: [
+          {
+            name: 'Vertical Filled - Forest',
+            description: 'Filled icon stacked vertically in forest green.',
+            usage: 'Light backgrounds',
+            file: 'public/logos_planton/planton_vertical.svg',
+            bg: 'light',
+          },
+          {
+            name: 'Vertical Filled - Accent',
+            description: 'Filled icon stacked vertically in lime green.',
+            usage: 'Dark backgrounds (forest, dark)',
+            file: 'public/logos_planton/planton_vertical_accent.svg',
+            bg: 'dark',
+          },
+          {
+            name: 'Vertical Filled - White',
+            description: 'Filled icon stacked vertically in white.',
+            usage: 'Dark or image backgrounds',
+            file: 'public/logos_planton/planton_vertical_branco.svg',
+            bg: 'dark',
+          },
+        ],
+      },
+      {
+        subgroup: 'Outline',
+        items: [
+          {
+            name: 'Vertical Outline - Forest',
+            description: 'Outline icon stacked vertically in forest green.',
+            usage: 'Light backgrounds',
+            file: 'public/logos_planton/planton_vertical_aberto_forest.svg',
+            bg: 'light',
+          },
+          {
+            name: 'Vertical Outline - Accent',
+            description: 'Outline icon stacked vertically in lime green.',
+            usage: 'Dark backgrounds (forest, dark)',
+            file: 'public/logos_planton/planton_vertical_aberto_accent.svg',
+            bg: 'dark',
+          },
+          {
+            name: 'Vertical Outline - White',
+            description: 'Outline icon stacked vertically in white.',
+            usage: 'Dark or image backgrounds',
+            file: 'public/logos_planton/planton_vertical_aberto_branco.svg',
+            bg: 'dark',
+          },
+        ],
       },
     ],
   },
   {
     group: 'With Tagline',
     description: 'Use only in specific branding contexts (presentations, marketing materials). Do not use in product UI.',
-    items: [
+    subgroups: [
       {
-        name: 'Vertical with Tagline',
-        description: 'Full version with tagline. Restricted to brand materials.',
-        usage: 'Marketing and branding materials',
-        file: 'public/logos_planton/planton_vertical_tagline.svg',
-        bg: 'dark',
+        subgroup: 'Brand',
+        items: [
+          {
+            name: 'Vertical with Tagline',
+            description: 'Full version with tagline. Restricted to brand materials.',
+            usage: 'Marketing and branding materials',
+            file: 'public/logos_planton/planton_vertical_tagline.svg',
+            bg: 'dark',
+          },
+        ],
       },
     ],
   },
   {
     group: 'Icon',
     description: 'Standalone symbol. Use in favicons, avatars and very small spaces.',
-    items: [
+    subgroups: [
       {
-        name: 'Square',
-        description: 'Square icon without text.',
-        usage: 'Favicon, avatar, compact spaces',
-        file: 'public/logos_planton/planton_square.svg',
-        bg: 'light',
-      },
-      {
-        name: 'Square Inside',
-        description: 'Icon variation with inner detail.',
-        usage: 'Alternative icon variation',
-        file: 'public/logos_planton/planton_square_inside.svg',
-        bg: 'light',
+        subgroup: 'Symbol',
+        items: [
+          {
+            name: 'Square',
+            description: 'Square icon without text.',
+            usage: 'Favicon, avatar, compact spaces',
+            file: 'public/logos_planton/planton_square.svg',
+            bg: 'light',
+          },
+          {
+            name: 'Square Inside',
+            description: 'Icon variation with inner detail.',
+            usage: 'Alternative icon variation',
+            file: 'public/logos_planton/planton_square_inside.svg',
+            bg: 'light',
+          },
+        ],
       },
     ],
   },
@@ -235,12 +339,16 @@ export default function LogoPage() {
           <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Logo color by context</h2>
         </div>
 
+        <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
+          The <strong>Filled</strong> variant is the primary logo. Use it by default in all product contexts. The Outline variant is an alternative for specific applications.
+        </p>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-px border border-border overflow-hidden">
           {/* Light background */}
           <div className="flex flex-col">
             <div className="bg-white flex items-center justify-center h-40 px-12">
               <Image
-                src="/Logo_Planton_01.svg"
+                src="/logos_planton/planton_horizontal_forest.svg"
                 alt="Planton - light background"
                 width={200}
                 height={50}
@@ -259,7 +367,7 @@ export default function LogoPage() {
           <div className="flex flex-col">
             <div className="bg-planton-forest flex items-center justify-center h-40 px-12">
               <Image
-                src="/logos_planton/planton_horizontal_aberto_accent.svg"
+                src="/Logo_Planton_01.svg"
                 alt="Planton - dark background"
                 width={200}
                 height={50}
@@ -278,17 +386,34 @@ export default function LogoPage() {
 
       {/* Brand Logo Variations */}
       {brandLogos.map((group) => (
-        <section key={group.group} className="flex flex-col gap-6">
+        <section key={group.group} className="flex flex-col gap-8">
           <div className="flex flex-col gap-1">
             <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Brand variations</span>
             <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">{group.group}</h2>
             <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">{group.description}</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px border-t border-l border-border overflow-hidden">
-            {group.items.map((asset) => (
-              <LogoCard key={asset.file} asset={asset} />
-            ))}
-          </div>
+          {group.subgroups.length === 1 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px border-t border-l border-border overflow-hidden">
+              {group.subgroups[0].items.map((asset) => (
+                <LogoCard key={asset.file} asset={asset} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-6">
+              {group.subgroups.map((sub) => (
+                <div key={sub.subgroup} className="flex flex-col gap-3">
+                  <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-planton-muted/50 px-0.5">
+                    {sub.subgroup}
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px border-t border-l border-border overflow-hidden">
+                    {sub.items.map((asset) => (
+                      <LogoCard key={asset.file} asset={asset} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </section>
       ))}
 

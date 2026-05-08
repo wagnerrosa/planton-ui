@@ -19,9 +19,9 @@ const sections = [
     description: 'Reusable primitives: Button, Card, Input, Dialog, Tabs, Badge and more',
   },
   {
-    href: '/design-system/screens',
-    label: 'Screens',
-    description: 'Real Planton product screens with documented layout and behavior',
+    href: '/design-system/logo',
+    label: 'Logo',
+    description: 'Brand logo variations, usage rules and SVG/PNG downloads',
   },
 ]
 
@@ -33,6 +33,8 @@ const gettingStarted = [
 ]
 
 const changelog = [
+  { date: '08 may 2026', entry: 'Logo page: filled and outline variants for horizontal and vertical, SVG + PNG download' },
+  { date: '08 may 2026', entry: 'Home Explore card updated to link to Logo page' },
   { date: '21 mar 2026', entry: 'Added Images page to Foundations with 5 Brazilian biomes and download' },
   { date: '21 mar 2026', entry: 'Privacy Policy and Terms of Use with dialog in Academy footer' },
   { date: '21 mar 2026', entry: 'Design System home now accessible directly at design.planton.eco.br' },
