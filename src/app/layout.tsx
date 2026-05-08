@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     siteName: "Planton UI",
     images: [
       {
-        url: "https://design.planton.eco.br/api/og",
+        url: "https://design.planton.eco.br/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Planton UI Design System",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Planton UI — Design System",
     description: "Token, component and pattern reference for all Planton products.",
-    images: ["https://design.planton.eco.br/api/og"],
+    images: ["https://design.planton.eco.br/og-image.jpg"],
   },
   icons: {
     icon: [
