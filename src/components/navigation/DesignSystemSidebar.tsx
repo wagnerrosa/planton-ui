@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Palette, Type, MousePointer, Component, ImageIcon, Monitor, ChevronLeft, ChevronRight, Images } from 'lucide-react'
+import { Palette, Type, MousePointer, Component, ImageIcon, ChevronLeft, ChevronRight, Images } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { componentCategories } from '@/lib/components-registry'
@@ -132,21 +132,6 @@ export function DesignSystemSidebar() {
           })}
         </div>
 
-        {/* Screens */}
-        <div className="flex flex-col gap-0.5">
-          <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40 px-2 mb-1">
-            Screens
-          </span>
-
-          <Link
-            href="/design-system/screens"
-            className={itemClass(pathname === '/design-system/screens')}
-          >
-            <Monitor size={15} />
-            Overview
-          </Link>
-
-        </div>
 
       </nav>
 

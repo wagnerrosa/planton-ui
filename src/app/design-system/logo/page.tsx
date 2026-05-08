@@ -126,6 +126,24 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
 ]
 
 
+function downloadAsPng(publicPath: string, name: string) {
+  const img = new window.Image()
+  img.crossOrigin = 'anonymous'
+  img.onload = () => {
+    const scale = 4
+    const canvas = document.createElement('canvas')
+    canvas.width = img.naturalWidth * scale
+    canvas.height = img.naturalHeight * scale
+    const ctx = canvas.getContext('2d')!
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    const a = document.createElement('a')
+    a.href = canvas.toDataURL('image/png')
+    a.download = name.toLowerCase().replace(/\s+/g, '_') + '.png'
+    a.click()
+  }
+  img.src = publicPath
+}
+
 function LogoCard({ asset }: { asset: LogoAsset }) {
   const publicPath = '/' + asset.file.replace('public/', '')
 
@@ -165,19 +183,33 @@ function LogoCard({ asset }: { asset: LogoAsset }) {
 
         <CopyPath path={asset.file} />
 
-        <a
-          href={publicPath}
-          download
-          className={cn(
-            'relative inline-flex items-center overflow-hidden border rounded-none group mt-1',
-            'font-sans font-medium tracking-[0.02em] text-sm px-6 py-3',
-            'transition-[color] duration-[300ms] ease-out',
-            'border-planton-accent text-planton-accent hover:text-planton-white',
-          )}
-        >
-          <span aria-hidden className="absolute inset-0 -translate-x-full transition-transform ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:translate-x-0 bg-planton-accent" />
-          <span className="relative z-10">Download SVG</span>
-        </a>
+        <div className="flex gap-2 mt-1">
+          <a
+            href={publicPath}
+            download
+            className={cn(
+              'relative inline-flex items-center overflow-hidden border rounded-none group flex-1 justify-center',
+              'font-sans font-medium tracking-[0.02em] text-sm px-4 py-3',
+              'transition-[color] duration-[300ms] ease-out',
+              'border-planton-accent text-planton-accent hover:text-planton-white',
+            )}
+          >
+            <span aria-hidden className="absolute inset-0 -translate-x-full transition-transform ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:translate-x-0 bg-planton-accent" />
+            <span className="relative z-10">SVG</span>
+          </a>
+          <button
+            onClick={() => downloadAsPng(publicPath, asset.name)}
+            className={cn(
+              'relative inline-flex items-center overflow-hidden border rounded-none group flex-1 justify-center',
+              'font-sans font-medium tracking-[0.02em] text-sm px-4 py-3',
+              'transition-[color] duration-[300ms] ease-out',
+              'border-border text-planton-muted hover:text-planton-white',
+            )}
+          >
+            <span aria-hidden className="absolute inset-0 -translate-x-full transition-transform ease-[cubic-bezier(0.16,1,0.3,1)] duration-500 group-hover:translate-x-0 bg-planton-forest" />
+            <span className="relative z-10">PNG</span>
+          </button>
+        </div>
       </div>
     </div>
   )

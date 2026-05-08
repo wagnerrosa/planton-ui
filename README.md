@@ -741,7 +741,7 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system/components/navigation/*` | Tabs, Breadcrumb, Pagination, Command |
 | `/design-system/components/overlays/*` | DropdownMenu, Popover, HoverCard, Calendar, Dialog, Sheet, Tooltip |
 | `/design-system/components/layout/*` | Separator, Accordion, Collapsible, ScrollArea, AspectRatio, Carousel, ContentRow, Sidebar |
-| `/design-system/screens` | Índice de telas |
+| `/design-system/screens` | Índice de telas (**link direto — não aparece na sidebar**) |
 | `/design-system/screens/academy/login` | Fluxo de autenticação multi-step |
 | `/design-system/screens/academy/home` | Home do Academy (hero + trilhas + conteúdos) |
 | `/design-system/screens/academy/trilhas` | Listagem de trilhas (hero + gutters + cards) |
