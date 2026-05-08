@@ -25,10 +25,31 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Planton UI",
-  description: "Planton Design System",
+  description: "Token, component and pattern reference for all Planton products.",
   robots: {
     index: false,
     follow: false,
+  },
+  openGraph: {
+    title: "Planton UI — Design System",
+    description: "Token, component and pattern reference for all Planton products.",
+    url: "https://design.planton.eco.br",
+    siteName: "Planton UI",
+    images: [
+      {
+        url: "https://design.planton.eco.br/api/og",
+        width: 1200,
+        height: 630,
+        alt: "Planton UI Design System",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Planton UI — Design System",
+    description: "Token, component and pattern reference for all Planton products.",
+    images: ["https://design.planton.eco.br/api/og"],
   },
   icons: {
     icon: [
