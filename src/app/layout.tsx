@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     follow: false,
   },
   openGraph: {
-    title: "Planton UI — Design System",
+    title: "Planton UI - Design System",
     description: "Token, component and pattern reference for all Planton products.",
     url: "https://design.planton.eco.br",
     siteName: "Planton UI",
@@ -47,17 +47,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Planton UI — Design System",
+    title: "Planton UI - Design System",
     description: "Token, component and pattern reference for all Planton products.",
     images: ["https://design.planton.eco.br/og-image.jpg"],
   },
   icons: {
     icon: [
-      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/logos_planton/planton_square_inside.svg", type: "image/svg+xml" },
       { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon/favicon.ico" },
     ],
-    apple: "/favicon/apple-touch-icon.png",
   },
 };
 

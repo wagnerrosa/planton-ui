@@ -13,6 +13,8 @@ type LogoAsset = {
   usage: string
   file: string
   bg: 'light' | 'dark'
+  tall?: boolean
+  wide?: boolean
 }
 
 type LogoSubgroup = {
@@ -90,32 +92,6 @@ const brandLogos: LogoGroup[] = [
     description: 'Use when horizontal space is limited (e.g. mobile, narrow sidebars).',
     subgroups: [
       {
-        subgroup: 'Filled (primary)',
-        items: [
-          {
-            name: 'Vertical Filled - Forest',
-            description: 'Filled icon stacked vertically in forest green.',
-            usage: 'Light backgrounds',
-            file: 'public/logos_planton/planton_vertical.svg',
-            bg: 'light',
-          },
-          {
-            name: 'Vertical Filled - Accent',
-            description: 'Filled icon stacked vertically in lime green.',
-            usage: 'Dark backgrounds (forest, dark)',
-            file: 'public/logos_planton/planton_vertical_accent.svg',
-            bg: 'dark',
-          },
-          {
-            name: 'Vertical Filled - White',
-            description: 'Filled icon stacked vertically in white.',
-            usage: 'Dark or image backgrounds',
-            file: 'public/logos_planton/planton_vertical_branco.svg',
-            bg: 'dark',
-          },
-        ],
-      },
-      {
         subgroup: 'Outline',
         items: [
           {
@@ -124,6 +100,7 @@ const brandLogos: LogoGroup[] = [
             usage: 'Light backgrounds',
             file: 'public/logos_planton/planton_vertical_aberto_forest.svg',
             bg: 'light',
+            tall: true,
           },
           {
             name: 'Vertical Outline - Accent',
@@ -131,6 +108,7 @@ const brandLogos: LogoGroup[] = [
             usage: 'Dark backgrounds (forest, dark)',
             file: 'public/logos_planton/planton_vertical_aberto_accent.svg',
             bg: 'dark',
+            tall: true,
           },
           {
             name: 'Vertical Outline - White',
@@ -138,6 +116,7 @@ const brandLogos: LogoGroup[] = [
             usage: 'Dark or image backgrounds',
             file: 'public/logos_planton/planton_vertical_aberto_branco.svg',
             bg: 'dark',
+            tall: true,
           },
         ],
       },
@@ -151,10 +130,59 @@ const brandLogos: LogoGroup[] = [
         subgroup: 'Brand',
         items: [
           {
-            name: 'Vertical with Tagline',
-            description: 'Full version with tagline. Restricted to brand materials.',
-            usage: 'Marketing and branding materials',
+            name: 'Vertical with Tagline - Forest',
+            description: 'Full version with tagline in forest green.',
+            usage: 'Light backgrounds',
+            file: 'public/logos_planton/planton_vertical_tagline_forest.svg',
+            bg: 'light',
+            tall: true,
+          },
+          {
+            name: 'Vertical with Tagline - Accent',
+            description: 'Full version with tagline in lime green.',
+            usage: 'Dark backgrounds (forest, dark)',
+            file: 'public/logos_planton/planton_vertical_tagline_accent.svg',
+            bg: 'dark',
+            tall: true,
+          },
+          {
+            name: 'Vertical with Tagline - White',
+            description: 'Full version with tagline in white.',
+            usage: 'Dark or image backgrounds',
             file: 'public/logos_planton/planton_vertical_tagline.svg',
+            bg: 'dark',
+            tall: true,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    group: 'Lettering',
+    description: 'Wordmark only, without the symbol. Use when the icon is already present in context.',
+    subgroups: [
+      {
+        subgroup: 'Wordmark',
+        items: [
+          {
+            name: 'Lettering - Forest',
+            description: 'Wordmark in forest green.',
+            usage: 'Light backgrounds',
+            file: 'public/logos_planton/planton-lettering-forest.svg',
+            bg: 'light',
+          },
+          {
+            name: 'Lettering - Accent',
+            description: 'Wordmark in lime green.',
+            usage: 'Dark backgrounds (forest, dark)',
+            file: 'public/logos_planton/planton-lettering-accent.svg',
+            bg: 'dark',
+          },
+          {
+            name: 'Lettering - White',
+            description: 'Wordmark in white.',
+            usage: 'Dark or image backgrounds',
+            file: 'public/logos_planton/planton-lettering.svg',
             bg: 'dark',
           },
         ],
@@ -174,6 +202,7 @@ const brandLogos: LogoGroup[] = [
             usage: 'Favicon, avatar, compact spaces',
             file: 'public/logos_planton/planton_square.svg',
             bg: 'light',
+            tall: true,
           },
           {
             name: 'Square Inside',
@@ -181,6 +210,15 @@ const brandLogos: LogoGroup[] = [
             usage: 'Alternative icon variation',
             file: 'public/logos_planton/planton_square_inside.svg',
             bg: 'light',
+            tall: true,
+          },
+          {
+            name: 'Circle',
+            description: 'Circular icon variation.',
+            usage: 'Avatar',
+            file: 'public/logos_planton/planton_circle.svg',
+            bg: 'light',
+            tall: true,
           },
         ],
       },
@@ -198,6 +236,7 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
         usage: 'Light backgrounds',
         file: 'public/logos_produtos/planton_academy_forest.svg',
         bg: 'light',
+        wide: true,
       },
       {
         name: 'Academy - White',
@@ -205,6 +244,7 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
         usage: 'Dark backgrounds',
         file: 'public/logos_produtos/planton_academy_branco.svg',
         bg: 'dark',
+        wide: true,
       },
     ],
   },
@@ -217,6 +257,7 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
         usage: 'Light backgrounds',
         file: 'public/logos_produtos/planton_genius_forest.svg',
         bg: 'light',
+        wide: true,
       },
       {
         name: 'Genius - White',
@@ -224,6 +265,7 @@ const productLogos: { product: string; items: LogoAsset[] }[] = [
         usage: 'Dark backgrounds',
         file: 'public/logos_produtos/planton_genius_branco.svg',
         bg: 'dark',
+        wide: true,
       },
     ],
   },
@@ -255,16 +297,18 @@ function LogoCard({ asset }: { asset: LogoAsset }) {
     <div className="border-r border-b border-border flex flex-col">
       {/* Preview */}
       <div
-        className={`flex items-center justify-center h-36 px-8 ${
-          asset.bg === 'dark' ? 'bg-planton-forest' : 'bg-surface-default'
-        }`}
+        className={`flex items-center justify-center px-8 ${
+          asset.tall ? 'h-36' : 'h-28'
+        } ${asset.bg === 'dark' ? 'bg-planton-forest' : 'bg-surface-default'}`}
       >
         <Image
           src={publicPath}
           alt={asset.name}
           width={200}
           height={80}
-          className="object-contain max-h-16 w-auto"
+          className={`object-contain w-auto ${
+            asset.tall ? 'max-h-16' : asset.wide ? 'max-h-10 max-w-[240px]' : 'max-h-8 max-w-[160px]'
+          }`}
           unoptimized
         />
       </div>
@@ -423,7 +467,7 @@ export default function LogoPage() {
           <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Product logos</span>
           <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Planton Products</h2>
           <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
-            Each product has versions for light (forest) and dark (white) backgrounds. Never mix them — always use the correct version for the context.
+            Each product has versions for light (forest) and dark (white) backgrounds. Never mix them - always use the correct version for the context.
           </p>
         </div>
 
