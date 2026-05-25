@@ -14,9 +14,9 @@ const sections = [
     description: 'Font scales, line-height, tracking and visual hierarchy',
   },
   {
-    href: '/design-system/components',
-    label: 'Components',
-    description: 'Reusable primitives: Button, Card, Input, Dialog, Tabs, Badge and more',
+    href: '/design-system/carbon-neutral',
+    label: 'Carbon Neutral',
+    description: 'Carbon neutral seal: variants, contrast rules, exclusion zone and SVG/PNG downloads',
   },
   {
     href: '/design-system/logo',
@@ -28,11 +28,13 @@ const sections = [
 const gettingStarted = [
   'Use tokens instead of hardcoded values (colors, spacing, typography)',
   'Prefer existing primitives before creating new components',
-  'Reuse components whenever possible — avoid duplication',
+  'Reuse components whenever possible - avoid duplication',
   'Follow the project naming and structure conventions',
 ]
 
 const changelog = [
+  { date: '25 may 2026', entry: 'Carbon Neutral seal page: all variants, contrast rules, exclusion zone, real usage example and SVG/PNG downloads' },
+  { date: '25 may 2026', entry: 'Home Explore card updated to link to Carbon Neutral page' },
   { date: '08 may 2026', entry: 'Logo page: filled and outline variants for horizontal and vertical, SVG + PNG download' },
   { date: '08 may 2026', entry: 'Home Explore card updated to link to Logo page' },
   { date: '21 mar 2026', entry: 'Added Images page to Foundations with 5 Brazilian biomes and download' },
@@ -62,9 +64,9 @@ export default function Home() {
                 Token, component and pattern reference for all Planton products.
               </p>
               <div className="flex items-center gap-3 mt-2">
-                <span className="font-mono text-xs text-planton-muted/60">v0.3.0</span>
+                <span className="font-mono text-xs text-planton-muted/60">v0.3.1</span>
                 <span className="w-px h-3 bg-border" />
-                <span className="font-mono text-xs text-planton-muted/60">Updated March 2026</span>
+                <span className="font-mono text-xs text-planton-muted/60">Updated May 2026</span>
               </div>
             </div>
 

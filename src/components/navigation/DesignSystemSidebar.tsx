@@ -12,7 +12,8 @@ const foundations = [
   { href: '/design-system/colors',     label: 'Colors',     icon: Palette },
   { href: '/design-system/typography', label: 'Typography', icon: Type },
   { href: '/design-system/logo',       label: 'Logo',       icon: ImageIcon },
-  { href: '/design-system/images',     label: 'Images',     icon: Images },
+  { href: '/design-system/images',         label: 'Images',        icon: Images },
+  { href: '/design-system/carbon-neutral', label: 'Carbon Neutral', icon: () => <span className="font-mono text-[15px] leading-none w-[15px] h-[15px] flex items-center justify-center" style={{ fontWeight: 200, transform: 'scaleX(-1)', display: 'inline-flex' }}>ø</span> },
 ]
 
 const itemClass = (active: boolean) =>
@@ -52,7 +53,7 @@ export function DesignSystemSidebar() {
             <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-sidebar-foreground/40">
               Design System
             </span>
-            <span className="font-mono text-[0.6rem] text-sidebar-foreground/30">v0.3.0</span>
+            <span className="font-mono text-[0.6rem] text-sidebar-foreground/30">v0.3.1</span>
           </div>
         </Link>
         <button
