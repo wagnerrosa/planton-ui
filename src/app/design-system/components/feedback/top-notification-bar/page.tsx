@@ -90,7 +90,7 @@ export default function TopNotificationBarPage() {
               <tr className="border-b border-border">
                 <td className="py-2 pr-4 text-foreground">message</td>
                 <td className="py-2 pr-4 text-planton-muted">string</td>
-                <td className="py-2 pr-4 text-planton-muted">—</td>
+                <td className="py-2 pr-4 text-planton-muted">-</td>
                 <td className="py-2 text-planton-muted font-sans">Texto da notificação (obrigatório)</td>
               </tr>
               <tr className="border-b border-border">
@@ -102,13 +102,13 @@ export default function TopNotificationBarPage() {
               <tr className="border-b border-border">
                 <td className="py-2 pr-4 text-foreground">ctaLabel</td>
                 <td className="py-2 pr-4 text-planton-muted">string</td>
-                <td className="py-2 pr-4 text-planton-muted">—</td>
+                <td className="py-2 pr-4 text-planton-muted">-</td>
                 <td className="py-2 text-planton-muted font-sans">Texto do botão de ação</td>
               </tr>
               <tr className="border-b border-border">
                 <td className="py-2 pr-4 text-foreground">onCtaClick</td>
                 <td className="py-2 pr-4 text-planton-muted">{`() => void`}</td>
-                <td className="py-2 pr-4 text-planton-muted">—</td>
+                <td className="py-2 pr-4 text-planton-muted">-</td>
                 <td className="py-2 text-planton-muted font-sans">Callback ao clicar no CTA</td>
               </tr>
               <tr className="border-b border-border">
@@ -120,7 +120,7 @@ export default function TopNotificationBarPage() {
               <tr className="border-b border-border">
                 <td className="py-2 pr-4 text-foreground">onClose</td>
                 <td className="py-2 pr-4 text-planton-muted">{`() => void`}</td>
-                <td className="py-2 pr-4 text-planton-muted">—</td>
+                <td className="py-2 pr-4 text-planton-muted">-</td>
                 <td className="py-2 text-planton-muted font-sans">Callback ao fechar a notificação</td>
               </tr>
             </tbody>

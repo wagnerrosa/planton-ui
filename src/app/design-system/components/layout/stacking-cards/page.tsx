@@ -30,7 +30,7 @@ export default function StackingCardsPage() {
       {/* Live demo */}
       <section className="flex flex-col gap-6">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">
-          Exemplo — Scroll para ver o efeito de empilhamento
+          Exemplo - Scroll para ver o efeito de empilhamento
         </h2>
         <p className="text-sm text-muted-foreground">
           O container precisa de altura suficiente para o scroll funcionar. Cada card fica <code className="font-mono text-xs bg-muted px-1">sticky</code> e escala progressivamente conforme o scroll avança.
@@ -97,7 +97,7 @@ export default function StackingCardsPage() {
       {/* Props */}
       <section className="flex flex-col gap-4">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">
-          Props — StackingCards
+          Props - StackingCards
         </h2>
         <div className="border border-border overflow-hidden">
           <table className="w-full text-sm">
@@ -111,10 +111,10 @@ export default function StackingCardsPage() {
             </thead>
             <tbody>
               {[
-                ['totalCards', 'number', '—', 'Total de cards (necessário para calcular os ranges de scroll)'],
+                ['totalCards', 'number', '-', 'Total de cards (necessário para calcular os ranges de scroll)'],
                 ['scaleMultiplier', 'number', '0.03', 'Quanto cada card escala por nível de profundidade'],
-                ['className', 'string', '—', 'Classe do container (use para definir a altura do scroll)'],
-                ['children', 'function | ReactNode', '—', 'Render-prop com { scrollYProgress, totalCards, scaleMultiplier }'],
+                ['className', 'string', '-', 'Classe do container (use para definir a altura do scroll)'],
+                ['children', 'function | ReactNode', '-', 'Render-prop com { scrollYProgress, totalCards, scaleMultiplier }'],
               ].map(([prop, type, def, desc]) => (
                 <tr key={prop} className="border-b border-border even:bg-muted/30">
                   <td className="px-4 py-3 font-mono text-xs text-planton-accent">{prop}</td>

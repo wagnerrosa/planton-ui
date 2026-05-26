@@ -222,7 +222,7 @@ export function GMDashboardScreen() {
                 </div>
               )}
 
-              {/* Plan Timeline — mesma grade, ocupa linha inteira */}
+              {/* Plan Timeline - mesma grade, ocupa linha inteira */}
               <div className="border-r border-b border-border px-6 py-6 flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-4">
                   <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-muted">Vigência do contrato</span>
@@ -253,7 +253,7 @@ export function GMDashboardScreen() {
                 )}
               </div>
 
-              {/* Usage Chart — continua na mesma grade */}
+              {/* Usage Chart - continua na mesma grade */}
               <GMUsageChart />
             </div>
           </div>
@@ -392,7 +392,7 @@ export function GMDashboardScreen() {
                         <TableCell className="text-right text-sm tabular-nums">{collab.hoursWatched}h</TableCell>
                         <TableCell className="text-right text-sm tabular-nums">{collab.certificates}</TableCell>
                         <TableCell className="text-right text-sm tabular-nums">
-                          {collab.lastAccess ? formatDateBR(collab.lastAccess) : <span className="text-planton-muted">—</span>}
+                          {collab.lastAccess ? formatDateBR(collab.lastAccess) : <span className="text-planton-muted">-</span>}
                         </TableCell>
                       </TableRow>
                     ))

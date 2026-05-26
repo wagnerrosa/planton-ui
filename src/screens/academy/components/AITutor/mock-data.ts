@@ -13,9 +13,9 @@ const MOCK_RESPONSES: Record<string, RichBlock[]> = {
     {
       type: 'list',
       items: [
-        'Inventario de Emissoes — voce esta em 60%, falta pouco!',
-        'Fatores de Emissao — e pre-requisito para a proxima trilha',
-        'Relatorio GHG Protocol — conteudo novo disponivel',
+        'Inventario de Emissoes - voce esta em 60%, falta pouco!',
+        'Fatores de Emissao - e pre-requisito para a proxima trilha',
+        'Relatorio GHG Protocol - conteudo novo disponivel',
       ],
     },
     { type: 'highlight', content: 'Dica: completar "Inventario de Emissoes" desbloqueia o certificado da trilha Carbon Basics.' },
@@ -25,9 +25,9 @@ const MOCK_RESPONSES: Record<string, RichBlock[]> = {
     {
       type: 'list',
       items: [
-        'CO2 (dioxido de carbono) — principal GEE de origem antropica',
-        'CH4 (metano) — pecuaria, aterros e gas natural',
-        'N2O (oxido nitroso) — agricultura e processos industriais',
+        'CO2 (dioxido de carbono) - principal GEE de origem antropica',
+        'CH4 (metano) - pecuaria, aterros e gas natural',
+        'N2O (oxido nitroso) - agricultura e processos industriais',
       ],
     },
     { type: 'highlight', content: 'Na trilha "Carbon Basics" voce encontra um modulo completo sobre GEE com exercicios praticos.' },
@@ -37,9 +37,9 @@ const MOCK_RESPONSES: Record<string, RichBlock[]> = {
     {
       type: 'list',
       items: [
-        'Carbon Basics — fundamentos de carbono e inventario',
-        'ESG Essentials — introducao ao framework ESG',
-        'Sustentabilidade 101 — visao geral de sustentabilidade corporativa',
+        'Carbon Basics - fundamentos de carbono e inventario',
+        'ESG Essentials - introducao ao framework ESG',
+        'Sustentabilidade 101 - visao geral de sustentabilidade corporativa',
       ],
     },
   ],
@@ -48,16 +48,16 @@ const MOCK_RESPONSES: Record<string, RichBlock[]> = {
     {
       type: 'list',
       items: [
-        'Carbon Basics — fundamentos de carbono e inventario',
-        'ESG Essentials — introducao ao framework ESG',
-        'Sustentabilidade 101 — visao geral de sustentabilidade corporativa',
+        'Carbon Basics - fundamentos de carbono e inventario',
+        'ESG Essentials - introducao ao framework ESG',
+        'Sustentabilidade 101 - visao geral de sustentabilidade corporativa',
       ],
     },
   ],
 }
 
 const FALLBACK_RESPONSE: RichBlock[] = [
-  { type: 'text', content: 'Boa pergunta! Ainda estou aprendendo sobre esse tema. Por enquanto, recomendo explorar as trilhas disponiveis na plataforma — elas cobrem os principais topicos de sustentabilidade e carbono.' },
+  { type: 'text', content: 'Boa pergunta! Ainda estou aprendendo sobre esse tema. Por enquanto, recomendo explorar as trilhas disponiveis na plataforma - elas cobrem os principais topicos de sustentabilidade e carbono.' },
 ]
 
 export function getMockResponse(input: string): RichBlock[] {

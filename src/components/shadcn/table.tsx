@@ -107,7 +107,7 @@ const TableCaption = React.forwardRef<
 TableCaption.displayName = "TableCaption"
 
 // ---------------------------------------------------------------------------
-// TablePagination — componente global de paginação para tabelas
+// TablePagination - componente global de paginação para tabelas
 // ---------------------------------------------------------------------------
 
 type TablePaginationProps = {

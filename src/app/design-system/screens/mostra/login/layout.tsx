@@ -1,5 +1,5 @@
 /**
- * LoginLayout — sobrescreve o DesignSystemLayout
+ * LoginLayout - sobrescreve o DesignSystemLayout
  * Renderiza apenas o conteúdo sem sidebar
  */
 

@@ -10,7 +10,7 @@ export default function PatternsPage() {
         <Eyebrow>Patterns</Eyebrow>
         <Heading as="h1" size="heading-xl">Screen Patterns</Heading>
         <Body muted className="max-w-2xl">
-          Screen patterns have been promoted to <strong>Screens</strong> — real product screens from Planton.
+          Screen patterns have been promoted to <strong>Screens</strong> - real product screens from Planton.
           Browse the Screens section in the sidebar to view each screen.
         </Body>
       </div>

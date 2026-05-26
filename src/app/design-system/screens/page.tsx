@@ -55,6 +55,12 @@ const screens = [
     ],
   },
   {
+    product: 'Genius',
+    items: [
+      { href: '/design-system/screens/genius/chat', label: 'Chat', description: 'Interface de chat com assistente de IA para pesquisa' },
+    ],
+  },
+  {
     product: 'Mostra Sua Pegada',
     items: [
       { href: '/design-system/screens/mostra/login',            label: 'Login',        description: 'Tela de autenticação do admin' },

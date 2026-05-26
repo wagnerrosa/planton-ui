@@ -343,7 +343,7 @@ Card de trilha com miniaturas dos conteúdos, progress bar e metadata em `font-m
 
 Cards com visual inspirado em plataformas de streaming (Netflix / Apple TV):
 
-- **Aspect ratio:** 4:5 (portrait) — todas as informações dentro do thumbnail
+- **Aspect ratio:** 4:5 (portrait) - todas as informações dentro do thumbnail
 - **Gradient overlay:** `from-black/70 via-black/10 to-transparent` para legibilidade do texto
 - **Max width:** 220px (auto-contido, não depende do container)
 - **Hover:** scale 1.04 + shadow-2xl + zoom 1.05 na imagem
@@ -392,7 +392,7 @@ Componente de hero reutilizado na Home e na tela de Trilhas. Recebe um array de 
 <AcademyHero slides={TRAILS_HERO_SLIDES} />
 ```
 
-**AcademyHeroAction** — 3 variantes de CTA:
+**AcademyHeroAction** - 3 variantes de CTA:
 - `style: 'accent'` → retângulo sólido `bg-planton-accent text-planton-dark`
 - `style: 'outline'` → borda `white/30`, hover `white`
 - `variant: 'link'` → link inline `text-planton-accent`
@@ -658,7 +658,7 @@ Acesse: `http://localhost:3000/design-system/screens/academy/gm`
 Dashboard da plataforma para o Super Admin.
 
 - **AdminUsageChart:** mesmo padrão do GMUsageChart mas escala plataforma (10-15x maior).
-- **Tabelas:** clientes, vouchers, conteúdos, trilhas — todas com zebra stripes, headers em `font-mono` (Geist Mono), pagination mono, actions dropdown.
+- **Tabelas:** clientes, vouchers, conteúdos, trilhas - todas com zebra stripes, headers em `font-mono` (Geist Mono), pagination mono, actions dropdown.
 
 ---
 
@@ -678,7 +678,7 @@ As tabelas (`src/components/shadcn/table.tsx`) usam:
 
 ### Select com descrições nas opções
 
-Quando um `Select` precisa mostrar descrições nas opções do dropdown mas exibir apenas o nome do item no trigger após a seleção, **não use `<SelectValue>`** — o Radix renderiza o conteúdo completo do item selecionado (incluindo a descrição) dentro do trigger. O `textValue` não resolve isso, serve apenas para busca e acessibilidade.
+Quando um `Select` precisa mostrar descrições nas opções do dropdown mas exibir apenas o nome do item no trigger após a seleção, **não use `<SelectValue>`** - o Radix renderiza o conteúdo completo do item selecionado (incluindo a descrição) dentro do trigger. O `textValue` não resolve isso, serve apenas para busca e acessibilidade.
 
 **Solução:** substituir `<SelectValue>` por um `<span>` condicional no trigger, usando o mapa de labels do componente.
 
@@ -741,7 +741,7 @@ Implementado via `next-themes` com classe `.dark` no `<html>`. O toggle está di
 | `/design-system/components/navigation/*` | Tabs, Breadcrumb, Pagination, Command |
 | `/design-system/components/overlays/*` | DropdownMenu, Popover, HoverCard, Calendar, Dialog, Sheet, Tooltip |
 | `/design-system/components/layout/*` | Separator, Accordion, Collapsible, ScrollArea, AspectRatio, Carousel, ContentRow, Sidebar |
-| `/design-system/screens` | Índice de telas (**link direto — não aparece na sidebar**) |
+| `/design-system/screens` | Índice de telas (**link direto - não aparece na sidebar**) |
 | `/design-system/screens/academy/login` | Fluxo de autenticação multi-step |
 | `/design-system/screens/academy/home` | Home do Academy (hero + trilhas + conteúdos) |
 | `/design-system/screens/academy/trilhas` | Listagem de trilhas (hero + gutters + cards) |

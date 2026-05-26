@@ -77,7 +77,7 @@ export default function ChartPage() {
       {/* AreaChart */}
       <section className="flex flex-col gap-6">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">
-          AreaChart — Engajamento mensal (dual métrica)
+          AreaChart - Engajamento mensal (dual métrica)
         </h2>
         <div className="border border-border p-6">
           <ChartContainer config={areaConfig} className="h-[280px] w-full">
@@ -130,7 +130,7 @@ export default function ChartPage() {
       {/* BarChart */}
       <section className="flex flex-col gap-6">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">
-          BarChart — Top trilhas por acessos
+          BarChart - Top trilhas por acessos
         </h2>
         <div className="border border-border p-6">
           <ChartContainer config={barConfig} className="h-[240px] w-full">
@@ -160,7 +160,7 @@ export default function ChartPage() {
       {/* ChartConfig usage */}
       <section className="flex flex-col gap-4">
         <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">
-          ChartConfig — Estrutura
+          ChartConfig - Estrutura
         </h2>
         <div className="border border-border p-6 bg-card">
           <pre className="font-mono text-xs text-foreground/80 leading-relaxed overflow-auto">{`const chartConfig: ChartConfig = {
@@ -195,10 +195,10 @@ export default function ChartPage() {
             <strong className="text-foreground">ChartContainer</strong> já inclui um <code className="font-mono text-xs bg-muted px-1">ResponsiveContainer</code>. Defina altura via <code className="font-mono text-xs bg-muted px-1">className=&quot;h-[Npx]&quot;</code> no container, não no componente Recharts diretamente.
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">Cores</strong> devem usar variáveis CSS do design system (<code className="font-mono text-xs bg-muted px-1">var(--planton-accent)</code>, <code className="font-mono text-xs bg-muted px-1">var(--info)</code>) — nunca valores hardcoded. Isso garante suporte automático ao dark mode.
+            <strong className="text-foreground">Cores</strong> devem usar variáveis CSS do design system (<code className="font-mono text-xs bg-muted px-1">var(--planton-accent)</code>, <code className="font-mono text-xs bg-muted px-1">var(--info)</code>) - nunca valores hardcoded. Isso garante suporte automático ao dark mode.
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">Radius zero</strong>: barras e áreas seguem o padrão do design system — sem border-radius. Configure <code className="font-mono text-xs bg-muted px-1">radius={'{0}'}</code> em <code className="font-mono text-xs bg-muted px-1">Bar</code>.
+            <strong className="text-foreground">Radius zero</strong>: barras e áreas seguem o padrão do design system - sem border-radius. Configure <code className="font-mono text-xs bg-muted px-1">radius={'{0}'}</code> em <code className="font-mono text-xs bg-muted px-1">Bar</code>.
           </p>
         </div>
       </section>

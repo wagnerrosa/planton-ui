@@ -215,7 +215,7 @@ export function AdminContentScreen() {
             </div>
           </div>
 
-          {/* Table — sem coluna Quiz */}
+          {/* Table - sem coluna Quiz */}
           <div className="max-w-[1920px] mx-auto px-6 pb-10">
             <div className="border border-border">
               <Table>
@@ -267,7 +267,7 @@ export function AdminContentScreen() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm">
-                          {content.scope === 'global' ? '—' : content.clients.join(', ')}
+                          {content.scope === 'global' ? '-' : content.clients.join(', ')}
                         </TableCell>
                         <TableCell>
                           <Badge variant={STATUS_BADGE[content.status]}>
@@ -373,7 +373,7 @@ export function AdminContentScreen() {
               </div>
             )}
 
-            {/* Capa (thumb) — para tipos que não são vídeo */}
+            {/* Capa (thumb) - para tipos que não são vídeo */}
             {needsCover && (
               <div className="flex flex-col gap-2">
                 <Label htmlFor="content-cover">

@@ -43,7 +43,7 @@ export default function TablePage() {
     >
       {/* Exemplo básico com zebra stripes e headers mono */}
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Exemplo — Colaboradores (zebra stripes + headers mono)</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Exemplo - Colaboradores (zebra stripes + headers mono)</h2>
         <p className="text-sm text-muted-foreground">
           O <code className="font-mono text-xs bg-muted px-1">TableBody</code> aplica automaticamente zebra stripes nas linhas pares via <code className="font-mono text-xs bg-muted px-1">[&amp;_tr:nth-child(even)]:bg-muted/30</code>.
           O <code className="font-mono text-xs bg-muted px-1">TableHead</code> usa <code className="font-mono text-xs bg-muted px-1">font-mono</code> (Geist Mono) e o <code className="font-mono text-xs bg-muted px-1">TableCell</code> usa <code className="font-mono text-xs bg-muted px-1">font-sans</code> (Instrument Sans).
@@ -85,7 +85,7 @@ export default function TablePage() {
 
       {/* TablePagination */}
       <section className="flex flex-col gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Com paginação — TablePagination</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Com paginação - TablePagination</h2>
         <div className="border border-border overflow-hidden">
           <Table>
             <TableHeader>

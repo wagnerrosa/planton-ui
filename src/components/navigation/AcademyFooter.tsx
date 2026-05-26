@@ -88,7 +88,7 @@ export function AcademyFooter({ variant = 'default' }: AcademyFooterProps) {
             />
           </Link>
 
-          {/* Links — centro absoluto no desktop */}
+          {/* Links - centro absoluto no desktop */}
           <div className="flex items-center gap-6 text-xs text-muted-foreground md:absolute md:left-1/2 md:-translate-x-1/2">
             {linkButtons.map(({ label, action }) => (
               <button

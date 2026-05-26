@@ -67,7 +67,7 @@ const MONTHS_PT = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set'
 
 // Helper: format ISO date (YYYY-MM-DD) to DD MMM YYYY
 export function formatDateBR(isoDate: string): string {
-  if (!isoDate || isoDate === '—') return '—'
+  if (!isoDate || isoDate === '-') return '-'
   const [year, month, day] = isoDate.split('-')
   if (!year || !month || !day) return isoDate
   const m = parseInt(month, 10)

@@ -54,7 +54,7 @@ export function GMUsageChart() {
 
   return (
     <div className="border-r border-b border-border flex flex-col">
-      {/* Header — segue o mesmo padrão eyebrow das outras seções */}
+      {/* Header - segue o mesmo padrão eyebrow das outras seções */}
       <div className="flex items-center justify-between gap-4 px-6 py-5 border-b border-border">
         <div className="flex flex-col gap-1">
           <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-muted">

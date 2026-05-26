@@ -33,7 +33,7 @@ function MostraLayoutInner({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
-        {/* Navbar — full width */}
+        {/* Navbar - full width */}
         <MostraNavbar breadcrumbs={breadcrumbs} />
 
         {/* Sidebar + conteúdo */}

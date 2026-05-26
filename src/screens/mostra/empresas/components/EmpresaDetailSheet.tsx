@@ -94,7 +94,7 @@ export function EmpresaDetailSheet({
                     Ver arquivo
                   </a>
                 ) : (
-                  <Body size="sm">—</Body>
+                  <Body size="sm">-</Body>
                 )}
               </div>
               <div className="space-y-0.5">
@@ -104,7 +104,7 @@ export function EmpresaDetailSheet({
                     Ver arquivo
                   </a>
                 ) : (
-                  <Body size="sm">—</Body>
+                  <Body size="sm">-</Body>
                 )}
               </div>
             </div>

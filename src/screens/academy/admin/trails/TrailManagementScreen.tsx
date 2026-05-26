@@ -267,7 +267,7 @@ export function TrailManagementScreen() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm">
-                          {trail.visibility === 'global' ? '—' : trail.clients.join(', ')}
+                          {trail.visibility === 'global' ? '-' : trail.clients.join(', ')}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -308,7 +308,7 @@ export function TrailManagementScreen() {
         <AcademyFooter />
       </div>
 
-      {/* Dialog: Nova trilha — 3 etapas */}
+      {/* Dialog: Nova trilha - 3 etapas */}
       <Dialog open={dialogOpen} onOpenChange={(open) => { setDialogOpen(open); if (!open) resetDialog() }}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
@@ -322,7 +322,7 @@ export function TrailManagementScreen() {
               <TabsTrigger value="quiz" className="flex-1">3. Quiz</TabsTrigger>
             </TabsList>
 
-            {/* Step 1: Dados — sem campo de imagem de capa */}
+            {/* Step 1: Dados - sem campo de imagem de capa */}
             <TabsContent value="dados" className="flex flex-col gap-4 pt-4">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="trail-title">Título</Label>

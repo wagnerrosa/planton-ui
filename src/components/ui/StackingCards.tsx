@@ -30,7 +30,7 @@ export function StackingCards({
 
   return (
     <div ref={containerRef} className={className}>
-      {/* Provide context via render-prop style — children receive scrollYProgress */}
+      {/* Provide context via render-prop style - children receive scrollYProgress */}
       {typeof children === 'function'
         ? (children as (ctx: { scrollYProgress: typeof scrollYProgress; totalCards: number; scaleMultiplier: number }) => ReactNode)({
             scrollYProgress,

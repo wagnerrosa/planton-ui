@@ -48,7 +48,7 @@ export function AITutor() {
     handleSend(prompt)
   }, [handleSend])
 
-  // Verifica se deve renderizar com base na rota — DEPOIS de todos os hooks
+  // Verifica se deve renderizar com base na rota - DEPOIS de todos os hooks
   const segments = pathname.split('/design-system/screens/academy').pop() ?? pathname
   const shouldShow = useMemo(
     () => ALLOWED_PREFIXES.some((prefix) => segments.startsWith(prefix)),

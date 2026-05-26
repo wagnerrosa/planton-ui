@@ -34,7 +34,7 @@ export function FloatingButton({ open, onClick }: FloatingButtonProps) {
           className="h-5 w-auto object-contain"
           unoptimized
         />
-        {/* Planton symbol — full height, flush right */}
+        {/* Planton symbol - full height, flush right */}
         <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-[1px] border-white/20 bg-planton-accent/5">
           <Image
             src="/favicon/favicon.svg"

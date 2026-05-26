@@ -61,7 +61,7 @@ function AcademyLayoutInner({ children }: { children: React.ReactNode }) {
           </main>
         </div>
 
-        {/* AI Tutor — visível apenas nas telas do aluno (home, trilhas, trail, content) */}
+        {/* AI Tutor - visível apenas nas telas do aluno (home, trilhas, trail, content) */}
         <AITutor />
       </div>
     </SidebarProvider>

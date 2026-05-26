@@ -97,7 +97,7 @@ export const componentCategories: ComponentCategory[] = [
     label: 'Layout & Structure',
     icon: PanelsTopLeft,
     components: [
-      { slug: 'separator', name: 'Separator', description: 'Horizontal or vertical divider line. Also used as a full-width section border — a Planton brand visual pattern.', filePath: 'src/components/shadcn/separator.tsx' },
+      { slug: 'separator', name: 'Separator', description: 'Horizontal or vertical divider line. Also used as a full-width section border - a Planton brand visual pattern.', filePath: 'src/components/shadcn/separator.tsx' },
       { slug: 'accordion', name: 'Accordion', description: 'Expandable and collapsible sections.', filePath: 'src/components/shadcn/accordion.tsx' },
       { slug: 'collapsible', name: 'Collapsible', description: 'Container that can be expanded or collapsed.', filePath: 'src/components/shadcn/collapsible.tsx' },
       { slug: 'scroll-area', name: 'Scroll Area', description: 'Area with custom scrollbar.', filePath: 'src/components/shadcn/scroll-area.tsx' },

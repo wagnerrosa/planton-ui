@@ -19,28 +19,28 @@ type ReportCard = {
 
 const REPORTS: ReportCard[] = [
   {
-    title: 'Relatório Geral — Todos os Registros',
+    title: 'Relatório Geral - Todos os Registros',
     description: '47 registros totais',
     count: '47',
     countLabel: 'registros',
     filename: 'relatorio-geral.xlsx',
   },
   {
-    title: 'Relatório — Apenas Empresas',
-    description: '18 registros — Formato .xlsx',
+    title: 'Relatório - Apenas Empresas',
+    description: '18 registros - Formato .xlsx',
     count: '18',
     countLabel: 'empresas',
     filename: 'relatorio-empresas.xlsx',
   },
   {
-    title: 'Relatório — Apenas Fornecedores',
-    description: '10 registros — Formato .xlsx',
+    title: 'Relatório - Apenas Fornecedores',
+    description: '10 registros - Formato .xlsx',
     count: '10',
     countLabel: 'fornecedores',
     filename: 'relatorio-fornecedores.xlsx',
   },
   {
-    title: 'Relatório de FUP — Não Elegíveis com FUP Ativo',
+    title: 'Relatório de FUP - Não Elegíveis com FUP Ativo',
     description: 'Registros não elegíveis com acompanhamento de próximos passos',
     count: '4',
     countLabel: 'registros',

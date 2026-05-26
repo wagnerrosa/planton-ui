@@ -71,6 +71,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </ThemeProvider>
+        <div id="portal" />
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-YJ5N58SXSY" strategy="afterInteractive" />
         <Script id="google-analytics" strategy="afterInteractive">{`
           window.dataLayer = window.dataLayer || [];

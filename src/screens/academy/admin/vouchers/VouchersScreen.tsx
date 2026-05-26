@@ -232,7 +232,7 @@ export function VouchersScreen() {
                                   </DropdownMenuItem>
                                 )}
                                 {voucher.status === 'bloqueado' && (
-                                  <DropdownMenuItem onClick={() => toast.success('Voucher regenerado — aguardando ativação por mais 7 dias')}>
+                                  <DropdownMenuItem onClick={() => toast.success('Voucher regenerado - aguardando ativação por mais 7 dias')}>
                                     <RefreshCw size={14} className="mr-2" />
                                     Regenerar
                                   </DropdownMenuItem>

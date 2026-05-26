@@ -54,7 +54,7 @@ const fallbackImages: Record<string, string[]> = {
   trilha: ['/assets/PANTANAL-BG.jpg'],
 }
 
-/** One image per trail — cycles through biomes */
+/** One image per trail - cycles through biomes */
 const trailImages = [
   '/assets/MATA-ATLANTICA-BG.jpg',
   '/assets/CAATINGA-BG.jpg',
@@ -106,8 +106,8 @@ export function TrailCard({ trail }: TrailCardProps) {
 
   return (
     <Link href={href} className="group block">
-      {/* White card — glassmorphism via backdrop-blur on bg-card/95.
-          No border-radius, no shadows — per design system. */}
+      {/* White card - glassmorphism via backdrop-blur on bg-card/95.
+          No border-radius, no shadows - per design system. */}
       <div className="relative overflow-hidden bg-planton-forest">
 
         {/* Content: left info + right thumb */}
@@ -184,7 +184,7 @@ export function TrailCard({ trail }: TrailCardProps) {
               </div>
             )}
 
-            {/* Progress bar — only when progress > 0 */}
+            {/* Progress bar - only when progress > 0 */}
             {progress !== undefined && progress > 0 && (
               <div className="flex items-center gap-3 mt-4 max-w-xs">
                 <div className="flex-1 h-px bg-planton-accent/20 overflow-hidden">
@@ -216,7 +216,7 @@ export function TrailCard({ trail }: TrailCardProps) {
               className="absolute inset-0 w-full h-full object-cover brightness-[0.85] group-hover:brightness-100 group-hover:scale-[1.03] transition-all duration-500"
               draggable={false}
             />
-            {/* CTA overlay — centered on thumb */}
+            {/* CTA overlay - centered on thumb */}
             <div className="absolute inset-0 flex items-center justify-center">
               <span className="inline-flex items-center gap-2 border border-white/70 bg-white/10 px-4 py-2 font-mono text-xs text-white uppercase tracking-widest backdrop-blur-sm transition-colors duration-200 group-hover:bg-white/20">
                 {isConcluida ? 'Rever' : isNaoIniciada ? 'Começar' : 'Continuar'}

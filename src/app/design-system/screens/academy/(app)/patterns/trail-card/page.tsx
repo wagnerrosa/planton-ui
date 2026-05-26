@@ -10,7 +10,7 @@ export default function TrailCardPatternPage() {
     <main className="min-h-screen bg-surface-default max-w-[1400px] mx-auto px-6 py-16 flex flex-col gap-12">
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <Eyebrow>Pattern — Trilhas</Eyebrow>
+        <Eyebrow>Pattern - Trilhas</Eyebrow>
         <Heading as="h1" size="heading-xl">TrailCard</Heading>
         <Body muted className="max-w-2xl">
           Card de trilha com layout duas colunas: info à esquerda e imagem de bioma com CTA overlay à direita. Usado na tela de listagem de trilhas.
@@ -20,10 +20,10 @@ export default function TrailCardPatternPage() {
         </div>
       </div>
 
-      {/* Live demo — all statuses */}
+      {/* Live demo - all statuses */}
       <section className="flex flex-col gap-6">
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">
-          Variações — status
+          Variações - status
         </span>
         <div className="flex flex-col gap-4">
           {MOCK_TRAILS.map((t) => (
@@ -157,10 +157,10 @@ export default function TrailCardPatternPage() {
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Decisões de design</span>
         <div className="border border-border p-6 flex flex-col gap-3">
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">bg-planton-forest:</strong> fundo fixo da trilha — não usa bg-card para manter o tom editorial independente do dark mode.
+            <strong className="text-foreground">bg-planton-forest:</strong> fundo fixo da trilha - não usa bg-card para manter o tom editorial independente do dark mode.
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">Sem border-radius, sem shadow:</strong> segue o design system — borda-zero em superfícies de conteúdo.
+            <strong className="text-foreground">Sem border-radius, sem shadow:</strong> segue o design system - borda-zero em superfícies de conteúdo.
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
             <strong className="text-foreground">Bioma por ID:</strong> <code className="font-mono text-xs bg-muted px-1">parseInt(id.replace(/\D/g, &apos;&apos;), 10) % 5</code> garante imagem consistente e variada sem precisar de campo extra no modelo.

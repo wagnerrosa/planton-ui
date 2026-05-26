@@ -195,7 +195,7 @@ export function FornecedoresScreen() {
                       </TableCell>
                       <TableCell>
                         <Body size="sm" className="text-muted-foreground">
-                          {fornecedor.site ?? '—'}
+                          {fornecedor.site ?? '-'}
                         </Body>
                       </TableCell>
                       <TableCell>
@@ -206,7 +206,7 @@ export function FornecedoresScreen() {
                         <Body size="sm" className="text-muted-foreground">
                           {fornecedor.clientesIndicados.length > 0
                             ? fornecedor.clientesIndicados.join(', ')
-                            : '—'}
+                            : '-'}
                         </Body>
                       </TableCell>
                       <TableCell onClick={(e) => e.stopPropagation()}>

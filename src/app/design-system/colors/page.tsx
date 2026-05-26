@@ -105,7 +105,7 @@ export default function ColorsPage() {
             label: 'Warning',
             tokens: [
               { token: '--warning',            light: 'oklch(0.63 0.14 75)',  dark: 'oklch(0.73 0.14 75)' },
-              { token: '--warning-foreground',  light: 'oklch(0.15 0 0)',      dark: 'oklch(0.15 0 0)' },
+              { token: '--warning-foreground',  light: 'oklch(0.98 0 0)',      dark: 'oklch(0.15 0 0)' },
               { token: '--warning-surface',     light: 'oklch(0.97 0.03 75)',  dark: 'oklch(0.22 0.04 75)' },
               { token: '--warning-border',      light: 'oklch(0.82 0.08 75)',  dark: 'oklch(0.40 0.09 75)' },
             ],
@@ -116,7 +116,7 @@ export default function ColorsPage() {
             label: 'Info , Planton cyan',
             tokens: [
               { token: '--info',            light: 'oklch(0.64 0.10 213)', dark: 'oklch(0.72 0.10 213)' },
-              { token: '--info-foreground',  light: 'oklch(0.15 0 0)',      dark: 'oklch(0.15 0 0)' },
+              { token: '--info-foreground',  light: 'oklch(0.98 0 0)',      dark: 'oklch(0.15 0 0)' },
               { token: '--info-surface',     light: 'oklch(0.96 0.02 213)', dark: 'oklch(0.22 0.03 213)' },
               { token: '--info-border',      light: 'oklch(0.80 0.06 213)', dark: 'oklch(0.38 0.06 213)' },
             ],
@@ -132,9 +132,15 @@ export default function ColorsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-border">
               {group.tokens.map((t) => (
                 <div key={t.token} className="border-b border-r border-border flex flex-col">
-                  <div className="h-10 w-full grid grid-cols-2">
-                    <div style={{ background: t.light }} />
-                    <div style={{ background: t.dark }} />
+                  <div className="w-full grid grid-cols-2">
+                    <div className="flex flex-col">
+                      <span className="font-mono text-[9px] text-foreground/40 uppercase tracking-widest px-2 pt-1">☀ light</span>
+                      <div className="h-8 w-full" style={{ background: t.light }} />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-mono text-[9px] text-foreground/40 uppercase tracking-widest px-2 pt-1">☾ dark</span>
+                      <div className="h-8 w-full" style={{ background: t.dark }} />
+                    </div>
                   </div>
                   <div className="p-4 flex flex-col gap-1">
                     <div className="flex items-center gap-1">
@@ -160,7 +166,7 @@ export default function ColorsPage() {
         <div className="flex flex-col gap-2">
           <h2 className="font-heading text-xl text-planton-forest tracking-[-0.02em]">Dark Mode</h2>
           <p className="font-sans text-sm text-planton-muted leading-[1.65] max-w-xl">
-            In dark mode, brand colors remain unchanged. Only surface and foreground tokens are swapped for neutral OKLCH values — no chroma, only lightness.
+            In dark mode, brand colors remain unchanged. Only surface and foreground tokens are swapped for neutral OKLCH values - no chroma, only lightness.
           </p>
         </div>
 

@@ -92,9 +92,9 @@ export type QuizQuestion = {
 
 const MONTHS_PT = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 
-/** Formata ISO date (YYYY-MM-DD) para DD MMM YYYY. Retorna '—' se inválido. */
+/** Formata ISO date (YYYY-MM-DD) para DD MMM YYYY. Retorna '-' se inválido. */
 export function formatDateBR(isoDate: string): string {
-  if (!isoDate || isoDate === '—') return '—'
+  if (!isoDate || isoDate === '-') return '-'
   const [year, month, day] = isoDate.split('-')
   if (!year || !month || !day) return isoDate
   const m = parseInt(month, 10)
@@ -268,7 +268,7 @@ export const CLIENTS: Client[] = [
     totalHours: 0,
     totalCertificates: 0,
     trailsCompleted: 0,
-    plan: { name: '—', expiration: '—', daysRemaining: 0 },
+    plan: { name: '-', expiration: '-', daysRemaining: 0 },
     members: [
       { id: 'm20', name: 'Marcos Tavares', email: 'marcos@agronorte.com.br', role: 'gestor-master' },
     ],

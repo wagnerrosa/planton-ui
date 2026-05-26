@@ -33,7 +33,7 @@ export default function AITutorPatternPage() {
     <main className="min-h-screen bg-surface-default max-w-[1400px] mx-auto px-6 py-16 flex flex-col gap-12">
       {/* Header */}
       <div className="flex flex-col gap-2">
-        <Eyebrow>Pattern — Academy</Eyebrow>
+        <Eyebrow>Pattern - Academy</Eyebrow>
         <Heading as="h1" size="heading-xl">AI Tutor</Heading>
         <Body muted className="max-w-2xl">
           Assistente de IA flutuante integrado ao Academy. Aparece como botão pill glassmorphism no canto inferior direito e expande para um painel de chat. Disponível em rotas de conteúdo (/home, /trilhas, /trail/, /content/).
@@ -93,7 +93,7 @@ export default function AITutorPatternPage() {
       <section className="flex flex-col gap-4">
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Lógica de roteamento</span>
         <div className="border border-border p-6 bg-card">
-          <pre className="font-mono text-xs text-foreground/80 leading-relaxed overflow-auto">{`// index.tsx — rotas onde o tutor aparece
+          <pre className="font-mono text-xs text-foreground/80 leading-relaxed overflow-auto">{`// index.tsx - rotas onde o tutor aparece
 const ALLOWED_PREFIXES = ['/home', '/trilhas', '/trail/', '/content/']
 
 // Extrai o segmento após /design-system/screens/academy
@@ -111,7 +111,7 @@ if (!shouldShow) return null`}</pre>
       <section className="flex flex-col gap-4">
         <span className="font-mono text-xs uppercase tracking-[0.12em] text-planton-accent">Como integrar</span>
         <div className="border border-border p-6 bg-card">
-          <pre className="font-mono text-xs text-foreground/80 leading-relaxed overflow-auto">{`// Montar no layout do Academy — renderiza automaticamente por pathname
+          <pre className="font-mono text-xs text-foreground/80 leading-relaxed overflow-auto">{`// Montar no layout do Academy - renderiza automaticamente por pathname
 import { AITutor } from '@/screens/academy/components/AITutor'
 
 export default function AcademyLayout({ children }) {
