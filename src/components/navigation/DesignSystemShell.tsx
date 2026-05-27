@@ -7,6 +7,8 @@ import { DesignSystemSidebar, SidebarCollapseButton } from '@/components/navigat
 const SIDEBAR_HIDDEN_ROUTES = [
   '/design-system/screens/mostra/login',
   '/design-system/screens/academy/login',
+  '/design-system/screens/eureciclo/login',
+  '/design-system/screens/eureciclo/lp-builder',
 ]
 
 function shouldHideSidebar(pathname: string) {

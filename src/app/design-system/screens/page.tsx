@@ -61,6 +61,13 @@ const screens = [
     ],
   },
   {
+    product: 'eureciclo',
+    items: [
+      { href: '/design-system/screens/eureciclo/login', label: 'Login', description: 'Tela de acesso mobile-first com logos eureciclo + Planton' },
+      { href: '/design-system/screens/eureciclo/lp-builder', label: 'Gerador de LP', description: 'Cria landing page de reciclagem para cliente existente ou novo (mobile-first)' },
+    ],
+  },
+  {
     product: 'Mostra Sua Pegada',
     items: [
       { href: '/design-system/screens/mostra/login',            label: 'Login',        description: 'Tela de autenticação do admin' },
