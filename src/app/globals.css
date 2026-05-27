@@ -12,3 +12,63 @@ svg.lucide,
 svg.lucide * {
   stroke-width: 1 !important;
 }
+
+@keyframes genius-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes genius-fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes genius-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes genius-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.genius-enter-canvas {
+  animation: genius-fade-in-scale 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.genius-enter-sidebar-left {
+  animation: genius-slide-in-left 550ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 280ms;
+}
+.genius-enter-sidebar-right {
+  animation: genius-slide-in-right 550ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 380ms;
+}
+.genius-enter-grid {
+  animation: genius-fade-in-up 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 460ms;
+}

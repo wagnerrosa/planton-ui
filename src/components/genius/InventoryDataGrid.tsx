@@ -1,8 +1,9 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import type { SchemaColumn, SchemaRow } from '@/screens/genius/chat/mock-data'
 
-export const InventoryDataGrid = dynamic(
+const Impl = dynamic(
   () => import('./InventoryDataGridImpl').then((m) => m.InventoryDataGridImpl),
   {
     ssr: false,
@@ -13,3 +14,12 @@ export const InventoryDataGrid = dynamic(
     ),
   }
 )
+
+type Props = {
+  columns: SchemaColumn[]
+  rows: SchemaRow[]
+}
+
+export function InventoryDataGrid(props: Props) {
+  return <Impl {...props} />
+}
