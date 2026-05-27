@@ -72,3 +72,59 @@ svg.lucide * {
   animation: genius-fade-in-up 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
   animation-delay: 460ms;
 }
+
+@keyframes genius-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 0 rgba(173, 207, 120, 0.75),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 4px rgba(173, 207, 120, 0),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes genius-shine-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(280%) skewX(-20deg);
+  }
+}
+
+@keyframes genius-bounce-in {
+  0% {
+    transform: scale(0.94);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.genius-btn-ready {
+  position: relative;
+  overflow: hidden;
+  animation:
+    genius-bounce-in 380ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    genius-glow-pulse 1.8s ease-in-out 380ms infinite;
+}
+.genius-btn-ready::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  animation: genius-shine-sweep 2.4s ease-in-out 500ms infinite;
+  pointer-events: none;
+}
+

@@ -4,6 +4,7 @@ export type SchemaColumn = {
   id: string
   title: string
   width: number
+  type?: 'text' | 'bubble'
 }
 
 export type CellStatus = 'error' | 'warning'
@@ -40,6 +41,80 @@ export type EmissionCategory = {
 const now = new Date()
 const t = (offsetMin: number) => new Date(now.getTime() - offsetMin * 60_000)
 
+function buildCombustaoMovelLitros(): SchemaRow[] {
+  const veiculos = [
+    'Frota leve - Matriz', 'Frota leve - Filial Rio', 'Frota leve - Filial BH',
+    'Caminhões - CD Guarulhos', 'Caminhões - CD Cajamar', 'Caminhões - CD Recife',
+    'Geradores - CD Guarulhos', 'Geradores - Fábrica Campinas', 'Geradores - Matriz',
+    'Frota executiva', 'Vans logística', 'Empilhadeiras a diesel',
+    'Caminhão coleta - Norte', 'Caminhão coleta - Sul', 'Frota comercial - SP',
+    'Frota comercial - RJ', 'Frota técnica - manutenção', 'Frota de apoio',
+    'Caminhões leves - urbano', 'Caminhões pesados - rodoviário',
+  ]
+  const combustiveis = [
+    { nome: 'Diesel S10', fator: '2,67 kg/L', mult: 2.67 },
+    { nome: 'Diesel S500', fator: '2,68 kg/L', mult: 2.68 },
+    { nome: 'Gasolina', fator: '2,21 kg/L', mult: 2.21 },
+    { nome: 'Etanol', fator: '1,52 kg/L', mult: 1.52 },
+    { nome: 'GNV', fator: '1,87 kg/m³', mult: 1.87 },
+    { nome: 'Biodiesel B10', fator: '2,40 kg/L', mult: 2.40 },
+  ]
+  const responsaveis = [
+    'Carlos Mendes', 'Patrícia Souza', 'Diego Martins', 'Ana Beatriz Lima',
+    'Roberto Carvalho', 'Juliana Pereira', 'Fernando Alves', 'Camila Rodrigues',
+    'Marcos Oliveira', 'Beatriz Santos',
+  ]
+  const periodos = [
+    'Jan/2026', 'Fev/2026', 'Mar/2026', 'Abr/2026', 'Mai/2026', 'Jun/2026',
+    'Jul/2026', 'Ago/2026', 'Set/2026', 'Out/2025', 'Nov/2025', 'Dez/2025',
+  ]
+  const statusOpts = ['Validado', 'Validado', 'Validado', 'Em revisão', 'Pendente']
+
+  const rows: SchemaRow[] = []
+  for (let i = 0; i < 100; i++) {
+    const veiculo = veiculos[i % veiculos.length]
+    const comb = combustiveis[i % combustiveis.length]
+    const qtdNum = 500 + ((i * 137) % 28000)
+    const tco2eNum = (qtdNum * comb.mult) / 1000
+    const responsavel = responsaveis[i % responsaveis.length]
+    const periodo = periodos[i % periodos.length]
+    const status = statusOpts[i % statusOpts.length]
+
+    const row: SchemaRow = {
+      veiculo,
+      combustivel: comb.nome,
+      quantidade: qtdNum.toLocaleString('pt-BR'),
+      unidade: comb.nome === 'GNV' ? 'm³' : 'litros',
+      periodo,
+      fator: comb.fator,
+      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+      responsavel,
+      status,
+    }
+
+    // Sprinkle errors/warnings deterministically (~12% rows)
+    if (i % 17 === 3) {
+      row.quantidade = ''
+      row.tco2e = ''
+      row._cellStatus = { quantidade: 'error', tco2e: 'error' }
+      row.status = 'Pendente'
+    } else if (i % 23 === 7) {
+      row._cellStatus = { fator: 'warning' }
+      row.status = 'Em revisão'
+    } else if (i % 31 === 5) {
+      row.responsavel = ''
+      row._cellStatus = { responsavel: 'error' }
+      row.status = 'Pendente'
+    } else if (i % 29 === 11) {
+      row._cellStatus = { periodo: 'warning' }
+      row.status = 'Em revisão'
+    }
+
+    rows.push(row)
+  }
+  return rows
+}
+
 export const CATEGORIES: EmissionCategory[] = [
   {
     id: 'combustao-movel',
@@ -60,32 +135,26 @@ export const CATEGORIES: EmissionCategory[] = [
         label: 'Por litros',
         columns: [
           { id: 'veiculo', title: 'Veículo', width: 200 },
-          { id: 'combustivel', title: 'Combustível', width: 140 },
+          { id: 'combustivel', title: 'Combustível', width: 140, type: 'bubble' },
           { id: 'quantidade', title: 'Quantidade', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'fator', title: 'Fator', width: 130 },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
           { id: 'responsavel', title: 'Responsável', width: 160 },
           { id: 'status', title: 'Status', width: 130 },
         ],
-        rows: [
-          { veiculo: 'Frota leve - Matriz', combustivel: 'Diesel S10', quantidade: '12.450', unidade: 'litros', periodo: 'Jan/2026', fator: '2,67 kg/L', tco2e: '33,2', responsavel: 'Carlos Mendes', status: 'Validado' },
-          { veiculo: 'Frota leve - Matriz', combustivel: 'Etanol', quantidade: '5.620', unidade: 'litros', periodo: 'Jan/2026', fator: '1,52 kg/L', tco2e: '8,54', responsavel: 'Carlos Mendes', status: 'Validado' },
-          { veiculo: 'Caminhões - CD', combustivel: 'Diesel S10', quantidade: '28.300', unidade: 'litros', periodo: 'Jan/2026', fator: '2,67 kg/L', tco2e: '75,56', responsavel: 'Patrícia Souza', status: 'Em revisão', _cellStatus: { fator: 'warning' } },
-          { veiculo: 'Geradores - CD', combustivel: 'Diesel S10', quantidade: '', unidade: 'litros', periodo: 'Jan/2026', fator: '2,67 kg/L', tco2e: '', responsavel: 'Patrícia Souza', status: 'Pendente', _cellStatus: { quantidade: 'error', tco2e: 'error' } },
-          { veiculo: 'Frota executiva', combustivel: 'Gasolina', quantidade: '3.200', unidade: 'litros', periodo: 'Jan/2026', fator: '2,21 kg/L', tco2e: '7,07', responsavel: 'Diego Martins', status: 'Validado' },
-        ],
+        rows: buildCombustaoMovelLitros(),
       },
       {
         id: 'km',
         label: 'Por quilometragem',
         columns: [
           { id: 'veiculo', title: 'Veículo', width: 200 },
-          { id: 'tipo', title: 'Tipo', width: 140 },
+          { id: 'tipo', title: 'Tipo', width: 140, type: 'bubble' },
           { id: 'km', title: 'Distância', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'fator', title: 'Fator', width: 130 },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
           { id: 'observacoes', title: 'Observações', width: 260 },
@@ -103,10 +172,10 @@ export const CATEGORIES: EmissionCategory[] = [
         columns: [
           { id: 'origem', title: 'Origem', width: 220 },
           { id: 'destino', title: 'Destino', width: 220 },
-          { id: 'veiculo', title: 'Veículo', width: 160 },
+          { id: 'veiculo', title: 'Veículo', width: 160, type: 'bubble' },
           { id: 'viagens', title: 'Viagens', width: 100 },
           { id: 'kmCalculado', title: 'Km calculado', width: 140 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [
@@ -136,13 +205,13 @@ export const CATEGORIES: EmissionCategory[] = [
         id: 'kwh',
         label: 'Por kWh',
         columns: [
-          { id: 'unidade-op', title: 'Unidade operacional', width: 220 },
+          { id: 'unidade-op', title: 'Unidade operacional', width: 220, type: 'bubble' },
           { id: 'consumo', title: 'Consumo', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'fator', title: 'Fator SIN', width: 150 },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
-          { id: 'fornecedor', title: 'Fornecedor', width: 160 },
+          { id: 'fornecedor', title: 'Fornecedor', width: 160, type: 'bubble' },
         ],
         rows: [
           { 'unidade-op': 'Matriz - SP', consumo: '87.300', unidade: 'kWh', periodo: 'Jan/2026', fator: '0,0385 tCO₂/MWh', tco2e: '3,36', fornecedor: 'Enel' },
@@ -154,11 +223,11 @@ export const CATEGORIES: EmissionCategory[] = [
         id: 'fatura',
         label: 'Por fatura',
         columns: [
-          { id: 'unidade-op', title: 'Unidade operacional', width: 220 },
+          { id: 'unidade-op', title: 'Unidade operacional', width: 220, type: 'bubble' },
           { id: 'valor', title: 'Valor fatura', width: 140 },
           { id: 'tarifa', title: 'Tarifa média', width: 140 },
           { id: 'kwh-est', title: 'kWh estimado', width: 140 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [
@@ -187,11 +256,11 @@ export const CATEGORIES: EmissionCategory[] = [
         label: 'Refrigerantes',
         columns: [
           { id: 'equipamento', title: 'Equipamento', width: 220 },
-          { id: 'gas', title: 'Gás', width: 120 },
+          { id: 'gas', title: 'Gás', width: 120, type: 'bubble' },
           { id: 'recarga', title: 'Recarga', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100 },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
           { id: 'gwp', title: 'GWP', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [
@@ -221,10 +290,10 @@ export const CATEGORIES: EmissionCategory[] = [
         label: 'Gás natural',
         columns: [
           { id: 'equipamento', title: 'Equipamento', width: 220 },
-          { id: 'unidade-op', title: 'Unidade operacional', width: 200 },
+          { id: 'unidade-op', title: 'Unidade operacional', width: 200, type: 'bubble' },
           { id: 'consumo', title: 'Consumo', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [
@@ -238,10 +307,10 @@ export const CATEGORIES: EmissionCategory[] = [
         label: 'GLP',
         columns: [
           { id: 'equipamento', title: 'Equipamento', width: 220 },
-          { id: 'unidade-op', title: 'Unidade operacional', width: 200 },
+          { id: 'unidade-op', title: 'Unidade operacional', width: 200, type: 'bubble' },
           { id: 'consumo', title: 'Consumo', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [
@@ -271,9 +340,9 @@ export const CATEGORIES: EmissionCategory[] = [
         columns: [
           { id: 'origem', title: 'Origem', width: 180 },
           { id: 'destino', title: 'Destino', width: 180 },
-          { id: 'classe', title: 'Classe', width: 120 },
+          { id: 'classe', title: 'Classe', width: 120, type: 'bubble' },
           { id: 'viagens', title: 'Viagens', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [
@@ -287,10 +356,10 @@ export const CATEGORIES: EmissionCategory[] = [
         id: 'hospedagem',
         label: 'Hospedagem',
         columns: [
-          { id: 'cidade', title: 'Cidade', width: 180 },
-          { id: 'categoria', title: 'Categoria', width: 140 },
+          { id: 'cidade', title: 'Cidade', width: 180, type: 'bubble' },
+          { id: 'categoria', title: 'Categoria', width: 140, type: 'bubble' },
           { id: 'diarias', title: 'Diárias', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [
@@ -319,11 +388,11 @@ export const CATEGORIES: EmissionCategory[] = [
         id: 'por-tipo',
         label: 'Por tipo',
         columns: [
-          { id: 'tipo', title: 'Tipo de resíduo', width: 200 },
-          { id: 'destinacao', title: 'Destinação', width: 180 },
+          { id: 'tipo', title: 'Tipo de resíduo', width: 200, type: 'bubble' },
+          { id: 'destinacao', title: 'Destinação', width: 180, type: 'bubble' },
           { id: 'quantidade', title: 'Quantidade', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100 },
-          { id: 'periodo', title: 'Período', width: 130 },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
         rows: [

@@ -18,8 +18,10 @@ const Impl = dynamic(
 type Props = {
   columns: SchemaColumn[]
   rows: SchemaRow[]
+  readOnly?: boolean
 }
 
 export function InventoryDataGrid(props: Props) {
   return <Impl {...props} />
 }
+

@@ -23,6 +23,7 @@ export type GeniusChatComposerProps = {
   placeholder?: string
   chips?: GeniusChatComposerChip[]
   showChips?: boolean
+  disabled?: boolean
 }
 
 export function GeniusChatComposer({
@@ -32,10 +33,11 @@ export function GeniusChatComposer({
   placeholder = 'Descreva os dados que você possui',
   chips = DEFAULT_CHIPS,
   showChips = false,
+  disabled = false,
 }: GeniusChatComposerProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const canSend = input.trim().length > 0
+  const canSend = !disabled && input.trim().length > 0
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -64,12 +66,13 @@ export function GeniusChatComposer({
       />
 
       {/* Composer box */}
-      <div className="flex items-center gap-2 w-full rounded-full border border-border bg-background shadow-sm px-4 transition-shadow focus-within:shadow-md">
+      <div className={`flex items-center gap-2 w-full rounded-full border border-border bg-background shadow-sm px-4 transition-shadow ${disabled ? 'opacity-60' : 'focus-within:shadow-md'}`}>
         {/* Plus icon (left) — abre file picker */}
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+          disabled={disabled}
+          className="shrink-0 text-muted-foreground hover:text-foreground transition-colors disabled:cursor-not-allowed disabled:hover:text-muted-foreground"
           aria-label="Anexar arquivo"
         >
           <Plus size={20} strokeWidth={3} />
@@ -81,9 +84,10 @@ export function GeniusChatComposer({
           value={input}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
+          placeholder={disabled ? 'Inventário enviado. Somente leitura.' : placeholder}
           rows={1}
-          className="flex-1 resize-none bg-transparent py-4 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none max-h-[200px] leading-relaxed"
+          disabled={disabled}
+          className="flex-1 resize-none bg-transparent py-4 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none max-h-[200px] leading-relaxed disabled:cursor-not-allowed"
           style={{ fieldSizing: 'content' } as React.CSSProperties}
         />
 
