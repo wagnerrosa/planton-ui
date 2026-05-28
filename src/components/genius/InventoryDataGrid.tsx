@@ -19,6 +19,7 @@ type Props = {
   columns: SchemaColumn[]
   rows: SchemaRow[]
   readOnly?: boolean
+  highlightedRows?: number[]
 }
 
 export function InventoryDataGrid(props: Props) {

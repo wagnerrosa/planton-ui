@@ -83,8 +83,8 @@ const LIGHT_THEME: Partial<Theme> = {
   linkColor: '#ADCF78',
   cellHorizontalPadding: 12,
   cellVerticalPadding: 10,
-  headerFontStyle: '600 12px',
-  baseFontStyle: '13px',
+  headerFontStyle: '500 11px',
+  baseFontStyle: '11px',
   fontFamily: 'var(--font-mono), ui-monospace, monospace',
 }
 
@@ -109,8 +109,8 @@ const DARK_THEME: Partial<Theme> = {
   linkColor: '#ADCF78',
   cellHorizontalPadding: 12,
   cellVerticalPadding: 10,
-  headerFontStyle: '600 12px',
-  baseFontStyle: '13px',
+  headerFontStyle: '500 11px',
+  baseFontStyle: '11px',
   fontFamily: 'var(--font-mono), ui-monospace, monospace',
 }
 
@@ -118,9 +118,10 @@ type Props = {
   columns: SchemaColumn[]
   rows: SchemaRow[]
   readOnly?: boolean
+  highlightedRows?: number[]
 }
 
-export function InventoryDataGridImpl({ columns, rows, readOnly = false }: Props) {
+export function InventoryDataGridImpl({ columns, rows, readOnly = false, highlightedRows }: Props) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [monoFamily, setMonoFamily] = useState<string>('ui-monospace, monospace')
@@ -192,9 +193,17 @@ export function InventoryDataGridImpl({ columns, rows, readOnly = false }: Props
   const baseTheme = resolvedTheme === 'dark' ? DARK_THEME : LIGHT_THEME
   const theme: Partial<Theme> = { ...baseTheme, fontFamily: monoFamily }
 
-  const strokeColor = resolvedTheme === 'dark' ? BUBBLE_STROKE_DARK : BUBBLE_STROKE_LIGHT
+  const strokeColor = readOnly
+    ? resolvedTheme === 'dark' ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)'
+    : resolvedTheme === 'dark' ? BUBBLE_STROKE_DARK : BUBBLE_STROKE_LIGHT
 
   const getRowThemeOverride = (row: number): Partial<Theme> | undefined => {
+    if (highlightedRows?.includes(row)) {
+      return {
+        bgCell: 'rgba(74, 153, 120, 0.08)',
+        bgCellMedium: 'rgba(74, 153, 120, 0.12)',
+      }
+    }
     const r = rows[row]
     if (!r?._cellStatus) return undefined
     let worst: 'error' | 'warning' | undefined
@@ -243,15 +252,39 @@ export function InventoryDataGridImpl({ columns, rows, readOnly = false }: Props
         ]
       : undefined
 
+  const readOnlyTheme: Partial<Theme> = readOnly
+    ? {
+        bgCell: resolvedTheme === 'dark' ? '#0d0d0d' : '#fafafa',
+        bgCellMedium: resolvedTheme === 'dark' ? '#111111' : '#f7f7f7',
+        bgHeader: resolvedTheme === 'dark' ? '#0f0f0f' : '#f5f5f5',
+        bgHeaderHasFocus: resolvedTheme === 'dark' ? '#0f0f0f' : '#f5f5f5',
+        bgHeaderHovered: resolvedTheme === 'dark' ? '#0f0f0f' : '#f5f5f5',
+        textDark: resolvedTheme === 'dark' ? '#6b6b6b' : '#8a8a8a',
+        textMedium: resolvedTheme === 'dark' ? '#555555' : '#aaaaaa',
+        textHeader: resolvedTheme === 'dark' ? '#555555' : '#aaaaaa',
+        textBubble: resolvedTheme === 'dark' ? '#6b6b6b' : '#8a8a8a',
+        borderColor: resolvedTheme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+        drilldownBorder: resolvedTheme === 'dark' ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+      }
+    : {}
+
+  const finalTheme: Partial<Theme> = { ...theme, ...readOnlyTheme }
+
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full relative">
+      {readOnly && (
+        <div className="absolute top-2 right-3 z-10 flex items-center gap-1.5 px-2 py-1 text-[10px] font-sans font-medium text-muted-foreground bg-background/80 backdrop-blur-sm border border-border rounded pointer-events-none select-none">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Somente leitura
+        </div>
+      )}
       <DataEditor
         columns={gridColumns}
         rows={rows.length}
         getCellContent={getCellContent}
         width="100%"
         height="100%"
-        theme={theme}
+        theme={finalTheme}
         smoothScrollX
         smoothScrollY
         rowHeight={40}

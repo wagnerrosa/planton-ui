@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, CheckCircle2, Send, Loader2, AlertTriangle } from 'lucide-react'
-import { toast } from 'sonner'
+import { marked } from 'marked'
+import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, CheckCircle2, Send, Loader2, AlertTriangle, LayoutDashboard, FileText } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -28,17 +28,15 @@ function cloneCategories(): EmissionCategory[] {
   }))
 }
 
-function countIssues(cats: EmissionCategory[]): { errors: number; warnings: number } {
+function countIssuesForCategory(cat: EmissionCategory): { errors: number; warnings: number } {
   let errors = 0
   let warnings = 0
-  for (const cat of cats) {
-    for (const schema of cat.schemas) {
-      for (const row of schema.rows) {
-        if (!row._cellStatus) continue
-        for (const status of Object.values(row._cellStatus)) {
-          if (status === 'error') errors++
-          else if (status === 'warning') warnings++
-        }
+  for (const schema of cat.schemas) {
+    for (const row of schema.rows) {
+      if (!row._cellStatus) continue
+      for (const status of Object.values(row._cellStatus)) {
+        if (status === 'error') errors++
+        else if (status === 'warning') warnings++
       }
     }
   }
@@ -85,48 +83,94 @@ export function ChatScreen() {
   const [categoriesOpen, setCategoriesOpen] = useState(true)
   const [chatOpen, setChatOpen] = useState(true)
   const [categoriesData, setCategoriesData] = useState<EmissionCategory[]>(cloneCategories)
-  const [validationState, setValidationState] = useState<ValidationState>('idle')
-  const [issueCounts, setIssueCounts] = useState<{ errors: number; warnings: number }>(() => countIssues(CATEGORIES))
-  const [glowKey, setGlowKey] = useState(0)
-  const [verifyClicks, setVerifyClicks] = useState(0)
+
+  // Per-category state
+  const [validationByCategory, setValidationByCategory] = useState<Record<string, ValidationState>>({})
+  const [issueCountsByCategory, setIssueCountsByCategory] = useState<Record<string, { errors: number; warnings: number }>>({})
+  const [glowKeyByCategory, setGlowKeyByCategory] = useState<Record<string, number>>({})
+  const [verifyClicksByCategory, setVerifyClicksByCategory] = useState<Record<string, number>>({})
+  const [submittedCategories, setSubmittedCategories] = useState<Set<string>>(new Set())
+
+  const [highlightedRows, setHighlightedRows] = useState<number[]>([])
+
+  function handleSentFileClick(fileIndex: number) {
+    if (fileIndex < 0) { setHighlightedRows([]); return }
+    // mock: cada arquivo mapeia para 3 linhas baseado no seu índice
+    const base = (fileIndex * 3) % Math.max(activeCategory.schemas[0].rows.length, 1)
+    const rows = [base, base + 1, base + 2].filter((r) => r < activeCategory.schemas[0].rows.length)
+    setHighlightedRows(rows)
+  }
   const [submitModalOpen, setSubmitModalOpen] = useState(false)
   const [submitConfirmText, setSubmitConfirmText] = useState('')
   const [splitMounted, setSplitMounted] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+  const [composerHeight, setComposerHeight] = useState(112)
+  const composerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = composerRef.current
+    if (!el) return
+    const obs = new ResizeObserver(() => setComposerHeight(el.offsetHeight))
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [viewMode])
+
+  const validationState: ValidationState = validationByCategory[activeCategoryId] ?? 'idle'
+  const issueCounts = issueCountsByCategory[activeCategoryId] ?? { errors: 0, warnings: 0 }
+  const glowKey = glowKeyByCategory[activeCategoryId] ?? 0
+  const submitted = submittedCategories.has(activeCategoryId)
+
+  function pushChatMsg(catId: string, content: string, variant?: ChatMessage['variant']) {
+    const msg: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'assistant',
+      content,
+      timestamp: new Date(),
+      variant,
+    }
+    setChatsByCategory((prev) => ({
+      ...prev,
+      [catId]: [...(prev[catId] ?? []), msg],
+    }))
+  }
 
   function handleVerify() {
     if (validationState === 'checking') return
-    setValidationState('checking')
-    const nextClicks = verifyClicks + 1
-    setVerifyClicks(nextClicks)
+    const nextClicks = (verifyClicksByCategory[activeCategoryId] ?? 0) + 1
+    setVerifyClicksByCategory((prev) => ({ ...prev, [activeCategoryId]: nextClicks }))
+    setValidationByCategory((prev) => ({ ...prev, [activeCategoryId]: 'checking' }))
 
     setTimeout(() => {
+      const activeCategory = categoriesData.find((c) => c.id === activeCategoryId)!
       if (nextClicks >= 3) {
-        // 3ª verificação: simula que IA corrigiu tudo
-        const cleared = categoriesData.map((cat) => ({
-          ...cat,
-          schemas: cat.schemas.map((s) => ({
-            ...s,
-            rows: s.rows.map((r) => {
-              const { _cellStatus: _drop, ...rest } = r
-              void _drop
-              return rest
-            }),
-          })),
-        }))
+        const cleared = categoriesData.map((cat) => {
+          if (cat.id !== activeCategoryId) return cat
+          return {
+            ...cat,
+            schemas: cat.schemas.map((s) => ({
+              ...s,
+              rows: s.rows.map((r) => {
+                const { _cellStatus: _drop, ...rest } = r
+                void _drop
+                return rest
+              }),
+            })),
+          }
+        })
         setCategoriesData(cleared)
-        setIssueCounts({ errors: 0, warnings: 0 })
-        setValidationState('ready')
-        setGlowKey((k) => k + 1)
-        toast.success('Inventário verificado — pronto para envio.')
+        setIssueCountsByCategory((prev) => ({ ...prev, [activeCategoryId]: { errors: 0, warnings: 0 } }))
+        setValidationByCategory((prev) => ({ ...prev, [activeCategoryId]: 'ready' }))
+        setGlowKeyByCategory((prev) => ({ ...prev, [activeCategoryId]: (prev[activeCategoryId] ?? 0) + 1 }))
+        pushChatMsg(activeCategoryId, `${activeCategory.label} verificado com sucesso — nenhum erro encontrado. Pronto para envio.`, 'success')
         return
       }
 
-      const counts = countIssues(categoriesData)
-      setIssueCounts(counts)
-      setValidationState('has-issues')
-      toast.error(
-        `${counts.errors} ${counts.errors === 1 ? 'erro' : 'erros'}${counts.warnings ? ` · ${counts.warnings} ${counts.warnings === 1 ? 'aviso' : 'avisos'}` : ''} encontrados. Revise e verifique novamente.`,
+      const counts = countIssuesForCategory(activeCategory)
+      setIssueCountsByCategory((prev) => ({ ...prev, [activeCategoryId]: counts }))
+      setValidationByCategory((prev) => ({ ...prev, [activeCategoryId]: 'has-issues' }))
+      pushChatMsg(
+        activeCategoryId,
+        `${counts.errors} ${counts.errors === 1 ? 'erro' : 'erros'}${counts.warnings ? ` · ${counts.warnings} ${counts.warnings === 1 ? 'aviso' : 'avisos'}` : ''} encontrados. Revise os dados destacados e verifique novamente.`,
+        counts.errors > 0 ? 'error' : 'warning',
       )
     }, 900)
   }
@@ -138,17 +182,21 @@ export function ChatScreen() {
   }
 
   function handleConfirmSubmit() {
-    toast.success('Inventário enviado com sucesso!')
+    const activeCategory = categoriesData.find((c) => c.id === activeCategoryId)!
     setSubmitModalOpen(false)
-    setValidationState('idle')
-    setVerifyClicks(0)
+    setValidationByCategory((prev) => ({ ...prev, [activeCategoryId]: 'idle' }))
+    setVerifyClicksByCategory((prev) => ({ ...prev, [activeCategoryId]: 0 }))
     setSubmitConfirmText('')
-    setSubmitted(true)
+    setSubmittedCategories((prev) => new Set([...prev, activeCategoryId]))
+    pushChatMsg(activeCategoryId, `${activeCategory.label} enviado com sucesso! Os dados foram registrados oficialmente.`, 'success')
   }
+
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const activeCategory = categoriesData.find((c) => c.id === activeCategoryId) ?? findCategory(activeCategoryId)
+  const RESUMO_ID = '__resumo__'
   const activeSchemaId = activeSchemaByCategory[activeCategoryId] ?? activeCategory.schemas[0].id
+  const isResumoActive = activeSchemaId === RESUMO_ID
   const activeSchema = activeCategory.schemas.find((s) => s.id === activeSchemaId) ?? activeCategory.schemas[0]
   const activeChat = chatsByCategory[activeCategoryId] ?? []
 
@@ -160,7 +208,7 @@ export function ChatScreen() {
 
   useEffect(() => {
     if (viewMode === 'split' && !splitMounted) {
-      const timer = setTimeout(() => setSplitMounted(true), 1100)
+      const timer = setTimeout(() => setSplitMounted(true), 30)
       return () => clearTimeout(timer)
     }
     if (viewMode !== 'split' && splitMounted) {
@@ -168,9 +216,9 @@ export function ChatScreen() {
     }
   }, [viewMode, splitMounted])
 
-  function handleSend() {
+  function handleSend(files: File[] = []) {
     const text = input.trim()
-    if (!text) return
+    if (!text && files.length === 0) return
 
     const isInventory = detectsInventoryData(text)
     const now = new Date()
@@ -181,6 +229,7 @@ export function ChatScreen() {
       content: text,
       hasInventoryData: isInventory,
       timestamp: now,
+      attachments: files.map((f) => ({ name: f.name, ext: f.name.split('.').pop()?.toLowerCase() ?? '' })),
     }
     const assistantMsg: ChatMessage = {
       id: (Date.now() + 1).toString(),
@@ -193,8 +242,29 @@ export function ChatScreen() {
 
     setChatsByCategory((prev) => ({
       ...prev,
-      [activeCategoryId]: [...(prev[activeCategoryId] ?? []), userMsg, assistantMsg],
+      [activeCategoryId]: [
+        ...(prev[activeCategoryId] ?? []),
+        userMsg,
+        assistantMsg,
+      ],
     }))
+
+    if (isInventory) {
+      const catId = activeCategoryId
+      setTimeout(() => {
+        const onboardingMsg: ChatMessage = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: '',
+          isOnboarding: true,
+          timestamp: new Date(),
+        }
+        setChatsByCategory((prev) => ({
+          ...prev,
+          [catId]: [...(prev[catId] ?? []), onboardingMsg],
+        }))
+      }, 800)
+    }
     setInput('')
 
     if (isInventory) {
@@ -206,11 +276,244 @@ export function ChatScreen() {
 
   function handleSelectCategory(id: string) {
     setActiveCategoryId(id)
-    if (viewMode === 'empty') setViewMode('split')
+    if (viewMode === 'empty') setViewMode('chat')
   }
 
   function handleSelectSchema(id: string) {
     setActiveSchemaByCategory((prev) => ({ ...prev, [activeCategoryId]: id }))
+  }
+
+  // ── Onboarding message JSX ───────────────────────────────────────────────
+  function OnboardingMessage({ timestamp }: { timestamp: Date }) {
+    return (
+      <div className="flex flex-col gap-3 text-foreground">
+        <p>Ótimo, os dados estão na planilha! Agora entramos na fase de preenchimento — deixa eu te mostrar como funciona:</p>
+
+        <div className="flex flex-col gap-2.5">
+          <div className="flex gap-2.5">
+            <span className="shrink-0 mt-0.5">1.</span>
+            <p><span className="font-semibold">Edite diretamente nas células</span> — Clique em qualquer célula e edite à vontade. Cada aba corresponde a um schema desta categoria. A estrutura de colunas é fixa e não pode ser alterada.</p>
+          </div>
+
+          <div className="flex gap-2.5">
+            <span className="shrink-0 mt-0.5">2.</span>
+            <p><span className="font-semibold">Ou me peça para editar</span> — Se preferir, descreva aqui o que precisa e eu faço as alterações na planilha.</p>
+          </div>
+
+          <div className="flex gap-2.5">
+            <span className="shrink-0 mt-0.5">3.</span>
+            <p><span className="font-semibold">Selecione linhas para me dar contexto</span> — As linhas selecionadas viram contexto para mim automaticamente. Com muitas linhas de uma vez, posso ter dificuldade em processar tudo com precisão.</p>
+          </div>
+
+          <div className="flex gap-2.5">
+            <span className="shrink-0 mt-0.5">4.</span>
+            <p><span className="font-semibold">Envie arquivos a qualquer momento</span> — Pode continuar enviando planilhas e PDFs aqui no chat.</p>
+          </div>
+
+          <div className="flex gap-2.5">
+            <span className="shrink-0 mt-0.5">5.</span>
+            <div className="flex flex-col gap-1">
+              <p>
+                Clique em{' '}
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-border bg-background text-[10px] font-medium align-middle mx-0.5">
+                  <CheckCircle2 size={9} />
+                  Verificar
+                </span>
+                {' '}para checar o preenchimento
+              </p>
+              <div className="flex flex-col gap-1 pl-0.5">
+                <span className="flex items-center gap-1.5 text-destructive">
+                  <span className="w-2 h-2 rounded-full bg-destructive shrink-0" />
+                  Erros bloqueantes — precisam ser corrigidos antes do envio
+                </span>
+                <span className="flex items-center gap-1.5 text-warning">
+                  <span className="w-2 h-2 rounded-full bg-warning shrink-0" />
+                  Alertas — valores incomuns, não bloqueiam o envio
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2.5">
+            <span className="shrink-0 mt-0.5">6.</span>
+            <p>
+              Acesse a aba{' '}
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-border bg-background text-[10px] font-medium align-middle mx-0.5">
+                <LayoutDashboard size={9} />
+                Resumo
+              </span>
+              {' '}para visualizar o estado de todos os schemas desta categoria de uma só vez.
+            </p>
+          </div>
+
+          <div className="flex gap-2.5">
+            <span className="shrink-0 mt-0.5">7.</span>
+            <div>
+              <p>
+                <span className="font-semibold">Quando estiver pronto, clique em{' '}</span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-planton-accent text-white text-[10px] font-medium align-middle mx-0.5">
+                  <Send size={9} />
+                  Enviar
+                </span>
+                {' '}— disponível quando não houver erros bloqueantes.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <span className="text-[10px] text-muted-foreground/60 mt-0.5">{formatTime(timestamp)}</span>
+      </div>
+    )
+  }
+
+  // ── Chat message variant styles ───────────────────────────────────────────
+  const VARIANT_CLASS: Record<NonNullable<ChatMessage['variant']>, string> = {
+    error: 'text-destructive bg-destructive-surface border border-destructive-border',
+    warning: 'text-warning bg-warning-surface border border-warning-border',
+    success: 'text-success bg-success-surface border border-success-border',
+  }
+
+  function renderMessages(msgs: ChatMessage[], wide?: boolean) {
+    return msgs.map((msg) => {
+      if (msg.isOnboarding) {
+        return (
+          <div key={msg.id} className="flex justify-start">
+            <div className={`${wide ? 'max-w-[80%]' : 'max-w-[90%]'} px-3 py-2.5 ${wide ? 'text-sm' : 'text-xs'} font-sans leading-relaxed`}>
+              <OnboardingMessage timestamp={msg.timestamp} />
+            </div>
+          </div>
+        )
+      }
+      return (
+      <div
+        key={msg.id}
+        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+      >
+        <div
+          className={`${wide ? 'max-w-[80%]' : 'max-w-[90%]'} px-3 py-2.5 ${wide ? 'text-sm' : 'text-xs'} font-sans leading-relaxed ${msg.role === 'assistant' && !msg.variant ? 'rounded-2xl' : ''} ${
+            msg.role === 'user'
+              ? 'bg-muted text-foreground border border-border'
+              : msg.variant
+                ? VARIANT_CLASS[msg.variant]
+                : 'text-foreground'
+          }`}
+        >
+          {msg.attachments && msg.attachments.length > 0 && (
+            <div className="flex flex-col gap-1.5 mb-2">
+              {msg.attachments.map((att, i) => {
+                const colorStyles: Record<string, { backgroundColor: string; color: string }> = {
+                  xlsx: { backgroundColor: '#dcfce7', color: '#15803d' },
+                  xls:  { backgroundColor: '#dcfce7', color: '#15803d' },
+                  csv:  { backgroundColor: '#dbeafe', color: '#1d4ed8' },
+                  pdf:  { backgroundColor: '#fee2e2', color: '#b91c1c' },
+                  json: { backgroundColor: '#fef9c3', color: '#a16207' },
+                }
+                const badgeStyle = colorStyles[att.ext] ?? {}
+                const typeLabel = att.ext ? att.ext.toUpperCase() : 'Arquivo'
+                return (
+                  <div key={i} className="flex items-center gap-2 border border-border bg-background px-2.5 py-1.5">
+                    <div className="flex items-center justify-center w-7 h-7 shrink-0 text-[10px] font-mono font-bold" style={badgeStyle}>
+                      {att.ext ? att.ext.slice(0, 3).toUpperCase() : <FileText size={12} />}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-medium text-foreground truncate leading-tight">{att.name}</span>
+                      <span className="text-[10px] text-muted-foreground leading-tight">{typeLabel}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+          {msg.hasInventoryData && msg.role === 'user' && (
+            <span className="flex items-center gap-1 text-[10px] text-planton-accent font-medium mb-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-planton-accent shrink-0" />
+              Dados de emissão detectados
+            </span>
+          )}
+          {msg.role === 'assistant'
+            ? <div className="prose prose-xs max-w-none dark:prose-invert [&_ol]:list-decimal [&_ul]:list-disc [&_li]:my-0.5 [&_p]:my-0 [&_p+p]:mt-2 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: marked.parse(msg.content) as string }} />
+            : msg.content
+          }
+          <span className={`block text-[10px] mt-1 opacity-60 ${msg.role === 'user' ? 'text-right' : 'text-left'} ${msg.variant ? '' : 'text-muted-foreground'}`}>
+            {formatTime(msg.timestamp)}
+          </span>
+        </div>
+      </div>
+      )
+    })
+  }
+
+  // ── Action bar (per-category, rendered inside canvas header) ──────────────
+  function renderActionBar() {
+    if (submitted) {
+      return (
+        <div className="flex items-center gap-2 text-xs font-sans">
+          <CheckCircle2 size={13} className="text-planton-accent shrink-0" />
+          <span className="text-planton-accent font-medium">Categoria enviada</span>
+          <span className="text-muted-foreground">· somente leitura</span>
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-sans">
+          {validationState === 'checking' ? (
+            <>
+              <Loader2 size={12} className="animate-spin" />
+              <span>Verificando…</span>
+            </>
+          ) : validationState === 'has-issues' ? (
+            <>
+              <span className={`w-1.5 h-1.5 rounded-full ${issueCounts.errors > 0 ? 'bg-destructive' : 'bg-warning'}`} />
+              <span>
+                {issueCounts.errors > 0 ? (
+                  <span className="text-destructive font-medium">Corrija os erros e verifique novamente</span>
+                ) : (
+                  <span className="text-warning font-medium">Verifique novamente para enviar</span>
+                )}
+              </span>
+            </>
+          ) : validationState === 'ready' ? (
+            <>
+              <CheckCircle2 size={12} className="text-planton-accent" />
+              <span className="text-planton-accent font-medium">Categoria pronta para enviar</span>
+            </>
+          ) : (
+            <span>Verifique a categoria antes de enviar</span>
+          )}
+        </div>
+
+        <span className="h-4 w-px bg-border" />
+
+        <button
+          onClick={handleVerify}
+          disabled={validationState === 'checking'}
+          className="flex items-center gap-1.5 px-3 h-7 text-xs font-sans font-medium border border-border bg-background text-foreground hover:bg-muted transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {validationState === 'checking' ? (
+            <Loader2 size={12} className="animate-spin" />
+          ) : (
+            <CheckCircle2 size={12} />
+          )}
+          Verificar
+        </button>
+
+        <button
+          key={glowKey}
+          onClick={handleSubmit}
+          disabled={validationState !== 'ready'}
+          className={`flex items-center gap-1.5 px-3 h-7 text-xs font-sans font-medium transition-colors ${
+            validationState === 'ready'
+              ? 'bg-planton-accent text-white hover:bg-planton-accent/90 genius-btn-ready'
+              : 'bg-muted text-muted-foreground cursor-not-allowed'
+          }`}
+        >
+          <Send size={12} />
+          Enviar
+        </button>
+      </div>
+    )
   }
 
   // ── Estado vazio ──────────────────────────────────────────────
@@ -226,68 +529,135 @@ export function ChatScreen() {
               className="h-14 w-auto"
             />
             <p className="text-planton-forest dark:text-foreground text-4xl font-heading font-normal leading-[1.2] text-center max-w-2xl">
-              Envie planilhas, relatórios ou<br />
-              informações da sua operação para<br />
-              começarmos o inventário de emissões.
+              Por onde você quer começar<br />
+              o inventário de emissões?
             </p>
           </div>
-          <div className="w-full max-w-3xl">
-            <GeniusChatComposer
-              input={input}
-              onChange={setInput}
-              onSend={handleSend}
-              placeholder="Descreva os dados que você possui ou anexe os documentos."
-              showChips
-            />
+          <div className="flex flex-wrap justify-center gap-3 max-w-2xl">
+            {categoriesData.map((cat) => {
+              const Icon = cat.icon
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => handleSelectCategory(cat.id)}
+                  className="flex items-center gap-2.5 px-5 py-3 border border-border bg-background text-sm font-sans text-foreground hover:bg-muted hover:border-planton-accent/40 transition-colors"
+                >
+                  <Icon size={16} className="text-muted-foreground shrink-0" />
+                  {cat.label}
+                </button>
+              )
+            })}
           </div>
         </div>
       </>
     )
   }
 
-  // ── Estado chat (sem tabela ainda, só conversa) ──────────────
+  // ── Estado chat (split sem tabela — aguardando dados de inventário) ──
   if (viewMode === 'chat') {
     return (
-      <>
+      <div className="flex flex-col h-full">
         <GeniusNavbarSync breadcrumbs={[]} />
-        <div className="flex flex-col h-full">
-          <div className="flex-1 overflow-y-auto px-6 py-8">
-            <div className="max-w-3xl mx-auto flex flex-col gap-4">
-              {activeChat.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[80%] px-4 py-3 text-sm font-sans leading-relaxed rounded-2xl ${
-                      msg.role === 'user'
-                        ? 'bg-muted text-foreground border border-border'
-                        : 'text-foreground'
-                    }`}
+        <div className="flex flex-col flex-1 overflow-hidden bg-muted px-6 pt-5 pb-8 dark:bg-muted/60 gap-4">
+
+          <div className="flex flex-1 overflow-hidden bg-background border border-border rounded-2xl shadow-sm genius-enter-canvas">
+            <div className="flex flex-col flex-1 overflow-hidden">
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 h-12 border-b border-border shrink-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <activeCategory.icon size={16} className="text-muted-foreground shrink-0" />
+                  <h2 className="text-sm font-semibold text-foreground font-sans truncate">
+                    {activeCategory.label}
+                  </h2>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => setCategoriesOpen((v) => !v)}
+                    className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                    aria-label={categoriesOpen ? 'Recolher categorias' : 'Expandir categorias'}
+                    title={categoriesOpen ? 'Recolher categorias' : 'Expandir categorias'}
                   >
-                    {msg.content}
-                    <span className={`block text-[10px] text-muted-foreground/60 mt-1 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
-                      {formatTime(msg.timestamp)}
-                    </span>
+                    {categoriesOpen ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Corpo: sidebar categorias + chat full width */}
+              <div className="flex flex-1 overflow-hidden">
+
+                {/* Sidebar categorias */}
+                <div className={`${categoriesOpen ? 'w-56' : 'w-12'} shrink-0 border-r border-border overflow-y-auto overflow-x-hidden py-2 bg-muted/20 transition-[width] duration-200 genius-enter-sidebar-left`}>
+                  {categoriesOpen && (
+                    <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">
+                      Categorias
+                    </div>
+                  )}
+                  <ul className="flex flex-col">
+                    {categoriesData.map((cat) => {
+                      const Icon = cat.icon
+                      const isActive = cat.id === activeCategoryId
+                      return (
+                        <li key={cat.id}>
+                          <button
+                            onClick={() => handleSelectCategory(cat.id)}
+                            title={!categoriesOpen ? cat.label : undefined}
+                            className={`w-full flex items-center ${categoriesOpen ? 'gap-2.5 px-3 justify-start' : 'justify-center px-0'} py-2 text-xs font-sans transition-colors border-l-2 ${
+                              isActive ? 'border-planton-accent' : 'border-transparent'
+                            } ${
+                              isActive
+                                ? 'bg-background text-foreground font-medium'
+                                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+                            }`}
+                          >
+                            <Icon size={15} className="shrink-0" />
+                            {categoriesOpen && <span className="truncate text-left">{cat.label}</span>}
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+
+                {/* Chat full width */}
+                <div className="flex flex-col flex-1 overflow-hidden relative genius-enter-sidebar-right">
+                  <div className="px-4 py-3 border-b border-border shrink-0">
+                    <h3 className="text-xs font-semibold text-foreground font-sans">
+                      Envie dados de {activeCategory.label.toLowerCase()}
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground mt-1 leading-snug">{activeCategory.hint}</p>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto px-4 pt-4" style={{ paddingBottom: composerHeight + 16 }}>
+                    <div className="flex flex-col gap-3 max-w-2xl mx-auto">
+                      {renderMessages(activeChat, true)}
+                      <div ref={bottomRef} />
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 z-10">
+                    <div className="h-8 bg-gradient-to-t from-background to-transparent" />
+                    <div ref={composerRef} className="bg-background px-4 pb-4">
+                      <div className="max-w-2xl mx-auto">
+                        <GeniusChatComposer
+                          input={input}
+                          onChange={setInput}
+                          onSend={handleSend}
+                          onSentFileClick={handleSentFileClick}
+                          placeholder="Envie dados ou faça uma pergunta…"
+                          disabled={submitted}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ))}
-              <div ref={bottomRef} />
+
+              </div>
             </div>
           </div>
-          <div className="shrink-0 px-6 pb-6">
-            <div className="max-w-3xl mx-auto">
-              <GeniusChatComposer
-                input={input}
-                onChange={setInput}
-                onSend={handleSend}
-                placeholder="Continue descrevendo..."
-                disabled={submitted}
-              />
-            </div>
-          </div>
+
         </div>
-      </>
+      </div>
     )
   }
 
@@ -297,88 +667,13 @@ export function ChatScreen() {
       <GeniusNavbarSync breadcrumbs={[]} />
       <div className="flex flex-col flex-1 overflow-hidden bg-muted px-6 pt-5 pb-8 dark:bg-muted/60 gap-4">
 
-        {/* Action bar flutuante (pill centralizada) */}
-        <div className="flex justify-center shrink-0">
-          {submitted ? (
-            <div className="flex items-center gap-2 px-4 h-11 rounded-full border border-border bg-background shadow-sm text-xs font-sans">
-              <CheckCircle2 size={14} className="text-planton-accent shrink-0" />
-              <span className="text-planton-accent font-medium">Inventário enviado</span>
-              <span className="text-muted-foreground">· somente leitura</span>
-            </div>
-          ) : (
-          <div className="flex items-center gap-3 px-3 h-11 rounded-full border border-border bg-background shadow-sm">
-            <div className="flex items-center gap-2 pl-2 text-[11px] text-muted-foreground font-sans">
-              {validationState === 'checking' ? (
-                <>
-                  <Loader2 size={13} className="animate-spin" />
-                  <span>Verificando inventário…</span>
-                </>
-              ) : validationState === 'has-issues' ? (
-                <>
-                  <span className="w-1.5 h-1.5 rounded-full bg-destructive" />
-                  <span>
-                    {issueCounts.errors > 0 && (
-                      <span className="text-destructive font-medium">
-                        {issueCounts.errors} {issueCounts.errors === 1 ? 'erro' : 'erros'}
-                      </span>
-                    )}
-                    {issueCounts.errors > 0 && issueCounts.warnings > 0 && <span> · </span>}
-                    {issueCounts.warnings > 0 && (
-                      <span className="text-warning font-medium">
-                        {issueCounts.warnings} {issueCounts.warnings === 1 ? 'aviso' : 'avisos'}
-                      </span>
-                    )}
-                    <span> pendentes</span>
-                  </span>
-                </>
-              ) : validationState === 'ready' ? (
-                <>
-                  <CheckCircle2 size={13} className="text-planton-accent" />
-                  <span className="text-planton-accent font-medium">Tudo certo — pronto para enviar</span>
-                </>
-              ) : (
-                <span>Verifique o inventário antes de enviar</span>
-              )}
-            </div>
-
-            <span className="h-5 w-px bg-border" />
-
-            <button
-              onClick={handleVerify}
-              disabled={validationState === 'checking'}
-              className="flex items-center gap-1.5 px-3 h-8 rounded-full text-xs font-sans font-medium border border-border bg-background text-foreground hover:bg-muted transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {validationState === 'checking' ? (
-                <Loader2 size={13} className="animate-spin" />
-              ) : (
-                <CheckCircle2 size={13} />
-              )}
-              Verificar inventário
-            </button>
-
-            <button
-              key={glowKey}
-              onClick={handleSubmit}
-              disabled={validationState !== 'ready'}
-              className={`flex items-center gap-1.5 px-4 h-8 rounded-full text-xs font-sans font-medium transition-colors ${
-                validationState === 'ready'
-                  ? 'bg-planton-accent text-white hover:bg-planton-accent/90 genius-btn-ready'
-                  : 'bg-muted text-muted-foreground cursor-not-allowed'
-              }`}
-            >
-              <Send size={13} />
-              Enviar inventário
-            </button>
-          </div>
-          )}
-        </div>
-
         <div className={`flex flex-1 overflow-hidden bg-background border border-border rounded-2xl shadow-sm ${!splitMounted ? 'genius-enter-canvas' : ''}`}>
         <div className="flex flex-col flex-1 overflow-hidden">
 
-          {/* Header da janela */}
-          <div className="flex items-center justify-between px-4 h-12 border-b border-border shrink-0">
-            <div className="flex items-center gap-2 min-w-0">
+          {/* Header da janela — com action bar centralizada */}
+          <div className="flex items-center px-4 h-12 border-b border-border shrink-0">
+            {/* Esquerda: ícone + label categoria */}
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               <activeCategory.icon size={16} className="text-muted-foreground shrink-0" />
               <h2 className="text-sm font-semibold text-foreground font-sans truncate">
                 {activeCategory.label}
@@ -387,7 +682,14 @@ export function ChatScreen() {
                 · {activeSchema.label}
               </span>
             </div>
-            <div className="flex items-center gap-1 shrink-0">
+
+            {/* Centro: action bar por categoria */}
+            <div className="flex items-center justify-center shrink-0">
+              {renderActionBar()}
+            </div>
+
+            {/* Direita: toggles */}
+            <div className="flex items-center gap-1 flex-1 justify-end">
               <button
                 onClick={() => setCategoriesOpen((v) => !v)}
                 className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
@@ -421,6 +723,7 @@ export function ChatScreen() {
                 {categoriesData.map((cat) => {
                   const Icon = cat.icon
                   const isActive = cat.id === activeCategoryId
+                  const isCatSubmitted = submittedCategories.has(cat.id)
                   const worst = getCategoryWorstStatus(cat)
                   const borderClass = isActive
                     ? 'border-planton-accent'
@@ -440,7 +743,11 @@ export function ChatScreen() {
                       >
                         <span className="relative shrink-0">
                           <Icon size={15} />
-                          {worst && (
+                          {isCatSubmitted ? (
+                            <span
+                              className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-planton-accent ring-1 ring-background"
+                            />
+                          ) : worst && (
                             <span
                               className={`absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full ${STATUS_DOT_CLASS[worst]} ring-1 ring-background`}
                             />
@@ -455,13 +762,32 @@ export function ChatScreen() {
             </div>
 
             {/* Centro: tabela + rodapé guias */}
-            <div className={`flex flex-col flex-1 overflow-hidden ${!splitMounted ? 'genius-enter-grid' : ''}`}>
+            <div className={`flex flex-col flex-1 overflow-hidden genius-split-expand ${splitMounted ? 'max-w-full opacity-100' : 'max-w-0 opacity-0'}`}>
               <div className="flex-1 min-h-0">
-                <InventoryDataGrid columns={activeSchema.columns} rows={activeSchema.rows} readOnly={submitted} />
+                {isResumoActive ? (
+                  <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
+                    <LayoutDashboard size={32} className="opacity-30" />
+                    <p className="text-sm font-sans">Resumo em construção</p>
+                  </div>
+                ) : (
+                  <InventoryDataGrid columns={activeSchema.columns} rows={activeSchema.rows} readOnly={submitted} highlightedRows={highlightedRows} />
+                )}
               </div>
 
               {/* Guias Excel */}
               <div className="flex items-stretch h-9 border-t border-border bg-muted/30 shrink-0 overflow-x-auto">
+                {/* Aba Resumo — sempre primeiro */}
+                <button
+                  onClick={() => handleSelectSchema(RESUMO_ID)}
+                  className={`px-4 text-xs font-sans whitespace-nowrap transition-colors border-r border-border flex items-center gap-1.5 ${
+                    isResumoActive
+                      ? 'bg-background text-foreground font-medium border-t-2 border-t-planton-accent -mt-px'
+                      : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                  }`}
+                >
+                  <LayoutDashboard size={11} />
+                  Resumo
+                </button>
                 {activeCategory.schemas.map((schema) => {
                   const isActive = schema.id === activeSchemaId
                   const worst = getSchemaWorstStatus(schema)
@@ -487,7 +813,7 @@ export function ChatScreen() {
 
             {/* Sidebar chat */}
             {chatOpen && (
-              <div className={`w-[360px] shrink-0 border-l border-border relative overflow-hidden flex flex-col ${!splitMounted ? 'genius-enter-sidebar-right' : ''}`}>
+              <div className="w-[360px] shrink-0 border-l border-border relative overflow-hidden flex flex-col">
                 <div className="px-4 py-3 border-b border-border shrink-0">
                   <h3 className="text-xs font-semibold text-foreground font-sans">
                     Envie dados de {activeCategory.label.toLowerCase()}
@@ -495,44 +821,21 @@ export function ChatScreen() {
                   <p className="text-[10px] text-muted-foreground mt-1 leading-snug">{activeCategory.hint}</p>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-4 pt-4 pb-28">
+                <div className="flex-1 overflow-y-auto px-4 pt-4" style={{ paddingBottom: composerHeight + 16 }}>
                   <div className="flex flex-col gap-3">
-                    {activeChat.map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div
-                          className={`max-w-[90%] px-3 py-2.5 text-xs font-sans leading-relaxed rounded-2xl ${
-                            msg.role === 'user'
-                              ? 'bg-muted text-foreground border border-border'
-                              : 'text-foreground'
-                          }`}
-                        >
-                          {msg.hasInventoryData && msg.role === 'user' && (
-                            <span className="flex items-center gap-1 text-[10px] text-planton-accent font-medium mb-1.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-planton-accent shrink-0" />
-                              Dados de emissão detectados
-                            </span>
-                          )}
-                          {msg.content}
-                          <span className={`block text-[10px] text-muted-foreground/60 mt-1 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
-                            {formatTime(msg.timestamp)}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                    {renderMessages(activeChat)}
                     <div ref={bottomRef} />
                   </div>
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 z-10">
                   <div className="h-8 bg-gradient-to-t from-background to-transparent" />
-                  <div className="bg-background px-3 pb-3">
+                  <div ref={composerRef} className="bg-background px-3 pb-3">
                     <GeniusChatComposer
                       input={input}
                       onChange={setInput}
                       onSend={handleSend}
+                      onSentFileClick={handleSentFileClick}
                       placeholder="Pergunte ou envie mais dados…"
                       disabled={submitted}
                     />
@@ -550,10 +853,10 @@ export function ChatScreen() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertTriangle size={18} className="text-warning shrink-0" />
-              Enviar inventário
+              Enviar {activeCategory.label}
             </DialogTitle>
             <DialogDescription className="pt-2 leading-relaxed">
-              Esta ação é <span className="font-semibold text-foreground">irreversível</span>. Após o envio, o inventário será registrado oficialmente e não poderá ser editado.
+              Esta ação é <span className="font-semibold text-foreground">irreversível</span>. Após o envio, os dados de <span className="font-semibold text-foreground">{activeCategory.label}</span> serão registrados oficialmente e não poderão ser editados.
               <br /><br />
               Confirme que revisou todos os dados e não há mais nada a acrescentar.
             </DialogDescription>
@@ -561,7 +864,7 @@ export function ChatScreen() {
 
           <div className="flex flex-col gap-2">
             <label htmlFor="confirm-input" className="text-xs text-muted-foreground font-sans">
-              Digite <span className="font-mono font-semibold text-foreground">ENVIAR</span> para confirmar:
+              Digite <span className="font-mono font-semibold text-foreground">{activeCategory.label.toUpperCase()}</span> para confirmar:
             </label>
             <input
               id="confirm-input"
@@ -585,11 +888,11 @@ export function ChatScreen() {
             <button
               type="button"
               onClick={handleConfirmSubmit}
-              disabled={submitConfirmText.trim() !== 'ENVIAR'}
+              disabled={submitConfirmText.trim().toUpperCase() !== activeCategory.label.toUpperCase()}
               className="flex items-center gap-1.5 px-4 h-9 rounded-md text-sm font-sans font-medium bg-planton-accent text-white hover:bg-planton-accent/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
             >
               <Send size={14} />
-              Enviar inventário
+              Enviar {activeCategory.label}
             </button>
           </DialogFooter>
         </DialogContent>

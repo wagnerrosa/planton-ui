@@ -19,6 +19,12 @@ export type TableSchema = {
   label: string
   columns: SchemaColumn[]
   rows: SchemaRow[]
+  isResumo?: boolean
+}
+
+export type ChatAttachment = {
+  name: string
+  ext: string
 }
 
 export type ChatMessage = {
@@ -27,6 +33,9 @@ export type ChatMessage = {
   content: string
   hasInventoryData?: boolean
   timestamp: Date
+  variant?: 'error' | 'warning' | 'success'
+  isOnboarding?: boolean
+  attachments?: ChatAttachment[]
 }
 
 export type EmissionCategory = {
