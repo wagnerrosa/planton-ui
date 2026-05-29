@@ -94,7 +94,7 @@ export function EurecicloLoginScreen({ onLogin }: EurecicloLoginScreenProps) {
           </a>
           <div className="h-8 w-px bg-border" />
           <a href="https://planton.eco.br" target="_blank" rel="noopener noreferrer">
-            <img src="/Logo_Planton_01.svg" alt="Planton" className="h-[26px] w-auto" />
+            <img src="/Logo_Planton_forest.svg" alt="Planton" className="h-[26px] w-auto" />
           </a>
         </div>
 

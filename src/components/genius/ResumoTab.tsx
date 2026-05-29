@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState, useEffect } from 'react'
+import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
@@ -15,6 +16,7 @@ export type ResumoTabProps = {
   schemas: TableSchema[]
   validationState: ResumoValidationState
   onCellClick?: (schemaId: string) => void
+  pendingUnidades?: string[]
 }
 
 type CellAgg = {
@@ -96,11 +98,17 @@ export function ResumoTab({
   schemas,
   validationState,
   onCellClick,
+  pendingUnidades = [],
 }: ResumoTabProps) {
   const { unidades, matrix, totals } = useMemo(
     () => aggregate(schemas),
     [schemas],
   )
+
+  const allUnidades = useMemo(() => {
+    const pending = pendingUnidades.filter((u) => !unidades.includes(u))
+    return [...unidades, ...pending]
+  }, [unidades, pendingUnidades])
 
   const [monoFamily, setMonoFamily] = useState('ui-monospace, monospace')
   useEffect(() => {
@@ -113,7 +121,7 @@ export function ResumoTab({
   const isIdle =
     validationState === 'idle' || validationState === 'checking'
 
-  if (unidades.length === 0) {
+  if (allUnidades.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center flex-1 gap-3 text-muted-foreground p-6">
         <p className="text-sm font-sans">Sem filiais alocadas ainda.</p>
@@ -237,7 +245,8 @@ export function ResumoTab({
             </tr>
           </thead>
           <tbody>
-            {unidades.map((unidade, rowIdx) => {
+            {allUnidades.map((unidade, rowIdx) => {
+              const isPending = !unidades.includes(unidade)
               const totalErrors = totals[unidade]
               const rowBg = 'var(--rg-bg-cell)'
               return (
@@ -267,7 +276,7 @@ export function ResumoTab({
                       minWidth: FILIAL_COL_WIDTH,
                       padding: '0 12px',
                       background: rowBg,
-                      color: 'var(--rg-text)',
+                      color: isPending ? 'var(--rg-text-marker)' : 'var(--rg-text)',
                       borderRight: '1px solid var(--rg-border)',
                       borderBottom: '1px solid var(--rg-border)',
                     }}
@@ -291,15 +300,14 @@ export function ResumoTab({
                           borderBottom: '1px solid var(--rg-border)',
                         }}
                       >
-                        <ResumoCell
-                          cell={cell}
-                          isIdle={isIdle}
-                          onClick={
-                            onCellClick
-                              ? () => onCellClick(s.id)
-                              : undefined
-                          }
-                        />
+                        {isPending
+                          ? <span style={{ color: 'var(--rg-text-marker)' }}>—</span>
+                          : <ResumoCell
+                              cell={cell}
+                              isIdle={isIdle}
+                              onClick={onCellClick ? () => onCellClick(s.id) : undefined}
+                            />
+                        }
                       </td>
                     )
                   })}
@@ -312,7 +320,7 @@ export function ResumoTab({
                       padding: '0 12px',
                       background: rowBg,
                       color:
-                        !isIdle && totalErrors > 0
+                        !isPending && !isIdle && totalErrors > 0
                           ? '#b91c1c'
                           : 'var(--rg-text-marker)',
                       borderRight: '1px solid var(--rg-border)',
@@ -396,23 +404,24 @@ function ResumoCell({
 
   if (cell.errors > 0) {
     const label = `${cell.errors} ${pluralize(cell.errors, 'erro', 'erros')}`
+    const chip = (
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 border border-destructive/60 text-destructive font-medium leading-none">
+        <AlertCircle size={10} className="shrink-0" />
+        {label}
+      </span>
+    )
     if (onClick) {
       return (
         <button
           type="button"
           onClick={onClick}
-          className="font-medium hover:underline"
-          style={{ color: '#b91c1c' }}
+          className="hover:opacity-75 transition-opacity"
         >
-          {label}
+          {chip}
         </button>
       )
     }
-    return (
-      <span className="font-medium" style={{ color: '#b91c1c' }}>
-        {label}
-      </span>
-    )
+    return chip
   }
 
   if (cell.warnings > 0) {
@@ -424,17 +433,19 @@ function ResumoCell({
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span
-            className="cursor-help"
-            style={{ color: 'var(--rg-accent)' }}
-          >
-            ✓
+          <span className="relative inline-flex items-center gap-1 cursor-help" style={{ color: 'var(--rg-accent)' }}>
+            <CheckCircle2 size={14} className="shrink-0" />
+            <span className="absolute -top-0.5 -right-1 w-1.5 h-1.5 rounded-full bg-warning ring-1 ring-background" />
           </span>
         </TooltipTrigger>
-        <TooltipContent>{tooltipText}</TooltipContent>
+        <TooltipContent className="text-[10px] font-mono px-2 py-1">{tooltipText}</TooltipContent>
       </Tooltip>
     )
   }
 
-  return <span style={{ color: 'var(--rg-accent)' }}>✓</span>
+  return (
+    <span className="inline-flex items-center gap-1" style={{ color: 'var(--rg-accent)' }}>
+      <CheckCircle2 size={14} className="shrink-0" />
+    </span>
+  )
 }

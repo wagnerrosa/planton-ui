@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      {
+        source: "/screens",
+        destination: "/design-system/screens",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

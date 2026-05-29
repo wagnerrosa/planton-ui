@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { marked } from 'marked'
-import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, CheckCircle2, Send, Loader2, AlertTriangle, LayoutDashboard, FileText, Paperclip, MessageSquare } from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, CheckCircle2, Send, Loader2, AlertTriangle, Table2, FileText, Paperclip, MessageSquare, X } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -358,7 +358,7 @@ export function ChatScreen() {
       <div className="flex flex-col gap-3 text-foreground">
         <p>Ótimo, os dados estão na planilha! Agora entramos na fase de preenchimento — deixa eu te mostrar como funciona:</p>
 
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-6">
           <div className="flex gap-2.5">
             <span className="shrink-0 mt-0.5">1.</span>
             <p><span className="font-semibold">Edite diretamente nas células</span> — Clique em qualquer célula e edite à vontade. Cada aba corresponde a um schema desta categoria. A estrutura de colunas é fixa e não pode ser alterada.</p>
@@ -371,12 +371,32 @@ export function ChatScreen() {
 
           <div className="flex gap-2.5">
             <span className="shrink-0 mt-0.5">3.</span>
-            <p><span className="font-semibold">Selecione linhas para me dar contexto</span> — As linhas selecionadas viram contexto para mim automaticamente. Com muitas linhas de uma vez, posso ter dificuldade em processar tudo com precisão.</p>
+            <div className="flex flex-col gap-1.5">
+              <p><span className="font-semibold">Selecione linhas para me dar contexto</span> — Ao clicar em uma ou mais linhas da planilha, elas são automaticamente enviadas como contexto para mim. Atenção: seleções muito extensas podem reduzir a precisão da análise.</p>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-planton-accent/10 text-planton-accent text-[10px] font-sans font-medium border border-planton-accent/25 w-fit">
+                3 células selecionadas no contexto
+                <span className="ml-0.5 opacity-60 cursor-default"><X size={9} /></span>
+              </span>
+            </div>
           </div>
 
           <div className="flex gap-2.5">
             <span className="shrink-0 mt-0.5">4.</span>
-            <p><span className="font-semibold">Envie arquivos a qualquer momento</span> — Pode continuar enviando planilhas e PDFs aqui no chat.</p>
+            <div className="flex flex-col gap-1.5">
+              <p><span className="font-semibold">Envie arquivos a qualquer momento</span> — Planilhas e PDFs aqui no chat:</p>
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 border border-border bg-background px-2 py-1">
+                  <div className="flex items-center justify-center w-6 h-6 text-[9px] font-mono font-bold shrink-0" style={{ backgroundColor: '#dcfce7', color: '#15803d' }}>XLS</div>
+                  <span className="text-[10px] text-foreground font-medium">planilha.xlsx</span>
+                  <CheckCircle2 size={10} className="text-planton-accent shrink-0" />
+                </div>
+                <div className="flex items-center gap-1.5 border border-border bg-background px-2 py-1">
+                  <div className="flex items-center justify-center w-6 h-6 text-[9px] font-mono font-bold shrink-0" style={{ backgroundColor: '#fee2e2', color: '#b91c1c' }}>PDF</div>
+                  <span className="text-[10px] text-foreground font-medium">fatura.pdf</span>
+                  <Loader2 size={10} className="text-muted-foreground shrink-0 animate-spin" />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="flex gap-2.5">
@@ -408,7 +428,7 @@ export function ChatScreen() {
             <p>
               Acesse a aba{' '}
               <span className="inline-flex items-center gap-1 px-2 py-0.5 border border-border bg-background text-[10px] font-medium align-middle mx-0.5">
-                <LayoutDashboard size={9} />
+                <Table2 size={9} />
                 Resumo
               </span>
               {' '}para visualizar o estado de todos os schemas desta categoria de uma só vez.
@@ -764,12 +784,14 @@ export function ChatScreen() {
                 {activeCategory.label}
               </h2>
               <span className="text-xs text-muted-foreground hidden sm:inline">
-                · {activeSchema.label}
+                {isResumoActive
+                  ? '·  Resumo dos schemas'
+                  : `·  Schema ${activeSchema.label.toLowerCase()}`}
               </span>
             </div>
 
             {/* Direita: toggles */}
-            <div className="flex items-center gap-1 flex-1 justify-end">
+            <div className="flex items-center flex-1 justify-end">
               <button
                 onClick={() => setCategoriesOpen((v) => !v)}
                 className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
@@ -865,6 +887,7 @@ export function ChatScreen() {
                     schemas={activeCategory.schemas}
                     validationState={validationState}
                     onCellClick={handleSelectSchema}
+                    pendingUnidades={['Escritório Curitiba', 'Filial Fortaleza', 'Hub Manaus', 'Loja Brasília', 'Loja Porto Alegre']}
                   />
                 ) : (
                   <div className="flex-1 min-h-0">
@@ -884,7 +907,7 @@ export function ChatScreen() {
                       : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                   }`}
                 >
-                  <LayoutDashboard size={11} />
+                  <Table2 size={11} />
                   Resumo
                 </button>
                 {activeCategory.schemas.map((schema) => {

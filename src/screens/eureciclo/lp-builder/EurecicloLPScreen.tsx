@@ -167,7 +167,7 @@ export function EurecicloLPScreen() {
           <div className="flex items-center gap-4">
             <img src="/eureciclo.svg" alt="eureciclo" className="h-10 w-auto" />
             <div className="h-8 w-px bg-border" />
-            <img src="/Logo_Planton_01.svg" alt="Planton" className="h-[26px] w-auto" />
+            <img src="/Logo_Planton_forest.svg" alt="Planton" className="h-[26px] w-auto" />
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-lg font-semibold tracking-tight text-foreground font-sans">
