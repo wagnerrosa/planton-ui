@@ -1,10 +1,11 @@
 'use client'
 
 import '@glideapps/glide-data-grid/dist/index.css'
-import { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useTheme } from 'next-themes'
 import {
   DataEditor,
+  CompactSelection,
   GridCellKind,
   type GridColumn,
   type Item,
@@ -13,6 +14,8 @@ import {
   type GridMouseEventArgs,
   type Highlight,
   type DrawCellCallback,
+  type GridSelection,
+  type CellClickedEventArgs,
 } from '@glideapps/glide-data-grid'
 import type { SchemaColumn, SchemaRow } from '@/screens/genius/chat/mock-data'
 
@@ -119,13 +122,61 @@ type Props = {
   rows: SchemaRow[]
   readOnly?: boolean
   highlightedRows?: number[]
+  onSelectionChange?: (cellCount: number) => void
+  clearSelectionRef?: React.MutableRefObject<(() => void) | null>
 }
 
-export function InventoryDataGridImpl({ columns, rows, readOnly = false, highlightedRows }: Props) {
+function countSelectedCells(sel: GridSelection, totalCols: number, totalRows: number): number {
+  let count = 0
+  if (sel.current) {
+    const { range, rangeStack = [] } = sel.current
+    const allRanges = [range, ...rangeStack]
+    for (const r of allRanges) count += r.width * r.height
+  }
+  count += sel.rows.length * totalCols
+  count += sel.columns.length * totalRows
+  return count
+}
+
+type DropdownState = {
+  colIdx: number
+  rowIdx: number
+  options: string[]
+  x: number
+  y: number
+}
+
+export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, clearSelectionRef }: Props) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [monoFamily, setMonoFamily] = useState<string>('ui-monospace, monospace')
   const [hoveredCell, setHoveredCell] = useState<Item | undefined>(undefined)
+  const [gridSelection, setGridSelection] = useState<GridSelection>({ columns: CompactSelection.empty(), rows: CompactSelection.empty() })
+  const [localRows, setLocalRows] = useState<SchemaRow[]>(initialRows)
+  const [dropdown, setDropdown] = useState<DropdownState | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const rows = localRows
+
+  // reset when parent swaps to different schema/category
+  useEffect(() => {
+    setLocalRows(initialRows)
+    setDropdown(null)
+  }, [initialRows])
+
+  const clearSelection = useCallback(() => {
+    const empty: GridSelection = { columns: CompactSelection.empty(), rows: CompactSelection.empty() }
+    setGridSelection(empty)
+    onSelectionChange?.(0)
+  }, [onSelectionChange])
+
+  useEffect(() => {
+    if (clearSelectionRef) clearSelectionRef.current = clearSelection
+  }, [clearSelectionRef, clearSelection])
+
+  const handleGridSelectionChange = useCallback((sel: GridSelection) => {
+    setGridSelection(sel)
+    onSelectionChange?.(countSelectedCells(sel, columns.length, rows.length))
+  }, [onSelectionChange, columns.length, rows.length])
 
   const onItemHovered = useCallback((args: GridMouseEventArgs) => {
     if (args.kind === 'cell') {
@@ -144,6 +195,13 @@ export function InventoryDataGridImpl({ columns, rows, readOnly = false, highlig
       setMonoFamily(`${resolved}, ui-monospace, monospace`)
     }
   }, [])
+
+  useEffect(() => {
+    if (!dropdown) return
+    const close = () => setDropdown(null)
+    window.addEventListener('scroll', close, true)
+    return () => window.removeEventListener('scroll', close, true)
+  }, [dropdown])
 
   const gridColumns: GridColumn[] = columns.map((c) => ({
     id: c.id,
@@ -187,6 +245,30 @@ export function InventoryDataGridImpl({ columns, rows, readOnly = false, highlig
     },
     [columns, rows, readOnly]
   )
+
+  const handleCellClicked = useCallback(([colIdx, rowIdx]: Item, event: CellClickedEventArgs) => {
+    if (readOnly) return
+    if (event.shiftKey || event.ctrlKey || event.metaKey) return
+    const col = columns[colIdx]
+    if (!col.options || col.options.length === 0) return
+    // glide bounds already in viewport coords (includes canvas getBoundingClientRect offset)
+    const cellBounds = event.bounds
+    setDropdown({
+      colIdx,
+      rowIdx,
+      options: col.options,
+      x: cellBounds.x,
+      y: cellBounds.y + cellBounds.height,
+    })
+  }, [readOnly, columns])
+
+  const handleSelectOption = useCallback((option: string) => {
+    if (!dropdown) return
+    const { colIdx, rowIdx } = dropdown
+    const colId = columns[colIdx].id
+    setLocalRows((prev) => prev.map((r, i) => i === rowIdx ? { ...r, [colId]: option } : r))
+    setDropdown(null)
+  }, [dropdown, columns])
 
   if (!mounted) return null
 
@@ -271,7 +353,7 @@ export function InventoryDataGridImpl({ columns, rows, readOnly = false, highlig
   const finalTheme: Partial<Theme> = { ...theme, ...readOnlyTheme }
 
   return (
-    <div className="h-full w-full relative">
+    <div ref={containerRef} className="h-full w-full relative">
       {readOnly && (
         <div className="absolute top-2 right-3 z-10 flex items-center gap-1.5 px-2 py-1 text-[10px] font-sans font-medium text-muted-foreground bg-background/80 backdrop-blur-sm border border-border rounded pointer-events-none select-none">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -292,14 +374,49 @@ export function InventoryDataGridImpl({ columns, rows, readOnly = false, highlig
         rowMarkers={{ kind: 'number', theme: { fontFamily: monoFamily, baseFontStyle: '11px' } }}
         rowMarkerWidth={44}
         fixedShadowX={false}
+        gridSelection={gridSelection}
+        onGridSelectionChange={handleGridSelectionChange}
+        rangeSelect="multi-rect"
+        rangeSelectionBlending="mixed"
         onItemHovered={onItemHovered}
         highlightRegions={highlightRegions}
         drawCell={drawCell}
         getRowThemeOverride={getRowThemeOverride}
+        onCellClicked={handleCellClicked}
         onRowAppended={readOnly ? undefined : () => {}}
         trailingRowOptions={readOnly ? undefined : { hint: '', sticky: false, tint: false }}
         getCellsForSelection
       />
+      {dropdown && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setDropdown(null)} />
+          <div
+            className="fixed z-50 min-w-[140px] bg-background border border-border shadow-md py-1 rounded-md overflow-hidden"
+            style={{ left: dropdown.x, top: dropdown.y }}
+          >
+            {dropdown.options.map((opt) => {
+              const current = localRows[dropdown.rowIdx][columns[dropdown.colIdx].id]
+              const isSelected = current === opt
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  onClick={() => handleSelectOption(opt)}
+                  className={`w-full text-left px-3 py-1.5 text-xs font-mono transition-colors flex items-center gap-2 ${
+                    isSelected
+                      ? 'bg-planton-accent/10 text-planton-accent font-medium'
+                      : 'text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-planton-accent shrink-0" />}
+                  {!isSelected && <span className="w-1.5 h-1.5 shrink-0" />}
+                  {opt}
+                </button>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }

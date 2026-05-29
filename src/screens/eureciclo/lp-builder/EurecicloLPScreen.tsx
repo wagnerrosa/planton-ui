@@ -163,14 +163,18 @@ export function EurecicloLPScreen() {
   return (
     <main className="min-h-screen w-full bg-background">
       <div className="max-w-2xl mx-auto px-4 py-6 md:py-10 flex flex-col gap-6">
-        <header className="flex flex-col items-start gap-4">
-          <img src="/eureciclo.svg" alt="eureciclo" className="h-14 w-auto" />
+        <header className="flex flex-col items-start gap-10">
+          <div className="flex items-center gap-4">
+            <img src="/eureciclo.svg" alt="eureciclo" className="h-10 w-auto" />
+            <div className="h-8 w-px bg-border" />
+            <img src="/Logo_Planton_01.svg" alt="Planton" className="h-[26px] w-auto" />
+          </div>
           <div className="flex flex-col gap-1">
             <p className="text-lg font-semibold tracking-tight text-foreground font-sans">
               Jornada de Descarbonização
             </p>
             <Body size="sm" muted>
-              Selecione um cliente existente do banco ou cadastre um novo para gerar uma landing page personalizada.
+              Selecione um cliente existente do banco ou cadastre um novo para gerar uma plataforma de dados personalizada.
             </Body>
           </div>
         </header>

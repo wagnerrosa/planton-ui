@@ -5,6 +5,7 @@ export type SchemaColumn = {
   title: string
   width: number
   type?: 'text' | 'bubble'
+  options?: string[]
 }
 
 export type CellStatus = 'error' | 'warning'
@@ -25,6 +26,7 @@ export type TableSchema = {
 export type ChatAttachment = {
   name: string
   ext: string
+  processingId?: string
 }
 
 export type ChatMessage = {
@@ -151,7 +153,7 @@ export const CATEGORIES: EmissionCategory[] = [
         columns: [
           { id: 'unidade_empresa', title: 'Unidade', width: 180, type: 'bubble' },
           { id: 'veiculo', title: 'Veículo', width: 200 },
-          { id: 'combustivel', title: 'Combustível', width: 140, type: 'bubble' },
+          { id: 'combustivel', title: 'Combustível', width: 140, type: 'bubble', options: ['Diesel S10', 'Diesel S500', 'Gasolina', 'Etanol', 'GNV', 'Biodiesel B10'] },
           { id: 'quantidade', title: 'Quantidade', width: 130 },
           { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },

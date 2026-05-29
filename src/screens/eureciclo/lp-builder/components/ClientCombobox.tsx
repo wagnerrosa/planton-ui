@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import {
@@ -38,7 +38,7 @@ function ClientList({
 }) {
   return (
     <Command className="flex flex-col h-full">
-      <CommandInput placeholder="Digite nome ou CNPJ…" className="text-base shrink-0" />
+      <CommandInput placeholder="Digite nome ou CNPJ…" className="text-base md:text-sm shrink-0" />
       <CommandList className="flex-1 overflow-y-auto">
         <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
         <CommandGroup>
@@ -70,13 +70,14 @@ function ClientList({
   )
 }
 
-function TriggerButton({ selected, onClick }: { selected: Client | null; onClick?: () => void }) {
+function TriggerButton({ selected, onClick, ...props }: { selected: Client | null; onClick?: () => void } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       type="button"
       role="combobox"
       aria-haspopup="listbox"
       onClick={onClick}
+      {...props}
       className={cn(
         'w-full flex items-center justify-between gap-2',
         'h-12 px-4 rounded-md border border-border bg-background',
@@ -91,7 +92,7 @@ function TriggerButton({ selected, onClick }: { selected: Client | null; onClick
           <span className="truncate text-xs text-muted-foreground">{selected.cnpj}</span>
         </span>
       ) : (
-        <span className="text-muted-foreground">Buscar cliente por nome ou CNPJ…</span>
+        <span className="text-muted-foreground text-base md:text-sm">Buscar cliente por nome ou CNPJ…</span>
       )}
       <ChevronsUpDown size={16} className="shrink-0 text-muted-foreground" />
     </button>

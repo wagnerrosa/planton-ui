@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { marked } from 'marked'
-import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, CheckCircle2, Send, Loader2, AlertTriangle, LayoutDashboard, FileText } from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, CheckCircle2, Send, Loader2, AlertTriangle, LayoutDashboard, FileText, Paperclip, MessageSquare } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -14,9 +14,18 @@ import {
 import { GeniusNavbarSync } from '@/components/navigation/GeniusNavbarSync'
 import { GeniusChatComposer } from '@/components/genius/GeniusChatComposer'
 import { InventoryDataGrid } from '@/components/genius/InventoryDataGrid'
+import { ResumoTab } from '@/components/genius/ResumoTab'
 import { CATEGORIES, DEFAULT_CATEGORY_ID, findCategory, getCategoryWorstStatus, getSchemaWorstStatus, type CellStatus, type ChatMessage, type EmissionCategory } from './mock-data'
 
 type ValidationState = 'idle' | 'checking' | 'has-issues' | 'ready'
+
+type ProcessingFile = {
+  id: string
+  name: string
+  categoryId: string
+  schemaId: string
+  status: 'processing' | 'done' | 'error'
+}
 
 function cloneCategories(): EmissionCategory[] {
   return CATEGORIES.map((cat) => ({
@@ -92,27 +101,57 @@ export function ChatScreen() {
   const [submittedCategories, setSubmittedCategories] = useState<Set<string>>(new Set())
 
   const [highlightedRows, setHighlightedRows] = useState<number[]>([])
+  const [selectedCellCount, setSelectedCellCount] = useState(0)
+  const [selectedHistoryFile, setSelectedHistoryFile] = useState<number | null>(null)
+  const clearGridSelectionRef = useRef<(() => void) | null>(null)
 
   function handleSentFileClick(fileIndex: number) {
-    if (fileIndex < 0) { setHighlightedRows([]); return }
+    if (fileIndex < 0) { setHighlightedRows([]); setSelectedHistoryFile(null); return }
+    if (selectedHistoryFile === fileIndex) {
+      setHighlightedRows([])
+      setSelectedHistoryFile(null)
+      return
+    }
+    setSelectedHistoryFile(fileIndex)
     // mock: cada arquivo mapeia para 3 linhas baseado no seu índice
     const base = (fileIndex * 3) % Math.max(activeCategory.schemas[0].rows.length, 1)
     const rows = [base, base + 1, base + 2].filter((r) => r < activeCategory.schemas[0].rows.length)
     setHighlightedRows(rows)
   }
+  const [processingFiles, setProcessingFiles] = useState<ProcessingFile[]>([])
+
   const [submitModalOpen, setSubmitModalOpen] = useState(false)
   const [submitConfirmText, setSubmitConfirmText] = useState('')
   const [splitMounted, setSplitMounted] = useState(false)
-  const [composerHeight, setComposerHeight] = useState(112)
-  const composerRef = useRef<HTMLDivElement>(null)
+  const [chatWidth, setChatWidth] = useState(360)
+  const chatDragRef = useRef<{ startX: number; startWidth: number } | null>(null)
 
-  useEffect(() => {
-    const el = composerRef.current
-    if (!el) return
-    const obs = new ResizeObserver(() => setComposerHeight(el.offsetHeight))
-    obs.observe(el)
-    return () => obs.disconnect()
-  }, [viewMode])
+  function handleChatDragStart(e: React.MouseEvent) {
+    e.preventDefault()
+    chatDragRef.current = { startX: e.clientX, startWidth: chatWidth }
+
+    function onMove(ev: MouseEvent) {
+      if (!chatDragRef.current) return
+      const delta = chatDragRef.current.startX - ev.clientX
+      const next = chatDragRef.current.startWidth + delta
+      if (next < 300) {
+        setChatOpen(false)
+        onUp()
+        return
+      }
+      setChatWidth(Math.min(next, 700))
+    }
+
+    function onUp() {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+      chatDragRef.current = null
+    }
+
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+  const collapsedFileInputRef = useRef<HTMLInputElement>(null)
 
   const validationState: ValidationState = validationByCategory[activeCategoryId] ?? 'idle'
   const issueCounts = issueCountsByCategory[activeCategoryId] ?? { errors: 0, warnings: 0 }
@@ -199,6 +238,11 @@ export function ChatScreen() {
   const isResumoActive = activeSchemaId === RESUMO_ID
   const activeSchema = activeCategory.schemas.find((s) => s.id === activeSchemaId) ?? activeCategory.schemas[0]
   const activeChat = chatsByCategory[activeCategoryId] ?? []
+  function schemaProcessingCount(schemaId: string) {
+    return processingFiles.filter(
+      (p) => p.categoryId === activeCategoryId && p.schemaId === schemaId && p.status === 'processing'
+    ).length
+  }
 
   useEffect(() => {
     if (activeChat.length > 0) {
@@ -216,12 +260,31 @@ export function ChatScreen() {
     }
   }, [viewMode, splitMounted])
 
-  function handleSend(files: File[] = []) {
+  function handleSend(files: File[] = []): string[] {
     const text = input.trim()
-    if (!text && files.length === 0) return
+    if (!text && files.length === 0) return []
 
     const isInventory = detectsInventoryData(text)
     const now = new Date()
+
+    const newProcessingFiles: ProcessingFile[] = files.map((f) => ({
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      name: f.name,
+      categoryId: activeCategoryId,
+      schemaId: activeSchemaId,
+      status: 'processing' as const,
+    }))
+
+    if (newProcessingFiles.length > 0) {
+      setProcessingFiles((prev) => [...prev, ...newProcessingFiles])
+      newProcessingFiles.forEach((pf) => {
+        setTimeout(() => {
+          setProcessingFiles((prev) =>
+            prev.map((p) => (p.id === pf.id ? { ...p, status: 'done' } : p))
+          )
+        }, 8000 + Math.random() * 4000)
+      })
+    }
 
     const userMsg: ChatMessage = {
       id: Date.now().toString(),
@@ -229,7 +292,11 @@ export function ChatScreen() {
       content: text,
       hasInventoryData: isInventory,
       timestamp: now,
-      attachments: files.map((f) => ({ name: f.name, ext: f.name.split('.').pop()?.toLowerCase() ?? '' })),
+      attachments: files.map((f, i) => ({
+        name: f.name,
+        ext: f.name.split('.').pop()?.toLowerCase() ?? '',
+        processingId: newProcessingFiles[i]?.id,
+      })),
     }
     const assistantMsg: ChatMessage = {
       id: (Date.now() + 1).toString(),
@@ -272,6 +339,8 @@ export function ChatScreen() {
     } else if (viewMode === 'empty') {
       setViewMode('chat')
     }
+
+    return newProcessingFiles.map((p) => p.id)
   }
 
   function handleSelectCategory(id: string) {
@@ -374,7 +443,10 @@ export function ChatScreen() {
   }
 
   function renderMessages(msgs: ChatMessage[], wide?: boolean) {
+    let attachmentOffset = 0
     return msgs.map((msg) => {
+      const msgAttachmentOffset = attachmentOffset
+      attachmentOffset += msg.attachments?.length ?? 0
       if (msg.isOnboarding) {
         return (
           <div key={msg.id} className="flex justify-start">
@@ -392,7 +464,7 @@ export function ChatScreen() {
         <div
           className={`${wide ? 'max-w-[80%]' : 'max-w-[90%]'} px-3 py-2.5 ${wide ? 'text-sm' : 'text-xs'} font-sans leading-relaxed ${msg.role === 'assistant' && !msg.variant ? 'rounded-2xl' : ''} ${
             msg.role === 'user'
-              ? 'bg-muted text-foreground border border-border'
+              ? 'bg-muted/40 text-foreground border border-border'
               : msg.variant
                 ? VARIANT_CLASS[msg.variant]
                 : 'text-foreground'
@@ -410,16 +482,32 @@ export function ChatScreen() {
                 }
                 const badgeStyle = colorStyles[att.ext] ?? {}
                 const typeLabel = att.ext ? att.ext.toUpperCase() : 'Arquivo'
+                const pf = att.processingId ? processingFiles.find((p) => p.id === att.processingId) : null
                 return (
-                  <div key={i} className="flex items-center gap-2 border border-border bg-background px-2.5 py-1.5">
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleSentFileClick(msgAttachmentOffset + i)}
+                    className={`flex items-center gap-2 border px-2.5 py-1.5 w-full text-left transition-colors ${
+                      selectedHistoryFile === msgAttachmentOffset + i
+                        ? 'border-planton-accent bg-planton-accent/5'
+                        : 'border-border bg-background hover:bg-muted'
+                    }`}
+                  >
                     <div className="flex items-center justify-center w-7 h-7 shrink-0 text-[10px] font-mono font-bold" style={badgeStyle}>
                       {att.ext ? att.ext.slice(0, 3).toUpperCase() : <FileText size={12} />}
                     </div>
-                    <div className="flex flex-col min-w-0">
+                    <div className="flex flex-col min-w-0 flex-1">
                       <span className="text-xs font-medium text-foreground truncate leading-tight">{att.name}</span>
                       <span className="text-[10px] text-muted-foreground leading-tight">{typeLabel}</span>
                     </div>
-                  </div>
+                    {pf?.status === 'processing' && (
+                      <Loader2 size={12} className="animate-spin text-muted-foreground shrink-0" />
+                    )}
+                    {pf?.status === 'done' && (
+                      <CheckCircle2 size={12} className="text-planton-accent shrink-0" />
+                    )}
+                  </button>
                 )
               })}
             </div>
@@ -465,7 +553,7 @@ export function ChatScreen() {
             </>
           ) : validationState === 'has-issues' ? (
             <>
-              <span className={`w-1.5 h-1.5 rounded-full ${issueCounts.errors > 0 ? 'bg-destructive' : 'bg-warning'}`} />
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${issueCounts.errors > 0 ? 'bg-destructive' : 'bg-warning'}`} />
               <span>
                 {issueCounts.errors > 0 ? (
                   <span className="text-destructive font-medium">Corrija os erros e verifique novamente</span>
@@ -476,7 +564,7 @@ export function ChatScreen() {
             </>
           ) : validationState === 'ready' ? (
             <>
-              <CheckCircle2 size={12} className="text-planton-accent" />
+              <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-planton-accent" />
               <span className="text-planton-accent font-medium">Categoria pronta para enviar</span>
             </>
           ) : (
@@ -484,7 +572,6 @@ export function ChatScreen() {
           )}
         </div>
 
-        <span className="h-4 w-px bg-border" />
 
         <button
           onClick={handleVerify}
@@ -560,7 +647,7 @@ export function ChatScreen() {
         <GeniusNavbarSync breadcrumbs={[]} />
         <div className="flex flex-col flex-1 overflow-hidden bg-muted px-6 pt-5 pb-8 dark:bg-muted/60 gap-4">
 
-          <div className="flex flex-1 overflow-hidden bg-background border border-border rounded-2xl shadow-sm genius-enter-canvas">
+          <div className="flex flex-1 overflow-hidden bg-background border border-border shadow-[4px_4px_0px_0px_hsl(var(--foreground))] genius-enter-canvas">
             <div className="flex flex-col flex-1 overflow-hidden">
 
               {/* Header */}
@@ -628,26 +715,24 @@ export function ChatScreen() {
                     <p className="text-[10px] text-muted-foreground mt-1 leading-snug">{activeCategory.hint}</p>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto px-4 pt-4" style={{ paddingBottom: composerHeight + 16 }}>
+                  <div className="flex-1 overflow-y-auto px-4 pt-4 pb-4">
                     <div className="flex flex-col gap-3 max-w-2xl mx-auto">
                       {renderMessages(activeChat, true)}
                       <div ref={bottomRef} />
                     </div>
                   </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 z-10">
-                    <div className="h-8 bg-gradient-to-t from-background to-transparent" />
-                    <div ref={composerRef} className="bg-background px-4 pb-4">
-                      <div className="max-w-2xl mx-auto">
-                        <GeniusChatComposer
-                          input={input}
-                          onChange={setInput}
-                          onSend={handleSend}
-                          onSentFileClick={handleSentFileClick}
-                          placeholder="Envie dados ou faça uma pergunta…"
-                          disabled={submitted}
-                        />
-                      </div>
+                  <div className="shrink-0 bg-background px-4 pb-4">
+                    <div className="max-w-2xl mx-auto">
+                      <GeniusChatComposer
+                        input={input}
+                        onChange={setInput}
+                        onSend={handleSend}
+                        onSentFileClick={handleSentFileClick}
+                        placeholder="Envie dados ou faça uma pergunta…"
+                        disabled={submitted}
+                        fileProcessingStatus={(id) => processingFiles.find((p) => p.id === id)?.status}
+                      />
                     </div>
                   </div>
                 </div>
@@ -667,10 +752,10 @@ export function ChatScreen() {
       <GeniusNavbarSync breadcrumbs={[]} />
       <div className="flex flex-col flex-1 overflow-hidden bg-muted px-6 pt-5 pb-8 dark:bg-muted/60 gap-4">
 
-        <div className={`flex flex-1 overflow-hidden bg-background border border-border rounded-2xl shadow-sm ${!splitMounted ? 'genius-enter-canvas' : ''}`}>
+        <div className={`flex flex-1 overflow-hidden bg-background border border-border shadow-[4px_4px_0px_0px_hsl(var(--foreground))] ${!splitMounted ? 'genius-enter-canvas' : ''}`}>
         <div className="flex flex-col flex-1 overflow-hidden">
 
-          {/* Header da janela — com action bar centralizada */}
+          {/* Header da janela */}
           <div className="flex items-center px-4 h-12 border-b border-border shrink-0">
             {/* Esquerda: ícone + label categoria */}
             <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -681,11 +766,6 @@ export function ChatScreen() {
               <span className="text-xs text-muted-foreground hidden sm:inline">
                 · {activeSchema.label}
               </span>
-            </div>
-
-            {/* Centro: action bar por categoria */}
-            <div className="flex items-center justify-center shrink-0">
-              {renderActionBar()}
             </div>
 
             {/* Direita: toggles */}
@@ -763,14 +843,33 @@ export function ChatScreen() {
 
             {/* Centro: tabela + rodapé guias */}
             <div className={`flex flex-col flex-1 overflow-hidden genius-split-expand ${splitMounted ? 'max-w-full opacity-100' : 'max-w-0 opacity-0'}`}>
-              <div className="flex-1 min-h-0">
-                {isResumoActive ? (
-                  <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
-                    <LayoutDashboard size={32} className="opacity-30" />
-                    <p className="text-sm font-sans">Resumo em construção</p>
+              <div className="flex flex-col flex-1 min-h-0">
+                {schemaProcessingCount(activeSchemaId) > 0 && (
+                  <div className="flex items-center gap-2 px-4 py-2 border-b border-border bg-muted/40 shrink-0 text-xs font-sans text-muted-foreground">
+                    <Loader2 size={12} className="animate-spin shrink-0" />
+                    <span>
+                      {(() => {
+                        const pfs = processingFiles.filter(
+                          (p) => p.categoryId === activeCategoryId && p.schemaId === activeSchemaId && p.status === 'processing'
+                        )
+                        return pfs.length === 1
+                          ? `Processando ${pfs[0].name}…`
+                          : `Processando ${pfs.length} arquivos…`
+                      })()}
+                    </span>
+                    <span className="text-muted-foreground/60">Novas linhas serão adicionadas em breve.</span>
                   </div>
+                )}
+                {isResumoActive ? (
+                  <ResumoTab
+                    schemas={activeCategory.schemas}
+                    validationState={validationState}
+                    onCellClick={handleSelectSchema}
+                  />
                 ) : (
-                  <InventoryDataGrid columns={activeSchema.columns} rows={activeSchema.rows} readOnly={submitted} highlightedRows={highlightedRows} />
+                  <div className="flex-1 min-h-0">
+                    <InventoryDataGrid columns={activeSchema.columns} rows={activeSchema.rows} readOnly={submitted} highlightedRows={highlightedRows} onSelectionChange={setSelectedCellCount} clearSelectionRef={clearGridSelectionRef} />
+                  </div>
                 )}
               </div>
 
@@ -791,6 +890,7 @@ export function ChatScreen() {
                 {activeCategory.schemas.map((schema) => {
                   const isActive = schema.id === activeSchemaId
                   const worst = getSchemaWorstStatus(schema)
+                  const showProcessingDot = !worst && schemaProcessingCount(schema.id) > 0
                   return (
                     <button
                       key={schema.id}
@@ -801,9 +901,11 @@ export function ChatScreen() {
                           : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                       }`}
                     >
-                      {worst && (
+                      {worst ? (
                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT_CLASS[worst]}`} />
-                      )}
+                      ) : showProcessingDot ? (
+                        <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-muted-foreground/50 animate-pulse" />
+                      ) : null}
                       {schema.label}
                     </button>
                   )
@@ -812,35 +914,93 @@ export function ChatScreen() {
             </div>
 
             {/* Sidebar chat */}
-            {chatOpen && (
-              <div className="w-[360px] shrink-0 border-l border-border relative overflow-hidden flex flex-col">
+            {chatOpen ? (
+              <div className="shrink-0 border-l border-border relative overflow-hidden flex flex-col" style={{ width: chatWidth }}>
+                {/* Drag handle */}
+                <div
+                  onMouseDown={handleChatDragStart}
+                  className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-planton-accent/30 z-20 transition-colors"
+                />
+                {/* Action bar no header do chat */}
                 <div className="px-4 py-3 border-b border-border shrink-0">
-                  <h3 className="text-xs font-semibold text-foreground font-sans">
-                    Envie dados de {activeCategory.label.toLowerCase()}
-                  </h3>
-                  <p className="text-[10px] text-muted-foreground mt-1 leading-snug">{activeCategory.hint}</p>
+                  {renderActionBar()}
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-4 pt-4" style={{ paddingBottom: composerHeight + 16 }}>
+                <div className="flex-1 overflow-y-auto px-4 pt-4 pb-4">
                   <div className="flex flex-col gap-3">
                     {renderMessages(activeChat)}
                     <div ref={bottomRef} />
                   </div>
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 z-10">
-                  <div className="h-8 bg-gradient-to-t from-background to-transparent" />
-                  <div ref={composerRef} className="bg-background px-3 pb-3">
-                    <GeniusChatComposer
-                      input={input}
-                      onChange={setInput}
-                      onSend={handleSend}
-                      onSentFileClick={handleSentFileClick}
-                      placeholder="Pergunte ou envie mais dados…"
-                      disabled={submitted}
-                    />
-                  </div>
+                <div className="shrink-0 bg-background px-3 pb-3">
+                  <GeniusChatComposer
+                    input={input}
+                    onChange={setInput}
+                    onSend={handleSend}
+                    onSentFileClick={handleSentFileClick}
+                    onClearSelection={() => { clearGridSelectionRef.current?.(); setSelectedCellCount(0) }}
+                    placeholder="Pergunte ou envie mais dados…"
+                    disabled={submitted}
+                    selectionContext={selectedCellCount}
+                    fileProcessingStatus={(id) => processingFiles.find((p) => p.id === id)?.status}
+                  />
                 </div>
+              </div>
+            ) : (
+              /* Collapsed chat sidebar — w-12, 4 ícones verticais */
+              <div className="w-12 shrink-0 border-l border-border flex flex-col items-center py-2 gap-1 bg-muted/20">
+                <input
+                  ref={collapsedFileInputRef}
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files ?? [])
+                    if (files.length > 0) {
+                      handleSend(files)
+                      setChatOpen(true)
+                    }
+                    e.target.value = ''
+                  }}
+                />
+                <button
+                  onClick={handleVerify}
+                  disabled={validationState === 'checking' || submitted}
+                  title="Verificar"
+                  className="relative flex items-center justify-center w-8 h-8 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {validationState === 'checking' ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
+                  {validationState === 'has-issues' && (
+                    <span className={`absolute top-0.5 right-0.5 w-2 h-2 rounded-full ring-1 ring-background ${issueCounts.errors > 0 ? 'bg-destructive' : 'bg-warning'}`} />
+                  )}
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={validationState !== 'ready'}
+                  title="Enviar"
+                  className="relative flex items-center justify-center w-8 h-8 rounded-md transition-colors text-muted-foreground disabled:opacity-60 disabled:cursor-not-allowed hover:bg-muted"
+                >
+                  <Send size={16} />
+                  {validationState === 'ready' && (
+                    <span className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-planton-accent ring-1 ring-background genius-dot-ready" />
+                  )}
+                </button>
+                <button
+                  onClick={() => collapsedFileInputRef.current?.click()}
+                  disabled={submitted}
+                  title="Anexar arquivo"
+                  className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <Paperclip size={16} />
+                </button>
+                <button
+                  onClick={() => setChatOpen(true)}
+                  title="Abrir chat"
+                  className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+                >
+                  <MessageSquare size={16} />
+                </button>
               </div>
             )}
           </div>

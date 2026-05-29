@@ -15,11 +15,15 @@ const Impl = dynamic(
   }
 )
 
+import React from 'react'
+
 type Props = {
   columns: SchemaColumn[]
   rows: SchemaRow[]
   readOnly?: boolean
   highlightedRows?: number[]
+  onSelectionChange?: (cellCount: number) => void
+  clearSelectionRef?: React.MutableRefObject<(() => void) | null>
 }
 
 export function InventoryDataGrid(props: Props) {

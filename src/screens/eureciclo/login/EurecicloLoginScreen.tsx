@@ -1,21 +1,50 @@
 'use client'
 
-import { useState } from 'react'
-import { Input } from '@/components/shadcn/input'
+import { useRef, useState, KeyboardEvent, ClipboardEvent } from 'react'
 import { Button } from '@/components/primitives/Button'
+
+const PIN_LENGTH = 4
 
 type EurecicloLoginScreenProps = {
   onLogin?: () => void
 }
 
 export function EurecicloLoginScreen({ onLogin }: EurecicloLoginScreenProps) {
-  const [user, setUser] = useState('')
-  const [pass, setPass] = useState('')
+  const [digits, setDigits] = useState<string[]>(Array(PIN_LENGTH).fill(''))
+  const inputs = useRef<Array<HTMLInputElement | null>>([])
+
+  function handleChange(index: number, value: string) {
+    const digit = value.replace(/\D/g, '').slice(-1)
+    const next = [...digits]
+    next[index] = digit
+    setDigits(next)
+    if (digit && index < PIN_LENGTH - 1) {
+      inputs.current[index + 1]?.focus()
+    }
+  }
+
+  function handleKeyDown(index: number, e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Backspace' && !digits[index] && index > 0) {
+      inputs.current[index - 1]?.focus()
+    }
+  }
+
+  function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault()
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, PIN_LENGTH)
+    const next = Array(PIN_LENGTH).fill('')
+    pasted.split('').forEach((d, i) => { next[i] = d })
+    setDigits(next)
+    const focusIndex = Math.min(pasted.length, PIN_LENGTH - 1)
+    inputs.current[focusIndex]?.focus()
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onLogin?.()
+    if (digits.every(Boolean)) onLogin?.()
   }
+
+  const pinComplete = digits.every(Boolean)
 
   return (
     <main className="min-h-screen w-full bg-background flex flex-col items-center justify-center px-6">
@@ -26,42 +55,35 @@ export function EurecicloLoginScreen({ onLogin }: EurecicloLoginScreenProps) {
             Jornada de Descarbonização
           </p>
           <p className="text-sm text-muted-foreground font-sans">
-            Acesse sua conta para continuar.
+            Digite seu PIN de acesso.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="login-user" className="text-xs font-medium text-foreground font-sans">
-              Usuário
-            </label>
-            <Input
-              id="login-user"
-              type="text"
-              autoComplete="username"
-              value={user}
-              onChange={(e) => setUser(e.target.value)}
-              placeholder="seu@email.com.br"
-              className="h-12 text-base"
-            />
+        <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+          <div className="flex items-center justify-center gap-3">
+            {digits.map((digit, i) => (
+              <input
+                key={i}
+                ref={(el) => { inputs.current[i] = el }}
+                type="password"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(i, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(i, e)}
+                onPaste={handlePaste}
+                onFocus={(e) => e.target.select()}
+                className="w-14 h-16 rounded-xl border border-input bg-background text-center text-2xl font-semibold text-foreground shadow-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 caret-transparent"
+              />
+            ))}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label htmlFor="login-pass" className="text-xs font-medium text-foreground font-sans">
-              Senha
-            </label>
-            <Input
-              id="login-pass"
-              type="password"
-              autoComplete="current-password"
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-              placeholder="••••••••"
-              className="h-12 text-base"
-            />
-          </div>
-
-          <Button variant="secondary" type="submit" className="w-full justify-center mt-2">
+          <Button
+            variant="secondary"
+            type="submit"
+            className="w-full justify-center"
+            disabled={!pinComplete}
+          >
             Acessar
           </Button>
         </form>

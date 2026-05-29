@@ -38,7 +38,7 @@ export function RecyclingRow({ data, duplicate, canRemove, onChange, onRemove }:
           value={data.year ? String(data.year) : undefined}
           onValueChange={(v) => onChange({ ...data, year: Number(v) })}
         >
-          <SelectTrigger className="h-11 text-base md:w-28">
+          <SelectTrigger className="h-11 text-base md:text-sm md:w-28">
             <SelectValue placeholder="Ano" />
           </SelectTrigger>
           <SelectContent>
@@ -54,7 +54,7 @@ export function RecyclingRow({ data, duplicate, canRemove, onChange, onRemove }:
           value={data.material ?? undefined}
           onValueChange={(v) => onChange({ ...data, material: v as MaterialType })}
         >
-          <SelectTrigger className="h-11 text-base md:flex-1">
+          <SelectTrigger className="h-11 text-base md:text-sm md:flex-1">
             <SelectValue placeholder="Material" />
           </SelectTrigger>
           <SelectContent>
@@ -75,7 +75,7 @@ export function RecyclingRow({ data, duplicate, canRemove, onChange, onRemove }:
             value={data.tons}
             onChange={(e) => onChange({ ...data, tons: e.target.value })}
             placeholder="0"
-            className="h-11 text-base pr-10"
+            className="h-11 text-base md:text-sm pr-10"
           />
           <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
             t

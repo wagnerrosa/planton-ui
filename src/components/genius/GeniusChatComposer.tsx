@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { ArrowUp, Plus, BarChart2, FileText, Braces, Plug, X, File, Paperclip } from 'lucide-react'
+import { ArrowUp, Plus, BarChart2, FileText, Braces, Plug, X, File, Paperclip, Loader2, CheckCircle2 } from 'lucide-react'
 
 export type GeniusChatComposerChip = {
   label: string
@@ -19,6 +19,7 @@ const DEFAULT_CHIPS: GeniusChatComposerChip[] = [
 export type SentFile = {
   name: string
   ext: string
+  processingId?: string
 }
 
 const FILE_INFO: Record<string, { label: string; bgStyle: React.CSSProperties; textStyle: React.CSSProperties }> = {
@@ -36,12 +37,15 @@ function getFileInfo(ext: string) {
 export type GeniusChatComposerProps = {
   input: string
   onChange: (value: string) => void
-  onSend: (attachments: File[]) => void
+  onSend: (attachments: File[]) => string[]
   onSentFileClick?: (index: number) => void
+  onClearSelection?: () => void
   placeholder?: string
   chips?: GeniusChatComposerChip[]
   showChips?: boolean
   disabled?: boolean
+  selectionContext?: number
+  fileProcessingStatus?: (processingId: string) => 'processing' | 'done' | 'error' | undefined
 }
 
 export function GeniusChatComposer({
@@ -49,10 +53,13 @@ export function GeniusChatComposer({
   onChange,
   onSend,
   onSentFileClick,
+  onClearSelection,
   placeholder = 'Descreva os dados que você possui',
   chips = DEFAULT_CHIPS,
   showChips = false,
   disabled = false,
+  selectionContext = 0,
+  fileProcessingStatus,
 }: GeniusChatComposerProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -71,14 +78,18 @@ export function GeniusChatComposer({
 
   function handleSend() {
     const current = attachments
+    const processingIds = onSend(current)
     if (current.length > 0) {
       setSentFiles((prev) => [
         ...prev,
-        ...current.map((f) => ({ name: f.name, ext: f.name.split('.').pop()?.toLowerCase() ?? '' })),
+        ...current.map((f, i) => ({
+          name: f.name,
+          ext: f.name.split('.').pop()?.toLowerCase() ?? '',
+          processingId: processingIds[i],
+        })),
       ])
     }
     setAttachments([])
-    onSend(current)
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -111,6 +122,7 @@ export function GeniusChatComposer({
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {sentFiles.map((f, i) => {
               const info = getFileInfo(f.ext)
+              const status = f.processingId ? fileProcessingStatus?.(f.processingId) : undefined
               return (
                 <button
                   key={i}
@@ -130,6 +142,8 @@ export function GeniusChatComposer({
                     {f.ext ? f.ext.slice(0, 3).toUpperCase() : <File size={10} />}
                   </div>
                   <span className="text-[10px] font-sans text-foreground truncate leading-tight">{f.name}</span>
+                  {status === 'processing' && <Loader2 size={10} className="animate-spin text-muted-foreground shrink-0" />}
+                  {status === 'done' && <CheckCircle2 size={10} className="text-planton-accent shrink-0" />}
                 </button>
               )
             })}
@@ -138,7 +152,7 @@ export function GeniusChatComposer({
       )}
 
       {/* Composer box */}
-      <div className={`flex flex-col w-full border border-border bg-background shadow-sm transition-shadow ${disabled ? 'opacity-60' : 'focus-within:shadow-md'}`}>
+      <div className={`flex flex-col w-full border border-border bg-background ${disabled ? 'opacity-60' : ''}`}>
 
         {/* Anexos pendentes */}
         {attachments.length > 0 && (
@@ -165,6 +179,25 @@ export function GeniusChatComposer({
                 </div>
               )
             })}
+          </div>
+        )}
+
+        {/* Selection context pill */}
+        {selectionContext > 0 && (
+          <div className="flex items-center gap-1.5 px-4 pt-2.5">
+            <span className="flex items-center gap-1.5 px-2.5 py-1 bg-planton-accent/10 text-planton-accent text-[11px] font-sans font-medium border border-planton-accent/25">
+              {selectionContext} {selectionContext === 1 ? 'célula selecionada' : 'células selecionadas'} no contexto
+              {onClearSelection && (
+                <button
+                  type="button"
+                  onClick={onClearSelection}
+                  className="ml-0.5 hover:opacity-70 transition-opacity"
+                  aria-label="Limpar seleção"
+                >
+                  <X size={11} />
+                </button>
+              )}
+            </span>
           </div>
         )}
 

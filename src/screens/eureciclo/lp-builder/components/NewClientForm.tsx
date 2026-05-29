@@ -32,7 +32,7 @@ export function NewClientForm({ data, errors, onChange }: NewClientFormProps) {
           onChange={(e) => onChange({ ...data, cnpj: formatCnpj(e.target.value) })}
           placeholder="00.000.000/0000-00"
           inputMode="numeric"
-          className="h-12 text-base font-mono"
+          className="h-12 text-base md:text-sm"
           maxLength={18}
         />
       </Field>
@@ -43,7 +43,7 @@ export function NewClientForm({ data, errors, onChange }: NewClientFormProps) {
           value={data.name}
           onChange={(e) => onChange({ ...data, name: e.target.value })}
           placeholder="Razão social ou nome fantasia"
-          className="h-12 text-base"
+          className="h-12 text-base md:text-sm"
         />
       </Field>
 
@@ -52,7 +52,7 @@ export function NewClientForm({ data, errors, onChange }: NewClientFormProps) {
           value={data.sector || undefined}
           onValueChange={(v) => onChange({ ...data, sector: v })}
         >
-          <SelectTrigger id="sector" className="h-12 text-base">
+          <SelectTrigger id="sector" className="h-12 text-base md:text-sm">
             <SelectValue placeholder="Selecione o setor" />
           </SelectTrigger>
           <SelectContent position="popper" sideOffset={4} className="max-h-60 overflow-y-auto">

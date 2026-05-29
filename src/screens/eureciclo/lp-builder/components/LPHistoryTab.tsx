@@ -91,7 +91,7 @@ export function LPHistoryTab({ records }: LPHistoryTabProps) {
                 {filtered.map((r) => (
                   <tr key={r.id} className="border-b border-border last:border-b-0 hover:bg-muted/20 transition-colors">
                     <td className="px-4 py-3 font-medium text-foreground">{r.clientName}</td>
-                    <td className="px-4 py-3 font-mono text-xs text-muted-foreground whitespace-nowrap">{r.cnpj}</td>
+                    <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">{r.cnpj}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col gap-0.5">
                         {r.emails.map((e) => (
@@ -113,10 +113,8 @@ export function LPHistoryTab({ records }: LPHistoryTabProps) {
                         </a>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-right tabular-nums whitespace-nowrap">
-                      <span className={`text-sm font-medium ${r.accessCount > 0 ? 'text-foreground' : 'text-muted-foreground/50'}`}>
-                        {r.accessCount}
-                      </span>
+                    <td className="px-4 py-3 text-right text-xs text-muted-foreground tabular-nums whitespace-nowrap">
+                      {r.accessCount}
                     </td>
                     <td className="px-4 py-3 text-right text-xs text-muted-foreground whitespace-nowrap">
                       {formatDate(r.sentAt)}
@@ -134,7 +132,7 @@ export function LPHistoryTab({ records }: LPHistoryTabProps) {
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-medium text-foreground truncate">{r.clientName}</span>
-                    <span className="text-xs font-mono text-muted-foreground">{r.cnpj}</span>
+                    <span className="text-xs text-muted-foreground">{r.cnpj}</span>
                   </div>
                   <div className="flex flex-col items-end shrink-0 gap-0.5">
                     <span className={`text-sm font-medium tabular-nums ${r.accessCount > 0 ? 'text-foreground' : 'text-muted-foreground/50'}`}>
