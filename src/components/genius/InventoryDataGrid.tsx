@@ -2,6 +2,9 @@
 
 import dynamic from 'next/dynamic'
 import type { SchemaColumn, SchemaRow } from '@/screens/genius/chat/mock-data'
+import type { GridSelectionInfo } from './InventoryDataGridImpl'
+
+export type { GridSelectionInfo }
 
 const Impl = dynamic(
   () => import('./InventoryDataGridImpl').then((m) => m.InventoryDataGridImpl),
@@ -22,8 +25,9 @@ type Props = {
   rows: SchemaRow[]
   readOnly?: boolean
   highlightedRows?: number[]
-  onSelectionChange?: (cellCount: number) => void
+  onSelectionChange?: (info: GridSelectionInfo) => void
   clearSelectionRef?: React.MutableRefObject<(() => void) | null>
+  onEdit?: () => void
 }
 
 export function InventoryDataGrid(props: Props) {

@@ -45,6 +45,7 @@ export type EmissionCategory = {
   label: string
   icon: LucideIcon
   hint: string
+  scope: 1 | 2 | 3
   schemas: TableSchema[]
   initialChat: ChatMessage[]
 }
@@ -137,6 +138,7 @@ export const CATEGORIES: EmissionCategory[] = [
     id: 'combustao-movel',
     label: 'Combustão móvel',
     icon: Truck,
+    scope: 1,
     hint: 'Envie consumos em litros, quilometragem percorrida ou rotas origem→destino da sua frota.',
     initialChat: [
       {
@@ -155,7 +157,7 @@ export const CATEGORIES: EmissionCategory[] = [
           { id: 'veiculo', title: 'Veículo', width: 200 },
           { id: 'combustivel', title: 'Combustível', width: 140, type: 'bubble', options: ['Diesel S10', 'Diesel S500', 'Gasolina', 'Etanol', 'GNV', 'Biodiesel B10'] },
           { id: 'quantidade', title: 'Quantidade', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['litros', 'm³', 'kg'] },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'fator', title: 'Fator', width: 130 },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
@@ -172,7 +174,7 @@ export const CATEGORIES: EmissionCategory[] = [
           { id: 'veiculo', title: 'Veículo', width: 200 },
           { id: 'tipo', title: 'Tipo', width: 140, type: 'bubble' },
           { id: 'km', title: 'Distância', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['km', 'milhas'] },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'fator', title: 'Fator', width: 130 },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
@@ -211,6 +213,7 @@ export const CATEGORIES: EmissionCategory[] = [
     id: 'energia-eletrica',
     label: 'Energia elétrica',
     icon: Zap,
+    scope: 2,
     hint: 'Envie consumo em kWh por unidade ou valores das faturas em BRL com tarifa média.',
     initialChat: [
       {
@@ -227,7 +230,7 @@ export const CATEGORIES: EmissionCategory[] = [
         columns: [
           { id: 'unidade-op', title: 'Unidade', width: 180, type: 'bubble' },
           { id: 'consumo', title: 'Consumo', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['kWh', 'MWh', 'GWh'] },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'fator', title: 'Fator SIN', width: 150 },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
@@ -261,6 +264,7 @@ export const CATEGORIES: EmissionCategory[] = [
     id: 'emissoes-fugitivas',
     label: 'Emissões fugitivas',
     icon: Snowflake,
+    scope: 1,
     hint: 'Envie dados de recarga de gases refrigerantes (R-410A, R-134a, R-32) por equipamento.',
     initialChat: [
       {
@@ -279,7 +283,7 @@ export const CATEGORIES: EmissionCategory[] = [
           { id: 'equipamento', title: 'Equipamento', width: 220 },
           { id: 'gas', title: 'Gás', width: 120, type: 'bubble' },
           { id: 'recarga', title: 'Recarga', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['kg', 'g', 'lb'] },
           { id: 'gwp', title: 'GWP', width: 100 },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
@@ -296,6 +300,7 @@ export const CATEGORIES: EmissionCategory[] = [
     id: 'combustao-estacionaria',
     label: 'Combustão estacionária',
     icon: Flame,
+    scope: 1,
     hint: 'Envie consumo de gás natural, GLP ou diesel de geradores e caldeiras.',
     initialChat: [
       {
@@ -313,7 +318,7 @@ export const CATEGORIES: EmissionCategory[] = [
           { id: 'unidade-op', title: 'Unidade', width: 180, type: 'bubble' },
           { id: 'equipamento', title: 'Equipamento', width: 220 },
           { id: 'consumo', title: 'Consumo', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['m³', 'kg', 'litros', 'GJ'] },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
@@ -330,7 +335,7 @@ export const CATEGORIES: EmissionCategory[] = [
           { id: 'unidade-op', title: 'Unidade', width: 180, type: 'bubble' },
           { id: 'equipamento', title: 'Equipamento', width: 220 },
           { id: 'consumo', title: 'Consumo', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['m³', 'kg', 'litros', 'GJ'] },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],
@@ -345,6 +350,7 @@ export const CATEGORIES: EmissionCategory[] = [
     id: 'viagens-negocios',
     label: 'Viagens a negócios',
     icon: Plane,
+    scope: 3,
     hint: 'Envie dados de voos (origem/destino/classe), hospedagens ou deslocamentos rodoviários.',
     initialChat: [
       {
@@ -397,6 +403,7 @@ export const CATEGORIES: EmissionCategory[] = [
     id: 'residuos',
     label: 'Resíduos',
     icon: Trash2,
+    scope: 3,
     hint: 'Envie volumes por tipo (orgânico, reciclável, perigoso) e destinação final.',
     initialChat: [
       {
@@ -415,7 +422,7 @@ export const CATEGORIES: EmissionCategory[] = [
           { id: 'tipo', title: 'Tipo de resíduo', width: 200, type: 'bubble' },
           { id: 'destinacao', title: 'Destinação', width: 180, type: 'bubble' },
           { id: 'quantidade', title: 'Quantidade', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble' },
+          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['ton', 'kg', 'm³'] },
           { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
           { id: 'tco2e', title: 'tCO₂e', width: 100 },
         ],

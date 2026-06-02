@@ -117,25 +117,40 @@ const DARK_THEME: Partial<Theme> = {
   fontFamily: 'var(--font-mono), ui-monospace, monospace',
 }
 
+export type GridSelectionInfo = {
+  type: 'cells' | 'rows' | 'columns'
+  count: number
+}
+
 type Props = {
   columns: SchemaColumn[]
   rows: SchemaRow[]
   readOnly?: boolean
   highlightedRows?: number[]
-  onSelectionChange?: (cellCount: number) => void
+  onSelectionChange?: (info: GridSelectionInfo) => void
   clearSelectionRef?: React.MutableRefObject<(() => void) | null>
+  onEdit?: () => void
 }
 
-function countSelectedCells(sel: GridSelection, totalCols: number, totalRows: number): number {
-  let count = 0
+function getSelectionInfo(sel: GridSelection, totalCols: number, totalRows: number): GridSelectionInfo {
+  const colCount = sel.columns.length
+  const rowCount = sel.rows.length
+
+  if (colCount > 0 && rowCount === 0 && !sel.current) {
+    return { type: 'columns', count: colCount }
+  }
+  if (rowCount > 0 && colCount === 0 && !sel.current) {
+    return { type: 'rows', count: rowCount }
+  }
+
+  let cellCount = 0
   if (sel.current) {
     const { range, rangeStack = [] } = sel.current
-    const allRanges = [range, ...rangeStack]
-    for (const r of allRanges) count += r.width * r.height
+    for (const r of [range, ...rangeStack]) cellCount += r.width * r.height
   }
-  count += sel.rows.length * totalCols
-  count += sel.columns.length * totalRows
-  return count
+  cellCount += rowCount * totalCols
+  cellCount += colCount * totalRows
+  return { type: 'cells', count: cellCount }
 }
 
 type DropdownState = {
@@ -146,7 +161,7 @@ type DropdownState = {
   y: number
 }
 
-export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, clearSelectionRef }: Props) {
+export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, clearSelectionRef, onEdit }: Props) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [monoFamily, setMonoFamily] = useState<string>('ui-monospace, monospace')
@@ -166,7 +181,7 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
   const clearSelection = useCallback(() => {
     const empty: GridSelection = { columns: CompactSelection.empty(), rows: CompactSelection.empty() }
     setGridSelection(empty)
-    onSelectionChange?.(0)
+    onSelectionChange?.({ type: 'cells', count: 0 })
   }, [onSelectionChange])
 
   useEffect(() => {
@@ -175,7 +190,7 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
 
   const handleGridSelectionChange = useCallback((sel: GridSelection) => {
     setGridSelection(sel)
-    onSelectionChange?.(countSelectedCells(sel, columns.length, rows.length))
+    onSelectionChange?.(getSelectionInfo(sel, columns.length, rows.length))
   }, [onSelectionChange, columns.length, rows.length])
 
   const onItemHovered = useCallback((args: GridMouseEventArgs) => {
@@ -250,7 +265,7 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
     if (readOnly) return
     if (event.shiftKey || event.ctrlKey || event.metaKey) return
     const col = columns[colIdx]
-    if (!col.options || col.options.length === 0) return
+    if (!col || !col.options || col.options.length === 0) return
     // glide bounds already in viewport coords (includes canvas getBoundingClientRect offset)
     const cellBounds = event.bounds
     setDropdown({
@@ -268,7 +283,8 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
     const colId = columns[colIdx].id
     setLocalRows((prev) => prev.map((r, i) => i === rowIdx ? { ...r, [colId]: option } : r))
     setDropdown(null)
-  }, [dropdown, columns])
+    onEdit?.()
+  }, [dropdown, columns, onEdit])
 
   if (!mounted) return null
 
@@ -376,6 +392,8 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
         fixedShadowX={false}
         gridSelection={gridSelection}
         onGridSelectionChange={handleGridSelectionChange}
+        rowSelect="multi"
+        rowSelectionBlending="mixed"
         rangeSelect="multi-rect"
         rangeSelectionBlending="mixed"
         onItemHovered={onItemHovered}
@@ -383,7 +401,7 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
         drawCell={drawCell}
         getRowThemeOverride={getRowThemeOverride}
         onCellClicked={handleCellClicked}
-        onRowAppended={readOnly ? undefined : () => {}}
+        onRowAppended={readOnly ? undefined : () => { onEdit?.() }}
         trailingRowOptions={readOnly ? undefined : { hint: '', sticky: false, tint: false }}
         getCellsForSelection
       />

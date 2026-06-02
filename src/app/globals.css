@@ -132,6 +132,34 @@ svg.lucide * {
   pointer-events: none;
 }
 
+@keyframes genius-glow-pulse-neutral {
+  0%, 100% {
+    outline: 2px solid rgba(120, 120, 120, 0);
+    outline-offset: 0px;
+  }
+  50% {
+    outline: 2px solid rgba(120, 120, 120, 0.35);
+    outline-offset: 2px;
+  }
+}
+
+.genius-btn-verify-ready {
+  overflow: hidden;
+  animation: genius-glow-pulse-neutral 1.8s ease-in-out infinite;
+}
+
+.genius-btn-verify-ready::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  animation: genius-shine-sweep 2.8s ease-in-out 200ms infinite;
+  pointer-events: none;
+}
+
 @keyframes genius-dot-pulse {
   0%, 100% {
     opacity: 1;
@@ -145,5 +173,385 @@ svg.lucide * {
 
 .genius-dot-ready {
   animation: genius-dot-pulse 2s ease-in-out infinite;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Genius — View Transition: empty card → chat canvas morph
+   ───────────────────────────────────────────────────────────── */
+
+/* Fundo da página: fade rápido enquanto o card faz morph */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 600ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* O elemento compartilhado (genius-canvas) faz o morph */
+::view-transition-old(genius-canvas) {
+  animation: 500ms cubic-bezier(0.22, 1, 0.36, 1) both vt-genius-old;
+}
+::view-transition-new(genius-canvas) {
+  animation: 650ms cubic-bezier(0.22, 1, 0.36, 1) both vt-genius-new;
+}
+
+@keyframes vt-genius-old {
+  from { opacity: 1; filter: blur(0px); }
+  to   { opacity: 0; filter: blur(4px); }
+}
+
+@keyframes vt-genius-new {
+  from { opacity: 0; filter: blur(4px); }
+  to   { opacity: 1; filter: blur(0px); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Genius — Canvas header: tint verde sutil da identidade Planton
+   ───────────────────────────────────────────────────────────── */
+
+.genius-canvas-header {
+  background: rgba(10, 10, 10, 0.45);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Genius — Empty state glass card (blur real sobre imagem)
+   Técnica: imagem duplicada borrada DENTRO do card (filter:blur),
+   esticada+deslocada via CSS vars p/ alinhar ao fundo nítido.
+   Funciona em Chrome E Safari (não usa backdrop-filter, que o
+   Chrome desativa quando há overflow:hidden nos ancestrais).
+   ───────────────────────────────────────────────────────────── */
+
+@keyframes genius-empty-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.genius-empty-card {
+  animation: genius-empty-card-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 12px 48px -12px rgba(0, 0, 0, 0.55),
+    0 1px 0 0 rgba(255, 255, 255, 0.35) inset,
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+/* Camada borrada — preenche o stage inteiro via vars, recortada pelo overflow:hidden do card */
+.genius-card-blur {
+  width: var(--blur-w, 100%);
+  height: var(--blur-h, 100%);
+  left: var(--blur-x, 0);
+  top: var(--blur-y, 0);
+  filter: blur(28px) saturate(1.7) brightness(1.05);
+  transform: scale(1.08); /* esconde bordas transparentes do blur */
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .genius-empty-card {
+    animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Empty-state category chips — entrada stagger + hover lift/glow
+   + ícone cinético por categoria
+   ───────────────────────────────────────────────────────────── */
+
+/* Entrada: pop escalonado (delay via inline style por índice) */
+@keyframes genius-chip-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.genius-chip {
+  /* começa invisível; o pop revela */
+  opacity: 0;
+  animation: genius-chip-pop 460ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition:
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms ease,
+    background-color 200ms ease;
+  will-change: transform;
+}
+
+/* Hover: lift + glow accent + borda accent */
+.genius-chip:hover {
+  transform: translateY(-3px);
+  border-color: rgba(173, 207, 120, 0.7);
+  box-shadow:
+    0 6px 18px -6px rgba(173, 207, 120, 0.55),
+    0 0 0 1px rgba(173, 207, 120, 0.35);
+}
+
+.genius-chip:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* Ícone destaca no hover */
+.genius-chip:hover .genius-chip-icon {
+  color: var(--planton-accent, #adcf78);
+}
+
+/* ── Ícone cinético por categoria (dispara só no hover) ── */
+.genius-chip-icon {
+  display: inline-flex;
+  transform-origin: center;
+}
+
+/* combustao-movel → caminhão desliza */
+@keyframes genius-icon-truck {
+  0%   { transform: translateX(0); }
+  40%  { transform: translateX(3px); }
+  70%  { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+.genius-chip:hover .genius-icon-truck {
+  animation: genius-icon-truck 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* energia-eletrica → raio pulsa/flash */
+@keyframes genius-icon-zap {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  25%      { transform: scale(1.25); filter: brightness(1.6); }
+  50%      { transform: scale(0.95); filter: brightness(1); }
+  60%      { transform: scale(1.15); filter: brightness(1.4); }
+}
+.genius-chip:hover .genius-icon-zap {
+  animation: genius-icon-zap 650ms ease-in-out;
+}
+
+/* emissoes-fugitivas → floco gira */
+@keyframes genius-icon-snow {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.genius-chip:hover .genius-icon-snow {
+  animation: genius-icon-snow 900ms cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+/* combustao-estacionaria → chama tremula */
+@keyframes genius-icon-flame {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  20%      { transform: scale(1.12) rotate(-4deg); }
+  40%      { transform: scale(0.96) rotate(3deg); }
+  60%      { transform: scale(1.08) rotate(-2deg); }
+  80%      { transform: scale(0.98) rotate(2deg); }
+}
+.genius-chip:hover .genius-icon-flame {
+  animation: genius-icon-flame 650ms ease-in-out;
+}
+
+/* viagens-negocios → avião voa na diagonal */
+@keyframes genius-icon-plane {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  45%  { transform: translate(4px, -4px) rotate(8deg); }
+  55%  { transform: translate(-3px, 3px) rotate(-4deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.genius-chip:hover .genius-icon-plane {
+  animation: genius-icon-plane 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* residuos → lixeira pula */
+@keyframes genius-icon-trash {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  30%      { transform: translateY(-4px) scaleY(1.05); }
+  55%      { transform: translateY(0) scaleY(0.92); }
+  75%      { transform: translateY(-1px) scaleY(1); }
+}
+.genius-chip:hover .genius-icon-trash {
+  animation: genius-icon-trash 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Genius — Modal de sucesso (envio de categoria)
+   Ícone cinético + ring pulse + count-up + entrada escalonada
+   ───────────────────────────────────────────────────────────── */
+
+/* Form sai, sucesso entra */
+@keyframes genius-success-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.genius-success-enter {
+  animation: genius-success-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Ícone cinético no sucesso — repete a cada 5s.
+   Movimento acontece nos primeiros ~14% do ciclo; resto idle (gap).
+   1ª execução começa após 520ms (pop do disco assenta antes). */
+@keyframes genius-loop-truck {
+  0%   { transform: translateX(0); }
+  6%   { transform: translateX(3px); }
+  10%  { transform: translateX(-1px); }
+  14%  { transform: translateX(0); }
+  100% { transform: translateX(0); }
+}
+@keyframes genius-loop-zap {
+  0%, 14%, 100% { transform: scale(1); filter: brightness(1); }
+  4%   { transform: scale(1.25); filter: brightness(1.6); }
+  8%   { transform: scale(0.95); filter: brightness(1); }
+  10%  { transform: scale(1.15); filter: brightness(1.4); }
+}
+@keyframes genius-loop-snow {
+  0%   { transform: rotate(0deg); }
+  16%  { transform: rotate(360deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes genius-loop-flame {
+  0%, 14%, 100% { transform: scale(1) rotate(0deg); }
+  3%   { transform: scale(1.12) rotate(-4deg); }
+  6%   { transform: scale(0.96) rotate(3deg); }
+  9%   { transform: scale(1.08) rotate(-2deg); }
+  12%  { transform: scale(0.98) rotate(2deg); }
+}
+@keyframes genius-loop-plane {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  6%   { transform: translate(4px, -4px) rotate(8deg); }
+  9%   { transform: translate(-3px, 3px) rotate(-4deg); }
+  14%  { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes genius-loop-trash {
+  0%, 14%, 100% { transform: translateY(0) scaleY(1); }
+  4%   { transform: translateY(-4px) scaleY(1.05); }
+  8%   { transform: translateY(0) scaleY(0.92); }
+  11%  { transform: translateY(-1px) scaleY(1); }
+}
+.genius-success-kick.genius-icon-truck { animation: genius-loop-truck 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-zap   { animation: genius-loop-zap 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-snow  { animation: genius-loop-snow 5s cubic-bezier(0.45, 0, 0.2, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-flame { animation: genius-loop-flame 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-plane { animation: genius-loop-plane 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-trash { animation: genius-loop-trash 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+
+/* Disco do ícone: pop com overshoot */
+@keyframes genius-success-icon-pop {
+  0%   { opacity: 0; transform: scale(0.5); }
+  60%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.genius-success-icon {
+  animation: genius-success-icon-pop 520ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Ring accent que pulsa para fora, contínuo */
+@keyframes genius-success-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(173, 207, 120, 0.55); }
+  70%  { box-shadow: 0 0 0 16px rgba(173, 207, 120, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(173, 207, 120, 0); }
+}
+.genius-success-ring {
+  animation: genius-success-ring 2s cubic-bezier(0.22, 1, 0.36, 1) 400ms infinite;
+}
+
+/* Linhas do dashboard sobem em stagger (delay inline por índice) */
+@keyframes genius-success-stat {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.genius-success-stat {
+  opacity: 0;
+  animation: genius-success-stat 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Card de incentivo desliza por baixo */
+@keyframes genius-success-cta {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.genius-success-cta {
+  opacity: 0;
+  animation: genius-success-cta 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Barra de progresso preenche */
+@keyframes genius-progress-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(var(--progress, 0)); }
+}
+.genius-progress-bar {
+  transform-origin: left center;
+  animation: genius-progress-fill 900ms cubic-bezier(0.22, 1, 0.36, 1) 700ms both;
+}
+
+/* Confete — partículas brand sobem/caem 1x no sucesso.
+   Trajetória/timing vêm de custom props inline por partícula. */
+@keyframes genius-confetti {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0deg) scale(0.6);
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0), var(--dy, -120px)) rotate(var(--rot, 220deg)) scale(1);
+  }
+}
+.genius-confetti-piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  opacity: 0;
+  pointer-events: none;
+  animation: genius-confetti var(--dur, 1100ms) cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0ms) forwards;
+}
+
+/* Acessibilidade: desliga movimento se usuário pediu */
+@media (prefers-reduced-motion: reduce) {
+  .genius-chip {
+    opacity: 1;
+    animation: none;
+  }
+  .genius-chip:hover {
+    transform: none;
+  }
+  .genius-chip:hover .genius-chip-icon,
+  .genius-chip:hover [class*="genius-icon-"] {
+    animation: none;
+  }
+  .genius-success-enter,
+  .genius-success-icon,
+  .genius-success-ring,
+  .genius-success-stat,
+  .genius-success-cta,
+  .genius-progress-bar,
+  .genius-success-kick {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+  .genius-confetti-piece {
+    display: none;
+  }
 }
 

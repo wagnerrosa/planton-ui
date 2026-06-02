@@ -17,7 +17,7 @@ function GeniusLayoutInner({ children }: { children: React.ReactNode }) {
   }, [pathname])
 
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={false}>
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
         <GeniusNavbar breadcrumbs={breadcrumbs} />
 
