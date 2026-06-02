@@ -429,7 +429,7 @@ function ResumoCell({
       cell.warnings,
       'alerta',
       'alertas',
-    )} — ${pluralize(cell.warnings, 'linha', 'linhas')} ${cell.warningRows.join(', ')}`
+    )}`
     return (
       <Tooltip>
         <TooltipTrigger asChild>
