@@ -556,7 +556,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
       id: (Date.now() + 1).toString(),
       role: 'assistant',
       content: isInventory
-        ? `Identifiquei dados de ${activeCategory.label.toLowerCase()} na sua mensagem. Adicionei à guia "${activeSchema.label}". Deseja ajustar algum valor?`
+        ? `Identifiquei dados de ${activeCategory.label.toLowerCase()} na sua mensagem. Adicionei à aba "${activeSchema.label}". Deseja ajustar algum valor?`
         : `Envie dados de ${activeCategory.label.toLowerCase()} — por exemplo, consumos, quantidades ou faturas relacionados a essa categoria.`,
       timestamp: new Date(now.getTime() + 500),
     }
@@ -623,24 +623,24 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
   // ── Onboarding message JSX ───────────────────────────────────────────────
   function OnboardingMessage({ timestamp }: { timestamp: Date }) {
     return (
-      <div className="flex flex-col gap-2.5 leading-relaxed text-foreground">
+      <div className="flex flex-col gap-2.5 leading-relaxed text-foreground text-[12px] [&_p]:text-[12px]">
         <p>Os dados já estão na planilha. A partir de agora, entramos na fase de preenchimento:</p>
 
         <div className="flex flex-col gap-3">
           <div className="flex gap-2">
             <span className="shrink-0">1.</span>
-            <p>Edite diretamente nas células ou me peça aqui — clique em qualquer célula e edite, ou descreva o que precisa ser alterado e faço as modificações na planilha.</p>
+            <p>Edite diretamente nas células ou me peça para editar.</p>
           </div>
 
           <div className="flex gap-2">
             <span className="shrink-0">2.</span>
-            <p>Colunas não podem ser adicionadas ou removidas — cada aba tem estrutura fixa.</p>
+            <p>Colunas não podem ser adicionadas ou removidas.</p>
           </div>
 
           <div className="flex gap-2">
             <span className="shrink-0">3.</span>
             <div className="flex flex-col gap-1">
-              <p>Selecione linhas para enviar contexto — ao clicar em uma ou mais células, elas são automaticamente enviadas como contexto para mim.</p>
+              <p>Selecione linhas para me enviar como contexto.</p>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-planton-accent/10 text-planton-accent text-[10px] font-sans font-medium border border-planton-accent/25 w-fit">
                 3 células selecionadas no contexto
                 <span className="ml-0.5 opacity-60 cursor-default"><X size={9} /></span>
@@ -651,7 +651,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
           <div className="flex gap-2">
             <span className="shrink-0">4.</span>
             <div className="flex flex-col gap-1">
-              <p>Envie arquivos a qualquer momento — planilhas e PDFs podem continuar sendo enviados aqui no chat.</p>
+              <p>Envie arquivos a qualquer momento.</p>
               <div className="flex items-center gap-1.5">
                 <div className="flex items-center gap-1.5 border border-border bg-background px-2 py-1">
                   <div className="flex items-center justify-center w-6 h-6 text-[9px] font-mono font-bold shrink-0" style={{ backgroundColor: '#dcfce7', color: '#15803d' }}>XLS</div>
@@ -676,7 +676,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                   <CheckCircle2 size={9} />
                   Verificar
                 </span>
-                {' '}para checar o preenchimento da categoria
+                {' '}para checar o preenchimento da categoria.
               </p>
               <div className="flex flex-col gap-1 pl-0.5">
                 <span className="flex items-center gap-1.5 text-destructive">
@@ -699,6 +699,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                 <Table2 size={9} />
                 Resumo
               </span>
+              .
             </p>
           </div>
 
@@ -727,7 +728,9 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
     success: 'text-success bg-success-surface border border-success-border',
   }
 
-  function renderMessages(msgs: ChatMessage[], wide?: boolean) {
+  function renderMessages(msgs: ChatMessage[], opts?: { wide?: boolean; size?: 'xs' | 'sm' }) {
+    const wide = opts?.wide ?? false
+    const textSize = (opts?.size ?? (wide ? 'sm' : 'xs')) === 'sm' ? 'text-[14px]' : 'text-[12px]'
     let attachmentOffset = 0
     return msgs.map((msg) => {
       const msgAttachmentOffset = attachmentOffset
@@ -735,7 +738,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
       if (msg.isOnboarding) {
         return (
           <div key={msg.id} className="flex justify-start">
-            <div className={`${wide ? 'max-w-[80%]' : 'max-w-[90%]'} px-3 py-2.5 ${wide ? 'text-sm' : 'text-xs'} font-sans leading-relaxed`}>
+            <div className={`${wide ? 'max-w-[80%]' : 'max-w-[90%]'} px-3 py-2.5 ${textSize} font-sans leading-relaxed`}>
               <OnboardingMessage timestamp={msg.timestamp} />
             </div>
           </div>
@@ -747,7 +750,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
       >
         <div
-          className={`${wide ? 'max-w-[80%]' : 'max-w-[90%]'} px-3 py-2.5 ${wide ? 'text-sm' : 'text-xs'} font-sans leading-relaxed ${msg.role === 'assistant' && !msg.variant ? 'rounded-2xl' : ''} ${
+          className={`${wide ? 'max-w-[80%]' : 'max-w-[90%]'} px-3 py-2.5 ${textSize} font-sans leading-relaxed ${msg.role === 'assistant' && !msg.variant ? 'rounded-2xl' : ''} ${
             msg.role === 'user'
               ? 'bg-muted/40 text-foreground border border-border'
               : msg.variant
@@ -804,7 +807,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
             </span>
           )}
           {msg.role === 'assistant'
-            ? <div className="prose prose-xs max-w-none dark:prose-invert [&_ol]:list-decimal [&_ul]:list-disc [&_li]:my-0.5 [&_p]:my-0 [&_p+p]:mt-2 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: marked.parse(msg.content) as string }} />
+            ? <div className="prose prose-sm max-w-none dark:prose-invert [&_p]:text-[12px] [&_li]:text-[12px] [&_ol]:list-decimal [&_ul]:list-disc [&_li]:my-0.5 [&_p]:my-0 [&_p+p]:mt-2 [&_strong]:font-semibold" dangerouslySetInnerHTML={{ __html: marked.parse(msg.content) as string }} />
             : msg.content
           }
           <span className={`block text-[10px] mt-1 opacity-60 ${msg.role === 'user' ? 'text-right' : 'text-left'} ${msg.variant ? '' : 'text-muted-foreground'}`}>
@@ -836,7 +839,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                 <span className="font-medium text-foreground">
                   {linkedCount} {linkedCount === 1 ? 'linha' : 'linhas'}
                 </span>{' '}
-                da guia <span className="font-medium text-foreground">{activeCategory.schemas[0].label}</span> atreladas a este arquivo.
+                da aba <span className="font-medium text-foreground">{activeCategory.schemas[0].label}</span> atreladas a este arquivo.
               </p>
             )}
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-destructive/8 border border-destructive/20 text-sm font-sans text-destructive">
@@ -880,7 +883,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
 
           <div className="flex flex-col gap-4 rounded-md border border-border bg-muted/40 px-4 py-4">
             <p className="text-sm text-muted-foreground font-sans">
-              Serão removidos a conversa, os dados de todas as guias e os arquivos enviados de{' '}
+              Serão removidos a conversa, os dados de todas as abas e os arquivos enviados de{' '}
               <span className="font-medium text-foreground">{activeCategory.label}</span>.
             </p>
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-destructive/8 border border-destructive/20 text-sm font-sans text-destructive">
@@ -1199,7 +1202,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
 
                   <div className="flex-1 overflow-y-auto px-4 pt-4 pb-4">
                     <div className="flex flex-col gap-3 max-w-2xl mx-auto">
-                      {renderMessages(activeChat, true)}
+                      {renderMessages(activeChat, { wide: true, size: 'xs' })}
                       <div ref={bottomRef} />
                     </div>
                   </div>
@@ -1232,7 +1235,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
     )
   }
 
-  // ── Estado split (canvas com categorias + tabela + chat + guias) ──
+  // ── Estado split (canvas com categorias + tabela + chat + abas) ──
   return (
     <div className="flex flex-col h-full">
       <GeniusNavbarSync breadcrumbs={[]} />
@@ -1346,7 +1349,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
               })}
             </div>
 
-            {/* Centro: tabela + rodapé guias */}
+            {/* Centro: tabela + rodapé abas */}
             <div className={`flex flex-col flex-1 overflow-hidden genius-split-expand ${splitMounted ? 'max-w-full opacity-100' : 'max-w-0 opacity-0'}`}>
               <div className="flex flex-col flex-1 min-h-0">
                 {schemaProcessingCount(activeSchemaId) > 0 && (
@@ -1379,7 +1382,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                 )}
               </div>
 
-              {/* Guias Excel */}
+              {/* Abas Excel */}
               <div className="flex items-stretch h-9 border-t border-border bg-muted/30 shrink-0 overflow-x-auto">
                 {/* Aba Resumo — sempre primeiro */}
                 <button
@@ -1430,7 +1433,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                 {!filesExpanded && (
                   <div className="flex-1 overflow-y-auto px-4 pt-4 pb-4">
                     <div className="flex flex-col gap-3">
-                      {renderMessages(activeChat)}
+                      {renderMessages(activeChat, { size: 'xs' })}
                       <div ref={bottomRef} />
                     </div>
                   </div>

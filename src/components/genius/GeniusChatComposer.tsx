@@ -380,7 +380,7 @@ export function GeniusChatComposer({
             placeholder={disabled ? 'Inventário enviado. Somente leitura.' : placeholder}
             rows={1}
             disabled={disabled}
-            className="flex-1 resize-none bg-transparent py-4 text-sm font-sans text-foreground placeholder:text-muted-foreground focus:outline-none max-h-[200px] leading-relaxed disabled:cursor-not-allowed"
+            className="flex-1 resize-none bg-transparent py-4 text-[12px] font-sans text-foreground placeholder:text-muted-foreground focus:outline-none max-h-[200px] leading-relaxed disabled:cursor-not-allowed"
             style={{ fieldSizing: 'content' } as React.CSSProperties}
           />
 
