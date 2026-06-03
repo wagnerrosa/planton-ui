@@ -15,6 +15,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { GeniusNavbarSync } from '@/components/navigation/GeniusNavbarSync'
 import { GeniusChatComposer, type SentFile } from '@/components/genius/GeniusChatComposer'
 import { InventoryDataGrid, type GridSelectionInfo } from '@/components/genius/InventoryDataGrid'
+import { GridToolbar } from '@/components/genius/GridToolbar'
 import { ResumoTab } from '@/components/genius/ResumoTab'
 import { CategoryIcon } from '@/components/genius/CategoryIcon'
 import { CATEGORIES, DEFAULT_CATEGORY_ID, findCategory, getCategoryWorstStatus, getSchemaWorstStatus, type CellStatus, type ChatMessage, type EmissionCategory } from './mock-data'
@@ -189,6 +190,7 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
   const [filesExpanded, setFilesExpanded] = useState(false)
   const [highlightedRows, setHighlightedRows] = useState<number[]>([])
   const [selectedCellInfo, setSelectedCellInfo] = useState<GridSelectionInfo>({ type: 'cells', count: 0 })
+  const [gridSearch, setGridSearch] = useState('')
   const [selectedHistoryFile, setSelectedHistoryFile] = useState<number | null>(null)
   const clearGridSelectionRef = useRef<(() => void) | null>(null)
   const deleteFileRef = useRef<((index: number) => void) | null>(null)
@@ -1368,8 +1370,18 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                     pendingUnidades={['Escritório Curitiba', 'Filial Fortaleza', 'Hub Manaus', 'Loja Brasília', 'Loja Porto Alegre']}
                   />
                 ) : (
-                  <div className="flex-1 min-h-0">
-                    <InventoryDataGrid columns={activeSchema.columns} rows={activeSchema.rows} readOnly={submitted || schemaProcessingCount(activeSchemaId) > 0} highlightedRows={highlightedRows} onSelectionChange={setSelectedCellInfo} clearSelectionRef={clearGridSelectionRef} onEdit={markDirty} />
+                  <div className="flex flex-col flex-1 min-h-0">
+                    {!submitted && (
+                      <GridToolbar
+                        selection={selectedCellInfo}
+                        onDelete={() => { clearGridSelectionRef.current?.(); setSelectedCellInfo({ type: 'cells', count: 0 }); markDirty() }}
+                        search={gridSearch}
+                        onSearchChange={setGridSearch}
+                      />
+                    )}
+                    <div className="flex-1 min-h-0">
+                      <InventoryDataGrid columns={activeSchema.columns} rows={activeSchema.rows} readOnly={submitted || schemaProcessingCount(activeSchemaId) > 0} highlightedRows={highlightedRows} onSelectionChange={setSelectedCellInfo} clearSelectionRef={clearGridSelectionRef} onEdit={markDirty} />
+                    </div>
                   </div>
                 )}
               </div>

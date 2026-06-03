@@ -373,26 +373,29 @@ svg.lucide * {
 
 /* ── Categorias adicionais (hover) ───────────────────────────── */
 
-/* agrícola fermentação entérica → ruminação (mastigação lenta, squash vertical) */
-@keyframes genius-icon-beef {
-  0%, 100% { transform: scaleY(1) translateY(0); }
-  25%      { transform: scaleY(0.94) translateY(1px); }
-  50%      { transform: scaleY(1.02) translateY(0); }
-  75%      { transform: scaleY(0.96) translateY(1px); }
+/* agrícola fermentação entérica → vaca pasta (nod: abaixa a cabeça e levanta, squash no down) */
+@keyframes genius-icon-cow {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  35%      { transform: translateY(2px) scaleY(0.92); }
+  55%      { transform: translateY(2px) scaleY(0.92); }
+  80%      { transform: translateY(-0.5px) scaleY(1.02); }
 }
-.genius-chip:hover .genius-icon-beef {
-  animation: genius-icon-beef 700ms ease-in-out;
+.genius-chip:hover .genius-icon-cow {
+  transform-origin: bottom center;
+  animation: genius-icon-cow 820ms cubic-bezier(0.45, 0, 0.25, 1);
 }
 
-/* agrícola manejo de solo → trator avança trepidante (horizontal + jolt) */
-@keyframes genius-icon-tractor {
-  0%   { transform: translate(0, 0); }
-  40%  { transform: translate(2px, -1px); }
-  70%  { transform: translate(3px, 0); }
-  100% { transform: translate(0, 0); }
+/* agrícola manejo de solo → trigo balança ao vento (sway na base, leve translate p/ rajada) */
+@keyframes genius-icon-wheat {
+  0%   { transform: rotate(0deg) translateX(0); }
+  25%  { transform: rotate(-7deg) translateX(-1px); }
+  55%  { transform: rotate(5deg) translateX(1px); }
+  80%  { transform: rotate(-2deg) translateX(0); }
+  100% { transform: rotate(0deg) translateX(0); }
 }
-.genius-chip:hover .genius-icon-tractor {
-  animation: genius-icon-tractor 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+.genius-chip:hover .genius-icon-wheat {
+  transform-origin: bottom center;
+  animation: genius-icon-wheat 750ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* combustão móvel aéreo → helicóptero decola/paira (lift vertical + leve tilt; sem giro de rotor p/ não virar eólica) */
@@ -451,24 +454,26 @@ svg.lucide * {
   animation: genius-icon-recycle 750ms cubic-bezier(0.45, 0, 0.2, 1);
 }
 
-/* emissões casa-trabalho → passada em dois tempos (cadência de caminhar) */
-@keyframes genius-icon-footprints {
-  0%, 100% { transform: translate(0, 0); }
-  25%      { transform: translate(-1px, -1px); }
-  50%      { transform: translate(0, 0); }
-  75%      { transform: translate(1px, -1px); }
+/* emissões casa-trabalho → pulinho (hop: sai de casa, salta com squash no pouso) */
+@keyframes genius-icon-home-hop {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  20%      { transform: translateY(0) scaleY(0.9); }
+  50%      { transform: translateY(-4px) scaleY(1.05); }
+  75%      { transform: translateY(0) scaleY(0.94); }
 }
-.genius-chip:hover .genius-icon-footprints {
-  animation: genius-icon-footprints 700ms ease-in-out;
+.genius-chip:hover .genius-icon-home-hop {
+  transform-origin: bottom center;
+  animation: genius-icon-home-hop 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* transporte aéreo downstream → pouso inbound (PlaneLanding: entra de cima, desce ao centro) */
+/* transporte aéreo downstream → pouso inbound (espelho do takeoff: vem de cima-esquerda e assenta) */
 @keyframes genius-icon-air-down {
-  0%   { transform: translate(3px, -5px) rotate(6deg); }
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  50%  { transform: translate(-5px, -4px) rotate(8deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
 .genius-chip:hover .genius-icon-air-down {
-  animation: genius-icon-air-down 720ms cubic-bezier(0.25, 1, 0.5, 1);
+  animation: genius-icon-air-down 750ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* transporte aéreo upstream → decolagem outbound (PlaneTakeoff: sai p/ cima-direita) */
@@ -603,18 +608,17 @@ svg.lucide * {
 .genius-success-kick.genius-icon-trash { animation: genius-loop-trash 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 
 /* ── Loop das categorias adicionais (modal sucesso) — movimento em ~14% do ciclo, resto idle ── */
-@keyframes genius-loop-beef {
-  0%, 14%, 100% { transform: scaleY(1) translateY(0); }
-  4%  { transform: scaleY(0.94) translateY(1px); }
-  8%  { transform: scaleY(1.02) translateY(0); }
-  11% { transform: scaleY(0.96) translateY(1px); }
+@keyframes genius-loop-cow {
+  0%, 20%, 100% { transform: translateY(0) scaleY(1); }
+  6%  { transform: translateY(2px) scaleY(0.92); }
+  14% { transform: translateY(2px) scaleY(0.92); }
+  18% { transform: translateY(-0.5px) scaleY(1.02); }
 }
-@keyframes genius-loop-tractor {
-  0%   { transform: translate(0, 0); }
-  6%   { transform: translate(2px, -1px); }
-  10%  { transform: translate(3px, 0); }
-  14%  { transform: translate(0, 0); }
-  100% { transform: translate(0, 0); }
+@keyframes genius-loop-wheat {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-5deg); }
+  50%      { transform: rotate(4deg); }
+  75%      { transform: rotate(-3deg); }
 }
 @keyframes genius-loop-heli {
   0%, 14%, 100% { transform: translateY(0) rotate(0deg); }
@@ -645,14 +649,15 @@ svg.lucide * {
   16%  { transform: rotate(120deg) scale(1); }
   100% { transform: rotate(120deg) scale(1); }
 }
-@keyframes genius-loop-footprints {
-  0%, 14%, 100% { transform: translate(0, 0); }
-  4%  { transform: translate(-1px, -1px); }
-  8%  { transform: translate(0, 0); }
-  11% { transform: translate(1px, -1px); }
+@keyframes genius-loop-home-hop {
+  0%, 16%, 100% { transform: translateY(0) scaleY(1); }
+  3%  { transform: translateY(0) scaleY(0.9); }
+  8%  { transform: translateY(-4px) scaleY(1.05); }
+  12% { transform: translateY(0) scaleY(0.94); }
 }
 @keyframes genius-loop-air-down {
-  0%   { transform: translate(3px, -5px) rotate(6deg); }
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  7%   { transform: translate(-5px, -4px) rotate(8deg); }
   14%  { transform: translate(0, 0) rotate(0deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
@@ -689,14 +694,14 @@ svg.lucide * {
   14%  { transform: translateX(0) rotate(0deg); }
   100% { transform: translateX(0) rotate(0deg); }
 }
-.genius-success-kick.genius-icon-beef       { animation: genius-loop-beef 5s ease-in-out 520ms infinite; }
-.genius-success-kick.genius-icon-tractor    { animation: genius-loop-tractor 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-cow        { transform-origin: bottom center; animation: genius-loop-cow 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-wheat      { transform-origin: bottom center; animation: genius-loop-wheat 4s ease-in-out 520ms infinite; }
 .genius-success-kick.genius-icon-heli       { animation: genius-loop-heli 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-anchor     { animation: genius-loop-anchor 5s ease-in-out 520ms infinite; }
 .genius-success-kick.genius-icon-droplets   { animation: genius-loop-droplets 5s ease-in 520ms infinite; }
 .genius-success-kick.genius-icon-trees      { transform-origin: bottom center; animation: genius-loop-trees 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-recycle    { animation: genius-loop-recycle 5s cubic-bezier(0.45, 0, 0.2, 1) 520ms infinite; }
-.genius-success-kick.genius-icon-footprints { animation: genius-loop-footprints 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-home-hop   { transform-origin: bottom center; animation: genius-loop-home-hop 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-air-down   { animation: genius-loop-air-down 5s cubic-bezier(0.25, 1, 0.5, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-air-up     { animation: genius-loop-air-up 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-ship-down  { animation: genius-loop-ship-down 5s ease-in-out 520ms infinite; }

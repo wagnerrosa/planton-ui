@@ -1,9 +1,11 @@
+import type { ComponentType } from 'react'
 import {
   Truck, Flame, Zap, Snowflake, Plane, Trash2,
-  PawPrint, Tractor, PlaneTakeoff, PlaneLanding, Helicopter, Anchor, Ship, Container,
+  Wheat, PlaneTakeoff, PlaneLanding, Helicopter, Anchor, Ship, Container,
   Droplets, Trees, Recycle, House, Car, Van,
-  type LucideIcon,
+  type LucideProps,
 } from 'lucide-react'
+import { CowIcon } from './icons/CowIcon'
 
 /**
  * Catálogo de categorias de emissão do inventário GHG.
@@ -23,7 +25,8 @@ export type CategoryDef = {
   id: string
   label: string
   scope: EmissionScope
-  icon: LucideIcon
+  /** Componente de ícone — lucide ou SVG custom compatível ({@link LucideProps}). */
+  icon: ComponentType<LucideProps>
   /** Classe de animação cinética — sufixo após `genius-icon-`/`genius-loop-`. */
   anim: string
   /** Direção de fluxo para categorias upstream/downstream. */
@@ -32,8 +35,8 @@ export type CategoryDef = {
 
 export const EMISSION_CATEGORIES: CategoryDef[] = [
   // ── Escopo 1 ──────────────────────────────────────────────
-  { id: 'agricola-fermentacao-enterica', label: 'Atividades Agrícolas (Fermentação Entérica)', scope: 1, icon: PawPrint,     anim: 'genius-icon-beef' },
-  { id: 'agricola-manejo-solo',          label: 'Atividades Agrícolas (Manejo de Solo)',        scope: 1, icon: Tractor,      anim: 'genius-icon-tractor' },
+  { id: 'agricola-fermentacao-enterica', label: 'Atividades Agrícolas (Fermentação Entérica)', scope: 1, icon: CowIcon,      anim: 'genius-icon-cow' },
+  { id: 'agricola-manejo-solo',          label: 'Atividades Agrícolas (Manejo de Solo)',        scope: 1, icon: Wheat,        anim: 'genius-icon-wheat' },
   { id: 'combustao-estacionaria',        label: 'Combustão Estacionária',                       scope: 1, icon: Flame,        anim: 'genius-icon-flame' },
   { id: 'combustao-movel-aereo',         label: 'Combustão Móvel (Aéreo)',                      scope: 1, icon: Helicopter,   anim: 'genius-icon-heli' },
   { id: 'combustao-movel-hidroviario',   label: 'Combustão Móvel (Hidroviário)',                scope: 1, icon: Anchor,       anim: 'genius-icon-anchor' },
@@ -47,7 +50,7 @@ export const EMISSION_CATEGORIES: CategoryDef[] = [
   { id: 'energia-eletrica',              label: 'Aquisição de Energia Elétrica',                scope: 2, icon: Zap,          anim: 'genius-icon-zap' },
 
   // ── Escopo 3 ──────────────────────────────────────────────
-  { id: 'emissoes-casa-trabalho',        label: 'Emissões Casa-Trabalho',                       scope: 3, icon: House,        anim: 'genius-icon-footprints' },
+  { id: 'emissoes-casa-trabalho',        label: 'Emissões Casa-Trabalho',                       scope: 3, icon: House,        anim: 'genius-icon-home-hop' },
   { id: 'residuos',                      label: 'Resíduos Gerados nas Operações',               scope: 3, icon: Trash2,       anim: 'genius-icon-trash' },
   { id: 'transporte-aereo-downstream',   label: 'Transporte Aéreo Downstream',                  scope: 3, icon: PlaneLanding,  anim: 'genius-icon-air-down',  direction: 'down' },
   { id: 'transporte-aereo-upstream',     label: 'Transporte Aéreo Upstream',                    scope: 3, icon: PlaneTakeoff, anim: 'genius-icon-air-up',    direction: 'up' },

@@ -1,4 +1,5 @@
-import type { LucideIcon } from 'lucide-react'
+import type { ComponentType } from 'react'
+import type { LucideProps } from 'lucide-react'
 import { CATEGORY_ICON_ANIM } from './categories'
 
 export { CATEGORY_ICON_ANIM }
@@ -6,8 +7,8 @@ export { CATEGORY_ICON_ANIM }
 export type CategoryIconVariant = 'hover' | 'loop' | 'static'
 
 type CategoryIconProps = {
-  /** Componente de ícone lucide a renderizar (ex.: `cat.icon`). */
-  icon: LucideIcon
+  /** Componente de ícone a renderizar (lucide ou SVG custom; ex.: `cat.icon`). */
+  icon: ComponentType<LucideProps>
   /** ID da categoria — seleciona a animação cinética correspondente. */
   categoryId: string
   size?: number
