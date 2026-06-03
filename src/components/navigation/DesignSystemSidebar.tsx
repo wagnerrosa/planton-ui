@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Palette, Type, MousePointer, Component, ImageIcon, ChevronLeft, ChevronRight, Images } from 'lucide-react'
+import { Palette, Type, MousePointer, Component, ImageIcon, ChevronLeft, ChevronRight, Images, Shapes } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { componentCategories } from '@/lib/components-registry'
@@ -31,10 +31,11 @@ const subItemClass = (active: boolean) =>
   }`
 
 export function DesignSystemSidebar() {
-  const { open, toggleSidebar } = useSidebar()
+  const { open, openMobile, isMobile, toggleSidebar } = useSidebar()
   const pathname = usePathname()
 
-  if (!open) return null
+  const visible = isMobile ? openMobile : open
+  if (!visible) return null
 
   return (
     <>
@@ -44,7 +45,7 @@ export function DesignSystemSidebar() {
         onClick={toggleSidebar}
         aria-hidden="true"
       />
-      <aside className="w-[260px] shrink-0 border-r border-sidebar-border bg-sidebar flex flex-col overflow-y-auto relative z-40">
+      <aside className="w-[260px] shrink-0 border-r border-sidebar-border bg-sidebar flex flex-col h-screen sticky top-0 z-40">
       {/* Header */}
       <div className="px-5 py-5 border-b border-sidebar-border shrink-0 flex items-center justify-between">
         <Link href="/" className="flex flex-col gap-2">
@@ -66,7 +67,7 @@ export function DesignSystemSidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="px-3 py-4 flex flex-col gap-4 flex-1">
+      <nav className="px-3 py-4 flex flex-col gap-4 flex-1 overflow-y-auto">
 
         {/* Foundations */}
         <div className="flex flex-col gap-0.5">
@@ -101,6 +102,14 @@ export function DesignSystemSidebar() {
           >
             <MousePointer size={15} />
             Button
+          </Link>
+
+          <Link
+            href="/design-system/genius-icons"
+            className={itemClass(pathname === '/design-system/genius-icons')}
+          >
+            <Shapes size={15} />
+            Emission Icons
           </Link>
 
           {componentCategories.map((category) => {
@@ -146,17 +155,18 @@ export function DesignSystemSidebar() {
 }
 
 export function SidebarCollapseButton() {
-  const { open, toggleSidebar } = useSidebar()
+  const { open, openMobile, isMobile, toggleSidebar } = useSidebar()
 
-  if (open) return null
+  const visible = isMobile ? openMobile : open
+  if (visible) return null
 
   return (
     <button
       onClick={toggleSidebar}
-      className="fixed top-[10px] left-1 z-50 flex items-center justify-center w-11 h-11 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+      className="fixed top-0 left-0 z-50 flex items-center justify-center w-10 h-10 rounded-br-2xl bg-sidebar/80 backdrop-blur-sm border-r border-b border-sidebar-border/60 text-sidebar-foreground/60 shadow-sm hover:text-sidebar-foreground hover:bg-sidebar transition-colors"
       aria-label="Expand menu"
     >
-      <ChevronRight size={12} />
+      <ChevronRight size={14} />
     </button>
   )
 }

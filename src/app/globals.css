@@ -317,17 +317,6 @@ svg.lucide * {
   transform-origin: center;
 }
 
-/* combustao-movel → caminhão desliza */
-@keyframes genius-icon-truck {
-  0%   { transform: translateX(0); }
-  40%  { transform: translateX(3px); }
-  70%  { transform: translateX(-1px); }
-  100% { transform: translateX(0); }
-}
-.genius-chip:hover .genius-icon-truck {
-  animation: genius-icon-truck 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
 /* energia-eletrica → raio pulsa/flash */
 @keyframes genius-icon-zap {
   0%, 100% { transform: scale(1); filter: brightness(1); }
@@ -380,6 +369,170 @@ svg.lucide * {
 }
 .genius-chip:hover .genius-icon-trash {
   animation: genius-icon-trash 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Categorias adicionais (hover) ───────────────────────────── */
+
+/* agrícola fermentação entérica → ruminação (mastigação lenta, squash vertical) */
+@keyframes genius-icon-beef {
+  0%, 100% { transform: scaleY(1) translateY(0); }
+  25%      { transform: scaleY(0.94) translateY(1px); }
+  50%      { transform: scaleY(1.02) translateY(0); }
+  75%      { transform: scaleY(0.96) translateY(1px); }
+}
+.genius-chip:hover .genius-icon-beef {
+  animation: genius-icon-beef 700ms ease-in-out;
+}
+
+/* agrícola manejo de solo → trator avança trepidante (horizontal + jolt) */
+@keyframes genius-icon-tractor {
+  0%   { transform: translate(0, 0); }
+  40%  { transform: translate(2px, -1px); }
+  70%  { transform: translate(3px, 0); }
+  100% { transform: translate(0, 0); }
+}
+.genius-chip:hover .genius-icon-tractor {
+  animation: genius-icon-tractor 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* combustão móvel aéreo → helicóptero decola/paira (lift vertical + leve tilt; sem giro de rotor p/ não virar eólica) */
+@keyframes genius-icon-heli {
+  0%   { transform: translateY(0) rotate(0deg); }
+  35%  { transform: translateY(-4px) rotate(-3deg); }
+  60%  { transform: translateY(-2px) rotate(2deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+.genius-chip:hover .genius-icon-heli {
+  animation: genius-icon-heli 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* combustão móvel hidroviário → âncora baixa e balança (drop + sway naval) */
+@keyframes genius-icon-anchor {
+  0%   { transform: translateY(0) rotate(0deg); }
+  40%  { transform: translateY(3px) rotate(0deg); }
+  65%  { transform: translateY(2px) rotate(-5deg); }
+  85%  { transform: translateY(2px) rotate(4deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+.genius-chip:hover .genius-icon-anchor {
+  animation: genius-icon-anchor 800ms ease-in-out;
+}
+
+/* efluentes líquidos → gota acumula, cai e rebate (vertical drip) */
+@keyframes genius-icon-droplets {
+  0%   { transform: translateY(-2px) scaleY(1); }
+  45%  { transform: translateY(3px) scaleY(1.12); }
+  65%  { transform: translateY(3px) scaleY(0.9); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+.genius-chip:hover .genius-icon-droplets {
+  animation: genius-icon-droplets 700ms ease-in;
+}
+
+/* mudança no uso do solo → árvore tomba a partir da base e recupera */
+@keyframes genius-icon-trees {
+  0%   { transform: rotate(0deg) scaleY(1); }
+  40%  { transform: rotate(8deg) scaleY(0.92); }
+  70%  { transform: rotate(-2deg) scaleY(1); }
+  100% { transform: rotate(0deg) scaleY(1); }
+}
+.genius-chip:hover .genius-icon-trees {
+  transform-origin: bottom center;
+  animation: genius-icon-trees 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* resíduos compostagem → giro parcial cíclico (120deg + scale pop; distinto do snow 360deg) */
+@keyframes genius-icon-recycle {
+  0%   { transform: rotate(0deg) scale(1); }
+  60%  { transform: rotate(120deg) scale(1.05); }
+  100% { transform: rotate(120deg) scale(1); }
+}
+.genius-chip:hover .genius-icon-recycle {
+  animation: genius-icon-recycle 750ms cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+/* emissões casa-trabalho → passada em dois tempos (cadência de caminhar) */
+@keyframes genius-icon-footprints {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(-1px, -1px); }
+  50%      { transform: translate(0, 0); }
+  75%      { transform: translate(1px, -1px); }
+}
+.genius-chip:hover .genius-icon-footprints {
+  animation: genius-icon-footprints 700ms ease-in-out;
+}
+
+/* transporte aéreo downstream → pouso inbound (PlaneLanding: entra de cima, desce ao centro) */
+@keyframes genius-icon-air-down {
+  0%   { transform: translate(3px, -5px) rotate(6deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.genius-chip:hover .genius-icon-air-down {
+  animation: genius-icon-air-down 720ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* transporte aéreo upstream → decolagem outbound (PlaneTakeoff: sai p/ cima-direita) */
+@keyframes genius-icon-air-up {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  50%  { transform: translate(5px, -4px) rotate(-8deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.genius-chip:hover .genius-icon-air-up {
+  animation: genius-icon-air-up 750ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* transporte hidroviário downstream → navio zarpa outbound (direita) + bob de mar */
+@keyframes genius-icon-ship-down {
+  0%   { transform: translateX(0) translateY(0) rotate(0deg); }
+  50%  { transform: translateX(4px) translateY(-1px) rotate(2deg); }
+  100% { transform: translateX(0) translateY(0) rotate(0deg); }
+}
+.genius-chip:hover .genius-icon-ship-down {
+  animation: genius-icon-ship-down 780ms ease-in-out;
+}
+
+/* transporte hidroviário upstream → container embarca (desce de cima e assenta, squash no toque) */
+@keyframes genius-icon-container {
+  0%   { transform: translateY(-5px) scaleY(1); }
+  55%  { transform: translateY(0) scaleY(0.9); }
+  75%  { transform: translateY(0) scaleY(1.04); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+.genius-chip:hover .genius-icon-container {
+  animation: genius-icon-container 700ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* transporte rodoviário upstream → caminhão (fornecedor) chega, deslize seco com recuo */
+@keyframes genius-icon-truck {
+  0%   { transform: translateX(0); }
+  40%  { transform: translateX(3px); }
+  70%  { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+.genius-chip:hover .genius-icon-truck {
+  animation: genius-icon-truck 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* combustão móvel rodoviário → carro arranca (acelera p/ frente, leve nose-up) */
+@keyframes genius-icon-car {
+  0%   { transform: translateX(0) rotate(0deg); }
+  35%  { transform: translateX(4px) rotate(-2deg); }
+  70%  { transform: translateX(-1px) rotate(1deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+.genius-chip:hover .genius-icon-car {
+  animation: genius-icon-car 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* transporte rodoviário downstream → van entrega outbound (parte p/ direita, bounce de partida) */
+@keyframes genius-icon-van {
+  0%   { transform: translateX(0); }
+  55%  { transform: translateX(5px); }
+  80%  { transform: translateX(-1px); }
+  100% { transform: translateX(0); }
+}
+.genius-chip:hover .genius-icon-van {
+  animation: genius-icon-van 660ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -443,12 +596,114 @@ svg.lucide * {
   8%   { transform: translateY(0) scaleY(0.92); }
   11%  { transform: translateY(-1px) scaleY(1); }
 }
-.genius-success-kick.genius-icon-truck { animation: genius-loop-truck 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-zap   { animation: genius-loop-zap 5s ease-in-out 520ms infinite; }
 .genius-success-kick.genius-icon-snow  { animation: genius-loop-snow 5s cubic-bezier(0.45, 0, 0.2, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-flame { animation: genius-loop-flame 5s ease-in-out 520ms infinite; }
 .genius-success-kick.genius-icon-plane { animation: genius-loop-plane 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 .genius-success-kick.genius-icon-trash { animation: genius-loop-trash 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+
+/* ── Loop das categorias adicionais (modal sucesso) — movimento em ~14% do ciclo, resto idle ── */
+@keyframes genius-loop-beef {
+  0%, 14%, 100% { transform: scaleY(1) translateY(0); }
+  4%  { transform: scaleY(0.94) translateY(1px); }
+  8%  { transform: scaleY(1.02) translateY(0); }
+  11% { transform: scaleY(0.96) translateY(1px); }
+}
+@keyframes genius-loop-tractor {
+  0%   { transform: translate(0, 0); }
+  6%   { transform: translate(2px, -1px); }
+  10%  { transform: translate(3px, 0); }
+  14%  { transform: translate(0, 0); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes genius-loop-heli {
+  0%, 14%, 100% { transform: translateY(0) rotate(0deg); }
+  5%  { transform: translateY(-4px) rotate(-3deg); }
+  9%  { transform: translateY(-2px) rotate(2deg); }
+}
+@keyframes genius-loop-anchor {
+  0%, 14%, 100% { transform: translateY(0) rotate(0deg); }
+  6%  { transform: translateY(3px) rotate(0deg); }
+  9%  { transform: translateY(2px) rotate(-5deg); }
+  12% { transform: translateY(2px) rotate(4deg); }
+}
+@keyframes genius-loop-droplets {
+  0%   { transform: translateY(-2px) scaleY(1); }
+  6%   { transform: translateY(3px) scaleY(1.12); }
+  9%   { transform: translateY(3px) scaleY(0.9); }
+  14%  { transform: translateY(0) scaleY(1); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+@keyframes genius-loop-trees {
+  0%, 14%, 100% { transform: rotate(0deg) scaleY(1); }
+  6%  { transform: rotate(8deg) scaleY(0.92); }
+  10% { transform: rotate(-2deg) scaleY(1); }
+}
+@keyframes genius-loop-recycle {
+  0%   { transform: rotate(0deg) scale(1); }
+  10%  { transform: rotate(120deg) scale(1.05); }
+  16%  { transform: rotate(120deg) scale(1); }
+  100% { transform: rotate(120deg) scale(1); }
+}
+@keyframes genius-loop-footprints {
+  0%, 14%, 100% { transform: translate(0, 0); }
+  4%  { transform: translate(-1px, -1px); }
+  8%  { transform: translate(0, 0); }
+  11% { transform: translate(1px, -1px); }
+}
+@keyframes genius-loop-air-down {
+  0%   { transform: translate(3px, -5px) rotate(6deg); }
+  14%  { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes genius-loop-air-up {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  7%   { transform: translate(5px, -4px) rotate(-8deg); }
+  14%  { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+@keyframes genius-loop-ship-down {
+  0%   { transform: translateX(0) translateY(0) rotate(0deg); }
+  7%   { transform: translateX(4px) translateY(-1px) rotate(2deg); }
+  14%  { transform: translateX(0) translateY(0) rotate(0deg); }
+  100% { transform: translateX(0) translateY(0) rotate(0deg); }
+}
+@keyframes genius-loop-container {
+  0%   { transform: translateY(-5px) scaleY(1); }
+  8%   { transform: translateY(0) scaleY(0.9); }
+  11%  { transform: translateY(0) scaleY(1.04); }
+  14%  { transform: translateY(0) scaleY(1); }
+  100% { transform: translateY(0) scaleY(1); }
+}
+@keyframes genius-loop-van {
+  0%   { transform: translateX(0); }
+  8%   { transform: translateX(5px); }
+  11%  { transform: translateX(-1px); }
+  14%  { transform: translateX(0); }
+  100% { transform: translateX(0); }
+}
+@keyframes genius-loop-car {
+  0%   { transform: translateX(0) rotate(0deg); }
+  5%   { transform: translateX(4px) rotate(-2deg); }
+  10%  { transform: translateX(-1px) rotate(1deg); }
+  14%  { transform: translateX(0) rotate(0deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+.genius-success-kick.genius-icon-beef       { animation: genius-loop-beef 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-tractor    { animation: genius-loop-tractor 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-heli       { animation: genius-loop-heli 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-anchor     { animation: genius-loop-anchor 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-droplets   { animation: genius-loop-droplets 5s ease-in 520ms infinite; }
+.genius-success-kick.genius-icon-trees      { transform-origin: bottom center; animation: genius-loop-trees 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-recycle    { animation: genius-loop-recycle 5s cubic-bezier(0.45, 0, 0.2, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-footprints { animation: genius-loop-footprints 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-air-down   { animation: genius-loop-air-down 5s cubic-bezier(0.25, 1, 0.5, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-air-up     { animation: genius-loop-air-up 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-ship-down  { animation: genius-loop-ship-down 5s ease-in-out 520ms infinite; }
+.genius-success-kick.genius-icon-container  { animation: genius-loop-container 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-truck      { animation: genius-loop-truck 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-car        { animation: genius-loop-car 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
+.genius-success-kick.genius-icon-van        { animation: genius-loop-van 5s cubic-bezier(0.34, 1.56, 0.64, 1) 520ms infinite; }
 
 /* Disco do ícone: pop com overshoot */
 @keyframes genius-success-icon-pop {

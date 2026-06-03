@@ -48,6 +48,7 @@ export type EmissionCategory = {
   scope: 1 | 2 | 3
   schemas: TableSchema[]
   initialChat: ChatMessage[]
+  direction?: 'up' | 'down'
 }
 
 const now = new Date()

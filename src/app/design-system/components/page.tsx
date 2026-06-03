@@ -29,6 +29,16 @@ export default function ComponentsIndexPage() {
             <span className="text-sm text-planton-muted leading-[1.65]">{buttonMeta.description}</span>
             <span className="font-mono text-xs text-planton-muted/50 mt-1">{buttonMeta.filePath}</span>
           </Link>
+          <Link
+            href="/design-system/genius-icons"
+            className="group border-r border-b border-border p-6 flex flex-col gap-2 hover:bg-card transition-colors"
+          >
+            <span className="font-sans text-base font-medium text-foreground group-hover:text-planton-accent transition-colors">
+              Emission Icons
+            </span>
+            <span className="text-sm text-planton-muted leading-[1.65]">Catalog of GHG emission category icons with kinetic animations</span>
+            <span className="font-mono text-xs text-planton-muted/50 mt-1">src/components/genius/CategoryIcon.tsx</span>
+          </Link>
         </div>
       </section>
 

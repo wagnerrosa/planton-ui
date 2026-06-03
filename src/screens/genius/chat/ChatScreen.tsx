@@ -16,6 +16,7 @@ import { GeniusNavbarSync } from '@/components/navigation/GeniusNavbarSync'
 import { GeniusChatComposer, type SentFile } from '@/components/genius/GeniusChatComposer'
 import { InventoryDataGrid, type GridSelectionInfo } from '@/components/genius/InventoryDataGrid'
 import { ResumoTab } from '@/components/genius/ResumoTab'
+import { CategoryIcon } from '@/components/genius/CategoryIcon'
 import { CATEGORIES, DEFAULT_CATEGORY_ID, findCategory, getCategoryWorstStatus, getSchemaWorstStatus, type CellStatus, type ChatMessage, type EmissionCategory } from './mock-data'
 
 type ValidationState = 'idle' | 'checking' | 'has-issues' | 'ready'
@@ -64,16 +65,6 @@ const STATUS_BORDER_CLASS: Record<CellStatus, string> = {
 }
 
 type ViewMode = 'empty' | 'chat' | 'split'
-
-// Ícone cinético por categoria — classe dispara animação no hover do chip
-const CHIP_ICON_ANIM: Record<string, string> = {
-  'combustao-movel': 'genius-icon-truck',
-  'energia-eletrica': 'genius-icon-zap',
-  'emissoes-fugitivas': 'genius-icon-snow',
-  'combustao-estacionaria': 'genius-icon-flame',
-  'viagens-negocios': 'genius-icon-plane',
-  'residuos': 'genius-icon-trash',
-}
 
 // Estatísticas operacionais por categoria — mostradas no modal de sucesso pós-envio
 type SubmitStats = { registros: number; filiais: number }
@@ -1026,6 +1017,13 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
           {/* Overlay — gradiente: mais escuro na direita, mais transparente à esquerda (onde fica o card) */}
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.55) 100%)' }} aria-hidden />
 
+          {/* Legenda — categoria/escopo sob hover, canto inferior */}
+          <div className="absolute bottom-0 inset-x-0 z-10 p-6 md:p-8 bg-gradient-to-t from-black/50 to-transparent pointer-events-none">
+            <p className="text-white/90 text-sm font-sans font-medium drop-shadow transition-opacity duration-300">
+              {hoveredCat ? `Escopo ${hoveredCat.scope} · ${hoveredCat.label}` : 'Todos os escopos'}
+            </p>
+          </div>
+
           {/* Glass card */}
           <div ref={emptyCardRef} className="genius-empty-card relative z-10 flex flex-col items-start gap-5 px-5 py-6 sm:px-8 sm:py-8 max-w-sm w-full overflow-hidden" style={{ viewTransitionName: 'genius-canvas' }}>
             {/* Blur base sempre visível */}
@@ -1058,25 +1056,19 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
               </p>
             </div>
             <div className="relative z-10 grid grid-cols-2 gap-2 w-full">
-              {categoriesData.map((cat, i) => {
-                const Icon = cat.icon
-                const iconAnim = CHIP_ICON_ANIM[cat.id] ?? ''
-                return (
-                  <button
-                    key={cat.id}
-                    onClick={() => handleSelectCategory(cat.id)}
-                    onMouseEnter={() => setHoveredCategoryId(cat.id)}
-                    onMouseLeave={() => setHoveredCategoryId(null)}
-                    style={{ animationDelay: `${260 + i * 70}ms` }}
-                    className="genius-chip flex items-center gap-2 px-3 py-2.5 border border-white/20 bg-white/10 text-sm font-sans text-white hover:bg-white/20"
-                  >
-                    <span className={`genius-chip-icon shrink-0 text-white/80 ${iconAnim}`}>
-                      <Icon size={15} />
-                    </span>
-                    <span className="truncate text-left text-xs">{cat.label}</span>
-                  </button>
-                )
-              })}
+              {categoriesData.map((cat, i) => (
+                <button
+                  key={cat.id}
+                  onClick={() => handleSelectCategory(cat.id)}
+                  onMouseEnter={() => setHoveredCategoryId(cat.id)}
+                  onMouseLeave={() => setHoveredCategoryId(null)}
+                  style={{ animationDelay: `${260 + i * 70}ms` }}
+                  className="genius-chip flex items-center gap-2 px-3 py-2.5 border border-white/20 bg-white/10 text-sm font-sans text-white hover:bg-white/20"
+                >
+                  <CategoryIcon icon={cat.icon} categoryId={cat.id} variant="hover" className="text-white/80" />
+                  <span className="truncate text-left text-xs">{cat.label}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -1585,8 +1577,6 @@ function SubmitSuccess({
   totalCount: number
   onClose: () => void
 }) {
-  const Icon = category.icon
-  const iconAnim = CHIP_ICON_ANIM[category.id] ?? ''
   const stats = SUBMIT_STATS[category.id] ?? DEFAULT_SUBMIT_STATS
   const remaining = Math.max(totalCount - submittedCount, 0)
   const progress = totalCount > 0 ? submittedCount / totalCount : 0
@@ -1601,9 +1591,8 @@ function SubmitSuccess({
       <div className="relative mb-4">
         <Confetti />
         <div className="genius-success-icon genius-success-ring relative flex items-center justify-center w-16 h-16 rounded-full bg-planton-accent/12">
-          <span className={`genius-chip-icon text-planton-accent ${iconAnim} genius-success-kick`}>
-            <Icon size={30} />
-          </span>
+          <CategoryIcon icon={category.icon} categoryId={category.id} size={30} variant="loop" className="text-planton-accent" />
+
           <span className="absolute -bottom-1 -right-1 flex items-center justify-center w-6 h-6 rounded-full bg-planton-accent text-white ring-2 ring-background">
             <CheckCircle2 size={14} />
           </span>
