@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { Menu } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
-import { useGeniusNavbar } from './GeniusNavbarContext'
 import type { BreadcrumbItem } from './AcademyNavbar'
 
 const BASE = '/design-system/screens/genius'
@@ -21,7 +20,7 @@ export function GeniusNavbar({
 
   return (
     <nav className="sticky top-0 z-[60] border-b border-sidebar-border bg-sidebar">
-      <div className="w-full h-14 flex items-stretch">
+      <div className="w-full h-14 flex items-stretch relative">
 
         {/* Left */}
         <div className="flex items-stretch self-stretch flex-1 min-w-0">
@@ -69,6 +68,7 @@ export function GeniusNavbar({
             })}
           </nav>
         </div>
+
 
 
       </div>

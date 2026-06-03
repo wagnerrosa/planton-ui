@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import {
   MessageSquare,
   BarChart2,
-  Users,
   LogOut,
 } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
@@ -31,7 +30,6 @@ const NAV_GROUPS = [
     label: 'Dashboards',
     items: [
       { href: `${BASE}/dashboard-gerencial`, label: 'Dashboard Gerencial', icon: BarChart2 },
-      { href: `${BASE}/dashboard-respondente`, label: 'Dashboard do Respondente', icon: Users },
     ],
   },
 ]

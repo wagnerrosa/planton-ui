@@ -12,7 +12,9 @@ import {
   DialogTitle,
 } from '@/components/shadcn/dialog'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { TopNotificationBar } from '@/components/ui/TopNotificationBar'
 import { GeniusNavbarSync } from '@/components/navigation/GeniusNavbarSync'
+import { useGeniusNavbar } from '@/components/navigation/GeniusNavbarContext'
 import { GeniusChatComposer, type SentFile } from '@/components/genius/GeniusChatComposer'
 import { InventoryDataGrid, type GridSelectionInfo } from '@/components/genius/InventoryDataGrid'
 import { GridToolbar } from '@/components/genius/GridToolbar'
@@ -60,10 +62,6 @@ const STATUS_DOT_CLASS: Record<CellStatus, string> = {
   warning: 'bg-warning',
 }
 
-const STATUS_BORDER_CLASS: Record<CellStatus, string> = {
-  error: 'border-destructive',
-  warning: 'border-warning',
-}
 
 type ViewMode = 'empty' | 'chat' | 'split'
 
@@ -167,8 +165,15 @@ function buildInitialSchemas(): Record<string, string> {
   return Object.fromEntries(CATEGORIES.map((c) => [c.id, c.schemas[0].id]))
 }
 
-export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}) {
+export function ChatScreen({ userName = 'Usuário', daysRemaining: daysRemainingProp, onUpgradeClick }: { userName?: string; daysRemaining?: number; onUpgradeClick?: () => void } = {}) {
   const isMobile = useIsMobile()
+  const [daysRemaining] = useState<number | undefined>(() => {
+    if (daysRemainingProp !== undefined) return daysRemainingProp
+    // Mock: 50% chance de mostrar banner, com 1–14 dias aleatórios
+    if (Math.random() < 0.5) return undefined
+    return Math.floor(Math.random() * 14) + 1
+  })
+  const { setInventoryStatus } = useGeniusNavbar()
   const [input, setInput] = useState('')
   const [hoveredCategoryId, setHoveredCategoryId] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<ViewMode>('empty')
@@ -491,6 +496,10 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
       bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
   }, [activeChat])
+
+  useEffect(() => {
+    setInventoryStatus({ submittedCount: submittedCategories.size, totalCount: categoriesData.length })
+  }, [submittedCategories, categoriesData.length])
 
   // Mobile: sidebar de categorias vira overlay e começa fechada para não espremer o chat
   useEffect(() => {
@@ -995,6 +1004,15 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
     return (
       <>
         <GeniusNavbarSync breadcrumbs={[]} />
+        {daysRemaining !== undefined && (
+          <TopNotificationBar
+            message={`Você tem ${daysRemaining} ${daysRemaining === 1 ? 'dia' : 'dias'} para finalizar e enviar o inventário.`}
+            variant="accent"
+            ctaLabel="Enviar agora"
+            onCtaClick={onUpgradeClick}
+            dismissible
+          />
+        )}
         {/* Container do empty-state — ref de coordenadas para o blur clipado */}
         <div ref={emptyStageRef} className="genius-empty-stage relative flex flex-col items-start justify-center h-full px-8 md:px-16 overflow-hidden">
           {/* Base sempre visível — Escopo_todos */}
@@ -1085,7 +1103,16 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
     return (
       <div className="flex flex-col h-full">
         <GeniusNavbarSync breadcrumbs={[]} />
-        <div className="relative flex flex-col flex-1 overflow-hidden md:px-6 md:pt-5 md:pb-8">
+        {daysRemaining !== undefined && (
+          <TopNotificationBar
+            message={`Você tem ${daysRemaining} ${daysRemaining === 1 ? 'dia' : 'dias'} para finalizar e enviar o inventário.`}
+            variant="accent"
+            ctaLabel="Enviar agora"
+            onCtaClick={onUpgradeClick}
+            dismissible
+          />
+        )}
+        <div className="relative flex flex-col flex-1 overflow-hidden md:px-6 md:pt-8 md:pb-8">
           {/* Imagem de fundo persistente — borrada e escurecida */}
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/assets_ilutracoes/Escopo_todos.jpg)' }} aria-hidden />
           <div className="absolute inset-0 bg-black/55" aria-hidden />
@@ -1165,11 +1192,9 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                                 <button
                                   onClick={() => handleSelectCategory(cat.id)}
                                   title={!categoriesOpen ? cat.label : undefined}
-                                  className={`w-full flex items-center ${categoriesOpen ? 'gap-2.5 px-3 justify-start' : 'justify-center px-0'} py-2 text-xs font-sans transition-colors border-l-2 ${
-                                    isActive ? 'border-planton-accent' : 'border-transparent'
-                                  } ${
+                                  className={`w-full flex items-center ${categoriesOpen ? 'gap-2.5 px-3 justify-start' : 'justify-center px-0'} py-2 text-xs font-sans transition-colors ${
                                     isActive
-                                      ? 'bg-background text-foreground font-medium'
+                                      ? 'bg-planton-accent/12 text-foreground font-semibold'
                                       : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                                   }`}
                                 >
@@ -1233,7 +1258,16 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
   return (
     <div className="flex flex-col h-full">
       <GeniusNavbarSync breadcrumbs={[]} />
-      <div className="relative flex flex-col flex-1 overflow-hidden px-6 pt-5 pb-8">
+      {daysRemaining !== undefined && (
+        <TopNotificationBar
+          message={`Faltam ${daysRemaining} ${daysRemaining === 1 ? 'dia' : 'dias'} para enviar o inventário.`}
+          variant="accent"
+          ctaLabel="Enviar agora"
+          onCtaClick={onUpgradeClick}
+          dismissible
+        />
+      )}
+      <div className="relative flex flex-col flex-1 overflow-hidden px-6 pt-8 pb-8">
         {/* Imagem de fundo persistente — borrada e escurecida */}
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: 'url(/assets_ilutracoes/Escopo_todos.jpg)' }} aria-hidden />
         <div className="absolute inset-0 bg-black/55" aria-hidden />
@@ -1304,19 +1338,14 @@ export function ChatScreen({ userName = 'Usuário' }: { userName?: string } = {}
                         const isActive = cat.id === activeCategoryId
                         const isCatSubmitted = submittedCategories.has(cat.id)
                         const worst = getCategoryWorstStatus(cat)
-                        const borderClass = isActive
-                          ? 'border-planton-accent'
-                          : worst
-                            ? STATUS_BORDER_CLASS[worst]
-                            : 'border-transparent'
                         return (
                           <li key={cat.id}>
                             <button
                               onClick={() => handleSelectCategory(cat.id)}
                               title={!categoriesOpen ? cat.label : undefined}
-                              className={`w-full flex items-center ${categoriesOpen ? 'gap-2.5 px-3 justify-start' : 'justify-center px-0'} py-2 text-xs font-sans transition-colors border-l-2 ${borderClass} ${
+                              className={`w-full flex items-center ${categoriesOpen ? 'gap-2.5 px-3 justify-start' : 'justify-center px-0'} py-2 text-xs font-sans transition-colors ${
                                 isActive
-                                  ? 'bg-background text-foreground font-medium'
+                                  ? 'bg-planton-accent/12 text-foreground font-semibold'
                                   : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                               }`}
                             >
