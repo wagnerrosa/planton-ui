@@ -138,14 +138,14 @@ export function GridToolbar({
           )}
         </div>
 
-        <ToolbarButton icon={Undo2} label="Desfazer" shortcut={`${mod}+Z`} description="Reverte a última alteração feita na tabela." onClick={onUndo} disabled={!canUndo} className="ml-3" />
+        <ToolbarButton icon={Undo2} label="Desfazer" shortcut={`${mod}+Z`} description="Reverte a última alteração feita na tabela." onClick={onUndo} disabled={!canUndo} className="ml-5" />
         <ToolbarButton icon={Redo2} label="Refazer" shortcut={`${mod}+Shift+Z`} description="Reaplica a alteração que foi desfeita." onClick={onRedo} disabled={!canRedo} />
 
-        <ToolbarButton icon={Copy} label="Copiar" shortcut={`${mod}+C`} description="Copia as células selecionadas para a área de transferência." onClick={onCopy} disabled={!hasSelection} className="ml-3" />
+        <ToolbarButton icon={Copy} label="Copiar" shortcut={`${mod}+C`} description="Copia as células selecionadas para a área de transferência." onClick={onCopy} disabled={!hasSelection} className="ml-5" />
         <ToolbarButton icon={Scissors} label="Recortar" shortcut={`${mod}+X`} description="Copia as células e limpa os valores de origem." onClick={onCut} disabled={!hasSelection} />
         <ToolbarButton icon={ClipboardPaste} label="Colar" shortcut={`${mod}+V`} description="Cola o conteúdo na célula ativa. Colunas fora do schema são ignoradas." onClick={onPaste} />
 
-        <ToolbarButton icon={Trash2} label="Limpar seleção" shortcut="Delete" description="Apaga os valores das células selecionadas. Linhas que ficarem vazias são removidas." onClick={onDelete} disabled={!hasSelection} className="ml-3" />
+        <ToolbarButton icon={Trash2} label="Limpar seleção" shortcut="Delete" description="Apaga os valores das células selecionadas. Linhas que ficarem vazias são removidas." onClick={onDelete} disabled={!hasSelection} className="ml-5" />
       </div>
     </TooltipProvider>
   )
