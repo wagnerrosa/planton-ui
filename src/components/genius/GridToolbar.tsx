@@ -26,9 +26,10 @@ type ToolbarButtonProps = {
   shortcut?: string
   onClick?: () => void
   disabled?: boolean
+  className?: string
 }
 
-function ToolbarButton({ icon: Icon, label, description, shortcut, onClick, disabled }: ToolbarButtonProps) {
+function ToolbarButton({ icon: Icon, label, description, shortcut, onClick, disabled, className }: ToolbarButtonProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -37,7 +38,7 @@ function ToolbarButton({ icon: Icon, label, description, shortcut, onClick, disa
           onClick={onClick}
           disabled={disabled}
           aria-label={label}
-          className="flex items-center justify-center w-7 h-7 rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+          className={`flex items-center justify-center w-7 h-7 rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-35 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-muted-foreground ${className ?? ''}`}
         >
           <Icon size={14} />
         </button>
@@ -55,10 +56,6 @@ function ToolbarButton({ icon: Icon, label, description, shortcut, onClick, disa
       </TooltipContent>
     </Tooltip>
   )
-}
-
-function Divider() {
-  return <span className="w-px h-4 bg-border shrink-0" aria-hidden />
 }
 
 type Props = {
@@ -109,23 +106,14 @@ export function GridToolbar({
   return (
     <TooltipProvider delayDuration={150}>
       <div className="flex items-center gap-1 px-2 h-9 border-b border-border bg-muted/20 shrink-0">
-        <ToolbarButton icon={Undo2} label="Desfazer" shortcut={`${mod}+Z`} description="Reverte a última alteração feita na tabela." onClick={onUndo} disabled={!canUndo} />
-        <ToolbarButton icon={Redo2} label="Refazer" shortcut={`${mod}+Shift+Z`} description="Reaplica a alteração que foi desfeita." onClick={onRedo} disabled={!canRedo} />
-
-        <Divider />
-
-        <ToolbarButton icon={Copy} label="Copiar" shortcut={`${mod}+C`} description="Copia as células selecionadas para a área de transferência." onClick={onCopy} disabled={!hasSelection} />
-        <ToolbarButton icon={Scissors} label="Recortar" shortcut={`${mod}+X`} description="Copia as células e limpa os valores de origem." onClick={onCut} disabled={!hasSelection} />
-        <ToolbarButton icon={ClipboardPaste} label="Colar" shortcut={`${mod}+V`} description="Cola o conteúdo na célula ativa. Colunas fora do schema são ignoradas." onClick={onPaste} />
-
-        <Divider />
-
-        <ToolbarButton icon={Trash2} label="Limpar seleção" shortcut="Delete" description="Apaga os valores das células selecionadas. Linhas que ficarem vazias são removidas." onClick={onDelete} disabled={!hasSelection} />
-
-        {/* Busca — empurrada para a direita */}
-        <div className="ml-auto flex items-center">
+        {/* Busca — primeiro item, à esquerda. Expande com ease-in, empurra os demais. */}
+        <div
+          className={`relative flex items-center h-7 rounded-md transition-all duration-200 ease-in overflow-hidden ${
+            searchOpen ? 'w-56 px-2 gap-1 border border-border bg-background' : 'w-7 gap-0 border border-transparent'
+          }`}
+        >
           {searchOpen ? (
-            <div className="flex items-center gap-1 px-2 h-7 rounded-md border border-border bg-background">
+            <>
               <Search size={13} className="text-muted-foreground shrink-0" />
               <input
                 ref={searchInputRef}
@@ -134,7 +122,7 @@ export function GridToolbar({
                 onChange={(e) => onSearchChange?.(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Escape') closeSearch() }}
                 placeholder="Buscar na tabela…"
-                className="w-40 bg-transparent text-xs font-sans text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+                className="min-w-0 flex-1 bg-transparent text-xs font-sans text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
               />
               <button
                 type="button"
@@ -144,11 +132,20 @@ export function GridToolbar({
               >
                 <X size={12} />
               </button>
-            </div>
+            </>
           ) : (
             <ToolbarButton icon={Search} label="Buscar" shortcut={`${mod}+F`} description="Procura um valor em todas as células da aba." onClick={() => setSearchOpen(true)} />
           )}
         </div>
+
+        <ToolbarButton icon={Undo2} label="Desfazer" shortcut={`${mod}+Z`} description="Reverte a última alteração feita na tabela." onClick={onUndo} disabled={!canUndo} className="ml-3" />
+        <ToolbarButton icon={Redo2} label="Refazer" shortcut={`${mod}+Shift+Z`} description="Reaplica a alteração que foi desfeita." onClick={onRedo} disabled={!canRedo} />
+
+        <ToolbarButton icon={Copy} label="Copiar" shortcut={`${mod}+C`} description="Copia as células selecionadas para a área de transferência." onClick={onCopy} disabled={!hasSelection} className="ml-3" />
+        <ToolbarButton icon={Scissors} label="Recortar" shortcut={`${mod}+X`} description="Copia as células e limpa os valores de origem." onClick={onCut} disabled={!hasSelection} />
+        <ToolbarButton icon={ClipboardPaste} label="Colar" shortcut={`${mod}+V`} description="Cola o conteúdo na célula ativa. Colunas fora do schema são ignoradas." onClick={onPaste} />
+
+        <ToolbarButton icon={Trash2} label="Limpar seleção" shortcut="Delete" description="Apaga os valores das células selecionadas. Linhas que ficarem vazias são removidas." onClick={onDelete} disabled={!hasSelection} className="ml-3" />
       </div>
     </TooltipProvider>
   )
