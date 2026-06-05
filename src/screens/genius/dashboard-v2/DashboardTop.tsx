@@ -13,7 +13,7 @@ import {
   type Overview,
   type CombinationStatus,
   type AttentionItem,
-} from '../dashboard-gerencial/dashboard-data'
+} from './dashboard-data'
 import { SEGMENT_ORDER, SEVERITY_META } from './v2-derive'
 
 function useCountUp(target: number, durationMs = 900) {

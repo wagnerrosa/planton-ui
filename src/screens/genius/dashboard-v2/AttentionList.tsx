@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { AlertTriangle, ChevronRight, Check } from 'lucide-react'
-import type { AttentionItem } from '../dashboard-gerencial/dashboard-data'
+import type { AttentionItem } from './dashboard-data'
 import { SEVERITY_META } from './v2-derive'
 
 const PREVIEW_COUNT = 3

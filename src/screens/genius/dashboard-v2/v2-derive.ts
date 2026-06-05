@@ -10,7 +10,7 @@ import {
   type Combination,
   type Filial,
   type AttentionItem,
-} from '../dashboard-gerencial/dashboard-data'
+} from './dashboard-data'
 
 // Ordem canônica dos segmentos da barra: pior → neutro (espelha a union de
 // CombinationStatus, do mais urgente ao menos). Usada na barra segmentada e na

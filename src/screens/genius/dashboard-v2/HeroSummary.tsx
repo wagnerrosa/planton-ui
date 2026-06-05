@@ -11,7 +11,7 @@ import {
   STATUS_META,
   type Overview,
   type CombinationStatus,
-} from '../dashboard-gerencial/dashboard-data'
+} from './dashboard-data'
 import { SEGMENT_ORDER } from './v2-derive'
 
 function useCountUp(target: number, durationMs = 900) {

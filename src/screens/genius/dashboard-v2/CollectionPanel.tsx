@@ -16,7 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/shadcn/tooltip'
-import { STATUS_META, getCategoriaRollup, FILIAIS, CATEGORIA_COLS } from '../dashboard-gerencial/dashboard-data'
+import { STATUS_META, getCategoriaRollup, FILIAIS, CATEGORIA_COLS } from './dashboard-data'
 import { getFilialRows, getCategoriaStatusStrip, type FilialRow, type StatusDot, type FilialDot } from './v2-derive'
 
 type Axis = 'filial' | 'categoria'

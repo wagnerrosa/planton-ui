@@ -4,13 +4,13 @@ import { useMemo, useState } from 'react'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { Check, X, Clock, AlertTriangle } from 'lucide-react'
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/shadcn/sheet'
-import { StatusPill } from '../dashboard-gerencial/StatusPill'
+import { StatusPill } from './StatusPill'
 import {
   CATEGORIA_COLS,
   findFilial,
   type Combination,
   type Filial,
-} from '../dashboard-gerencial/dashboard-data'
+} from './dashboard-data'
 import { getCombinationTimeline, type TimelineEvent } from './v2-derive'
 
 export type DrawerTarget = { filialId: string; categoriaId?: string } | null

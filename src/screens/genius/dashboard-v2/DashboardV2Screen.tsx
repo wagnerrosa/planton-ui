@@ -7,7 +7,7 @@ import {
   ANO_BASE,
   getOverview,
   getAttentionItems,
-} from '../dashboard-gerencial/dashboard-data'
+} from './dashboard-data'
 import { FilialDrawerV2, type DrawerTarget } from './FilialDrawerV2'
 import { AttentionSheet } from './AttentionSheet'
 import { getTotalLinhas } from './v2-derive'

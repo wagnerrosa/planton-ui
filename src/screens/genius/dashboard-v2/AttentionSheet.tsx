@@ -3,7 +3,7 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { ChevronRight } from 'lucide-react'
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/shadcn/sheet'
-import type { AttentionItem } from '../dashboard-gerencial/dashboard-data'
+import type { AttentionItem } from './dashboard-data'
 import { SEVERITY_META } from './v2-derive'
 
 
