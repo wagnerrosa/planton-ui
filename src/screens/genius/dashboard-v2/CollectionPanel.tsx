@@ -8,6 +8,7 @@ import {
   ChevronDown,
   ArrowUpDown,
   ChevronRight,
+  ChevronLeft,
 } from 'lucide-react'
 import {
   Tooltip,
@@ -42,6 +43,7 @@ export function CollectionPanel({
             onClick={() => setAxis('filial')}
             icon={<Building2 size={14} />}
             label="Por filial"
+            activeClass="bg-planton-forest text-planton-accent"
           />
           <ToggleBtn
             active={axis === 'categoria'}
@@ -148,7 +150,6 @@ function FilialRowItem({
   onOpenDrawer: (filialId: string, categoriaId?: string) => void
 }) {
   const [open, setOpen] = useState(false)
-  const hasResp = !!row.respondenteNome
 
   return (
     <div className="bg-card border border-border">
@@ -156,27 +157,26 @@ function FilialRowItem({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors overflow-hidden"
+        className="relative w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors overflow-hidden"
       >
         <ChevronDown
           size={15}
           className={`text-muted-foreground shrink-0 transition-transform ${open ? '' : '-rotate-90'}`}
         />
-        <span
-          className={`flex items-center justify-center w-10 h-10 shrink-0 font-heading text-[12px] font-semibold ${
-            hasResp
-              ? 'bg-planton-forest text-planton-accent'
-              : 'bg-warning-surface text-warning border border-warning-border'
-          }`}
-        >
+        <span className="flex items-center justify-center w-10 h-10 shrink-0 font-heading text-[12px] font-semibold bg-planton-forest text-planton-accent">
           {row.sigla}
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[14px] font-sans font-medium text-foreground truncate">{row.nome}</p>
+          <div className="flex items-center h-[18px] mt-0.5">
+            <span className="text-[11px] font-sans text-muted-foreground truncate">
+              {row.categoriasComDados} {row.categoriasComDados === 1 ? 'categoria com dados' : 'categorias com dados'} · {row.categoriasSemDados} sem dados
+            </span>
+          </div>
         </div>
 
-        {/* Strip de status por categoria — centralizado */}
-        <div className="flex-1 flex justify-center">
+        {/* Strip — absoluto, centro geométrico da linha */}
+        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
           <StatusStrip strip={row.strip} />
         </div>
 
@@ -218,11 +218,14 @@ function FilialRowItem({
   )
 }
 
+const MAX_DOTS = 6
+
 function StatusStrip({ strip }: { strip: StatusDot[] }) {
+  const visible = strip.slice(0, MAX_DOTS)
   return (
     <TooltipProvider delayDuration={120}>
       <div className="hidden md:flex items-center gap-1 shrink-0">
-        {strip.map((dot) => {
+        {visible.map((dot) => {
           const meta = STATUS_META[dot.status]
           return (
             <Tooltip key={dot.categoriaId}>
@@ -244,10 +247,11 @@ function StatusStrip({ strip }: { strip: StatusDot[] }) {
 }
 
 function FilialStrip({ strip }: { strip: FilialDot[] }) {
+  const visible = strip.slice(0, MAX_DOTS)
   return (
     <TooltipProvider delayDuration={120}>
       <div className="hidden md:flex items-center gap-1 shrink-0">
-        {strip.map((dot) => {
+        {visible.map((dot) => {
           const meta = STATUS_META[dot.status]
           return (
             <Tooltip key={dot.filialId}>
@@ -316,6 +320,8 @@ function CategoriaList({
   )
 }
 
+const PAGE_SIZE = 18
+
 function CategoriaRowItem({
   cat,
   onOpenDrawer,
@@ -324,31 +330,48 @@ function CategoriaRowItem({
   onOpenDrawer: (filialId: string, categoriaId?: string) => void
 }) {
   const [open, setOpen] = useState(false)
+  const [page, setPage] = useState(0)
   const Icon = cat.icon
+
+  const aplicaveis = cat.unidades.filter((u) => u.status !== 'nao-aplicavel')
+  const totalPages = Math.ceil(aplicaveis.length / PAGE_SIZE)
+  const pageUnidades = aplicaveis.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  const from = page * PAGE_SIZE + 1
+  const to = Math.min((page + 1) * PAGE_SIZE, aplicaveis.length)
+
+  function handleToggle() {
+    setOpen((v) => !v)
+    setPage(0)
+  }
 
   return (
     <div className="bg-card border border-border">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors overflow-hidden"
+        onClick={handleToggle}
+        className="relative w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors overflow-hidden"
       >
         <ChevronDown
           size={15}
           className={`text-muted-foreground shrink-0 transition-transform ${open ? '' : '-rotate-90'}`}
         />
-        <span className="flex items-center justify-center w-10 h-10 shrink-0 bg-planton-forest text-planton-accent">
+        <span className="flex items-center justify-center w-10 h-10 shrink-0 bg-planton-accent text-planton-forest">
           <Icon size={18} />
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-[14px] font-sans font-medium text-foreground truncate">{cat.label}</p>
-          <p className="text-[11px] font-sans text-muted-foreground truncate">
-            Escopo {cat.scope} · {cat.unidadesComDados} {cat.unidadesComDados === 1 ? 'filial com dados' : 'filiais com dados'} · {cat.unidadesSemDados} sem dados
-          </p>
+          <div className="flex items-center gap-1.5 h-[18px] mt-0.5">
+            <span className="inline-flex items-center px-1.5 h-full text-[9px] font-heading font-semibold uppercase tracking-wider border border-border text-muted-foreground shrink-0">
+              Escopo {cat.scope}
+            </span>
+            <span className="text-[11px] font-sans text-muted-foreground truncate">
+              {cat.unidadesComDados} {cat.unidadesComDados === 1 ? 'filial com dados' : 'filiais com dados'} · {cat.unidadesSemDados} sem dados
+            </span>
+          </div>
         </div>
 
-        {/* Strip de status por filial — centralizado */}
-        <div className="flex-1 flex justify-center">
+        {/* Strip — absoluto, centro geométrico da linha */}
+        <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex">
           <FilialStrip strip={getCategoriaStatusStrip(cat.id)} />
         </div>
 
@@ -363,31 +386,68 @@ function CategoriaRowItem({
         </div>
       </button>
 
-      {/* Expansão: filiais em grid 3 colunas */}
+      {/* Expansão: filiais em grid 3 colunas com paginação */}
       {open && (
-        <div className="border-t border-border bg-muted/20 px-5 py-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {cat.unidades.map((u) => (
-            <button
-              key={u.filialId}
-              type="button"
-              onClick={() => onOpenDrawer(u.filialId, cat.id)}
-              className="group flex items-center justify-between gap-3 bg-card border border-border px-4 py-3 text-left hover:border-planton-accent/50 transition-colors"
-            >
-              <div className="min-w-0">
-                <p className="text-[13px] font-sans font-medium text-foreground truncate">{u.nome}</p>
-                <p className="text-[11px] font-sans text-muted-foreground truncate mt-0.5">{u.observacao}</p>
+        <div className="border-t border-border bg-muted/20 px-5 py-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {pageUnidades.map((u) => (
+              <button
+                key={u.filialId}
+                type="button"
+                onClick={() => onOpenDrawer(u.filialId, cat.id)}
+                className="group flex items-center justify-between gap-3 bg-card border border-border px-4 py-3 text-left hover:border-planton-accent/50 transition-colors"
+              >
+                <div className="min-w-0">
+                  <p className="text-[13px] font-sans font-medium text-foreground truncate">{u.nome}</p>
+                  <p className="text-[11px] font-sans text-muted-foreground truncate mt-0.5">{u.observacao}</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 border text-[10px] font-sans font-medium whitespace-nowrap ${STATUS_META[u.status].cellClass}`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_META[u.status].dotClass}`} />
+                    {STATUS_META[u.status].label}
+                  </span>
+                  <ChevronRight size={12} className="text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
+            ))}
+            {totalPages > 1 && Array.from({ length: PAGE_SIZE - pageUnidades.length }).map((_, i) => (
+              <div key={`ph-${i}`} className="px-4 py-3 invisible" aria-hidden>
+                <p className="text-[13px]">&nbsp;</p>
+                <p className="text-[11px] mt-0.5">&nbsp;</p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                <span
-                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 border text-[10px] font-sans font-medium whitespace-nowrap ${STATUS_META[u.status].cellClass}`}
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-3 pt-3 border-t border-border">
+              <span className="text-[11px] font-sans text-muted-foreground">
+                {from}–{to} de {aplicaveis.length} filiais
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => p - 1)}
+                  disabled={page === 0}
+                  className="flex items-center justify-center w-7 h-7 border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                 >
-                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_META[u.status].dotClass}`} />
-                  {STATUS_META[u.status].label}
+                  <ChevronLeft size={13} />
+                </button>
+                <span className="text-[11px] font-sans text-muted-foreground tabular-nums px-2">
+                  {page + 1} / {totalPages}
                 </span>
-                <ChevronRight size={12} className="text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={page === totalPages - 1}
+                  className="flex items-center justify-center w-7 h-7 border border-border text-muted-foreground hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight size={13} />
+                </button>
               </div>
-            </button>
-          ))}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -401,18 +461,20 @@ function ToggleBtn({
   onClick,
   icon,
   label,
+  activeClass = 'bg-planton-accent text-white',
 }: {
   active: boolean
   onClick: () => void
   icon: React.ReactNode
   label: string
+  activeClass?: string
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={`flex items-center gap-1.5 px-3 h-8 text-[12px] font-sans font-medium transition-colors ${
-        active ? 'bg-planton-accent text-white' : 'bg-card text-muted-foreground hover:bg-muted'
+        active ? activeClass : 'bg-card text-muted-foreground hover:bg-muted'
       }`}
     >
       {icon}

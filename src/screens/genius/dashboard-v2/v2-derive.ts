@@ -112,11 +112,15 @@ export type FilialRow = {
   pct: number
   worstStatus: CombinationStatus
   strip: StatusDot[]
+  categoriasComDados: number
+  categoriasSemDados: number
 }
 
 export function getFilialRows(): FilialRow[] {
   return FILIAIS.map((f) => {
     const prog = getFilialProgress(f)
+    const aplicaveis = CATEGORIA_COLS.filter((c) => f.combinacoes[c.id].status !== 'nao-aplicavel')
+    const comDados = aplicaveis.filter((c) => f.combinacoes[c.id].volume.totalLinhas > 0)
     return {
       id: f.id,
       sigla: f.sigla,
@@ -127,6 +131,8 @@ export function getFilialRows(): FilialRow[] {
       pct: prog.pct,
       worstStatus: getFilialWorstStatus(f),
       strip: getFilialStatusStrip(f),
+      categoriasComDados: comDados.length,
+      categoriasSemDados: aplicaveis.length - comDados.length,
     }
   })
 }
@@ -141,13 +147,14 @@ export type TimelineState = 'done' | 'current' | 'pending' | 'fail'
 export type TimelineEvent = {
   key: string
   label: string
-  detail?: string
-  action?: string  // CTA contextual exibido como mini-banner inline na etapa
+  detail?: string  // data · hora
+  meta?: string    // contexto secundário (linhas, resultado, etc.)
+  action?: string  // CTA contextual — mini-banner inline
   state: TimelineState
 }
 
 export function getCombinationTimeline(comb: Combination): TimelineEvent[] {
-  const { status, respondente, atividade, qualidade } = comb
+  const { status, respondente, atividade, qualidade, datas } = comb
 
   if (status === 'nao-aplicavel') {
     return [{ key: 'na', label: 'Não aplicável a esta filial', state: 'pending' }]
@@ -159,10 +166,8 @@ export function getCombinationTimeline(comb: Combination): TimelineEvent[] {
   const isSent = status === 'enviado' || status === 'aprovado'
   const isApproved = status === 'aprovado'
   const isReproved = status === 'reprovado'
-  // verificação automática rodou se tem resultado definido
   const verifRodou = qualidade.resultado !== 'nunca'
   const verifFalhou = qualidade.resultado === 'falhou' && qualidade.linhasProblema > 0
-  // ciclo com retrabalho: verificação falhou mas status avançou (enviado/aprovado) = corrigiu e reenviou
   const teveCicloCorreção = verifFalhou && (isSent || isReproved)
 
   const events: TimelineEvent[] = []
@@ -171,18 +176,19 @@ export function getCombinationTimeline(comb: Combination): TimelineEvent[] {
   events.push({
     key: 'alocado',
     label: hasResp ? 'Responsável alocado' : 'Aguardando alocação de responsável',
-    detail: hasResp ? respondente!.alocadaEm : undefined,
+    detail: datas.alocado,
     action: !hasResp ? 'Acesse o painel de usuários para designar um responsável a esta combinação.' : undefined,
     state: hasResp ? 'done' : 'current',
   })
   if (!hasResp) return events
 
-  // 2. Dados recebidos (só aparece quando há dados)
+  // 2. Dados recebidos
   if (hasData) {
     events.push({
       key: 'dados-recebidos',
       label: 'Dados recebidos',
-      detail: `${comb.volume.totalLinhas.toLocaleString('pt-BR')} linhas`,
+      detail: datas.dadosRecebidos,
+      meta: `${comb.volume.totalLinhas.toLocaleString('pt-BR')} linhas`,
       state: 'done',
     })
   } else if (isFilling) {
@@ -198,65 +204,63 @@ export function getCombinationTimeline(comb: Combination): TimelineEvent[] {
     return events
   }
 
-  // 3. Verificação automática — só aparece se rodou
+  // 3. Verificação automática
   if (verifRodou) {
     if (teveCicloCorreção) {
-      // falhou primeiro (histórico — já corrigiu)
       events.push({
         key: 'verif-falhou',
         label: 'Verificação automática',
-        detail: `${qualidade.linhasProblema} linhas com problema`,
+        detail: datas.verificacaoFalhou,
+        action: `${qualidade.linhasProblema} linhas com problema`,
         state: 'fail',
       })
-      // corrigiu e reenviou
       events.push({
         key: 'correcao',
         label: 'Correção e reenvio',
-        detail: atividade.ultimaAtualizacao,
+        detail: datas.correcaoReenvio,
         state: 'done',
       })
-      // segunda verificação (passou)
       events.push({
         key: 'verif-passou',
         label: 'Verificação automática',
-        detail: `passou · ${qualidade.ultimaVerificacao}`,
+        detail: datas.verificacaoPassed,
+        meta: 'passou',
         state: 'done',
       })
     } else if (verifFalhou && isFilling) {
-      // verificação falhou — aguardando correção do responsável
       events.push({
         key: 'verif-falhou',
         label: 'Verificação automática',
-        detail: `${qualidade.linhasProblema} linhas com problema`,
-        action: `Contate ${respondente!.nome} para corrigir e reenviar os dados.`,
+        detail: datas.verificacaoFalhou,
+        action: `${qualidade.linhasProblema} linhas com problema`,
         state: 'fail',
       })
       events.push({
         key: 'correcao',
         label: 'Correção pendente',
-        detail: atividade.diasSemAtualizar > 0
+        meta: atividade.diasSemAtualizar > 0
           ? `${atividade.diasSemAtualizar} dia${atividade.diasSemAtualizar !== 1 ? 's' : ''} sem atualização`
           : undefined,
         state: 'current',
       })
       return events
     } else {
-      // passou de primeira
       events.push({
         key: 'verif-passou',
         label: 'Verificação automática',
-        detail: `passou · ${qualidade.ultimaVerificacao}`,
+        detail: datas.verificacaoPassed,
+        meta: 'passou',
         state: isSent || isReproved || isApproved ? 'done' : 'current',
       })
     }
   }
 
-  // 4. Dados enviados para revisão humana
+  // 4. Enviado para revisão humana
   if (isSent || isReproved) {
     events.push({
       key: 'enviado',
       label: 'Enviado para revisão',
-      detail: atividade.ultimaAtualizacao,
+      detail: datas.enviado,
       state: 'done',
     })
   } else if (!verifRodou || (verifRodou && !verifFalhou)) {
@@ -266,13 +270,19 @@ export function getCombinationTimeline(comb: Combination): TimelineEvent[] {
 
   // 5. Resultado da revisão humana
   if (isApproved) {
-    events.push({ key: 'resultado', label: 'Aprovado', state: 'done' })
+    events.push({
+      key: 'resultado',
+      label: 'Aprovado',
+      detail: datas.aprovado,
+      meta: datas.totalLinhas ? `${datas.totalLinhas.toLocaleString('pt-BR')} linhas` : undefined,
+      state: 'done',
+    })
   } else if (isReproved) {
     events.push({
       key: 'resultado',
       label: 'Reprovado pelo gestor',
-      detail: `${qualidade.linhasProblema} linhas a corrigir`,
-      action: `Contate ${respondente!.nome} para corrigir as inconsistências e reenviar.`,
+      detail: datas.reprovado,
+      action: `${qualidade.linhasProblema} linhas a corrigir. Solicite ao responsável para corrigir os dados e reenviar.`,
       state: 'fail',
     })
     events.push({ key: 'aguarda-reenvio', label: 'Aguardando correção e reenvio', state: 'current' })

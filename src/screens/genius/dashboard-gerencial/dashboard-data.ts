@@ -115,6 +115,18 @@ export type Combination = {
     ultimaVerificacao: string
     resultado: 'passou' | 'falhou' | 'nunca'
   }
+  // Datas auditáveis por etapa do ciclo
+  datas: {
+    alocado?: string
+    dadosRecebidos?: string
+    verificacaoFalhou?: string
+    correcaoReenvio?: string
+    verificacaoPassed?: string
+    enviado?: string
+    reprovado?: string
+    aprovado?: string
+    totalLinhas?: number
+  }
 }
 
 export type Filial = {
@@ -221,6 +233,17 @@ const FILIAL_SEEDS: FilialSeed[] = [
     id: 'campinas', sigla: 'CP', nome: 'Campinas', respIdx: 4,
     status: ['enviado', 'aprovado', 'enviado', 'aprovado', 'nao-aplicavel', 'enviado'],
   },
+  // Filiais extras — mock para demonstrar paginação (combustão móvel com 20+ filiais)
+  { id: 'natal', sigla: 'NT', nome: 'Natal', respIdx: 0, status: ['aprovado', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'maceio', sigla: 'MC', nome: 'Maceió', respIdx: 1, status: ['reprovado', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'joao-pessoa', sigla: 'JP', nome: 'João Pessoa', respIdx: 2, status: ['em-preenchimento', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'teresina', sigla: 'TE', nome: 'Teresina', respIdx: null, status: ['sem-respondente', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'sao-luis', sigla: 'SL', nome: 'São Luís', respIdx: 3, status: ['aguardando', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'belem', sigla: 'BM', nome: 'Belém', respIdx: 4, status: ['enviado', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'macapa', sigla: 'MP', nome: 'Macapá', respIdx: 5, status: ['aprovado', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'porto-velho', sigla: 'PV', nome: 'Porto Velho', respIdx: null, status: ['sem-respondente', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'rio-branco', sigla: 'RB', nome: 'Rio Branco', respIdx: 6, status: ['reprovado', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
+  { id: 'boa-vista', sigla: 'BV', nome: 'Boa Vista', respIdx: 7, status: ['em-preenchimento', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel', 'nao-aplicavel'] },
 ]
 
 // Esquemas por categoria (rótulos derivados do Chat) p/ a seção Volume do drawer.
@@ -243,6 +266,7 @@ function buildCombination(seed: FilialSeed, catIdx: number): Combination {
       atividade: { primeiroDado: '—', ultimaAtualizacao: '—', diasSemAtualizar: 0 },
       volume: { totalLinhas: 0, schemas: [] },
       qualidade: { linhasOk: 0, linhasProblema: 0, ultimaVerificacao: '—', resultado: 'nunca' },
+      datas: {},
     }
   }
 
@@ -253,6 +277,7 @@ function buildCombination(seed: FilialSeed, catIdx: number): Combination {
       atividade: { primeiroDado: '—', ultimaAtualizacao: '—', diasSemAtualizar: 8 },
       volume: { totalLinhas: 0, schemas: [] },
       qualidade: { linhasOk: 0, linhasProblema: 0, ultimaVerificacao: '—', resultado: 'nunca' },
+      datas: {},
     }
   }
 
@@ -285,12 +310,54 @@ function buildCombination(seed: FilialSeed, catIdx: number): Combination {
   const ultimaVerificacao =
     resultado === 'nunca' ? '—' : diasSemAtualizar === 0 ? `hoje · ${HORAS[(seedNum + 1) % HORAS.length]}` : ultimaAtualizacao
 
+  // Datas determinísticas por etapa — derivadas dos mesmos seeds
+  const DATAS_MOCK = ['08 jan 2025', '10 jan 2025', '13 jan 2025', '15 jan 2025', '20 jan 2025', '22 jan 2025', '28 jan 2025', '03 fev 2025']
+  const d = (offset: number) => DATAS_MOCK[(seedNum + offset) % DATAS_MOCK.length]
+  const h = (offset: number) => HORAS[(seedNum + offset) % HORAS.length]
+
+  const datas: Combination['datas'] = {
+    alocado: respondente ? respondente.alocadaEm : undefined,
+    dadosRecebidos: `${d(1)} · ${h(1)}`,
+  }
+
+  // Verificação falhou: presente em reprovado + em-preenchimento com erros
+  const verifFalhouNoMock = (isReprovado || (status === 'em-preenchimento' && linhasProblema > 0))
+  if (verifFalhouNoMock) {
+    datas.verificacaoFalhou = `${d(2)} · ${h(2)}`
+  }
+
+  // Ciclo com correção: reprovado ou enviado/aprovado após falha
+  const teveCiclo = isReprovado || isReady
+  if (teveCiclo && verifFalhouNoMock) {
+    datas.correcaoReenvio = `${d(3)} · ${h(3)}`
+    datas.verificacaoPassed = `${d(4)} · ${h(4)}`
+  } else if (isReady) {
+    // passou de primeira
+    datas.verificacaoPassed = ultimaVerificacao
+  }
+
+  if (isReady || isReprovado) {
+    datas.enviado = `${d(5)} · ${h(5)}`
+  }
+
+  if (isReprovado) {
+    datas.reprovado = `${d(6)} · ${h(6)}`
+  }
+
+  if (status === 'aprovado') {
+    datas.aprovado = `${d(7)} · ${h(0)}`
+  }
+
+  // Total de linhas no campo datas para uso na timeline
+  datas.totalLinhas = totalLinhas
+
   return {
     status,
     respondente,
     atividade: { primeiroDado, ultimaAtualizacao, diasSemAtualizar },
     volume: { totalLinhas, schemas },
     qualidade: { linhasOk, linhasProblema, ultimaVerificacao, resultado },
+    datas,
   }
 }
 

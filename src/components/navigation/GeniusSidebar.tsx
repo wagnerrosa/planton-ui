@@ -29,7 +29,6 @@ const NAV_GROUPS = [
   {
     label: 'Dashboards',
     items: [
-      { href: `${BASE}/dashboard-gerencial`, label: 'Dashboard Gerencial', icon: BarChart2 },
       { href: `${BASE}/dashboard-v2`, label: 'Dashboard v2', icon: BarChart2 },
     ],
   },

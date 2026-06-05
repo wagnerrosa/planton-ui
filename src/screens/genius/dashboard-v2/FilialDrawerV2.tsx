@@ -26,7 +26,7 @@ export function FilialDrawerV2({
     <Sheet open={target !== null} onOpenChange={(o) => { if (!o) onClose() }}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-xl p-0 flex flex-col gap-0 overflow-hidden"
+        className="w-full sm:max-w-xl p-0 flex flex-col gap-0 overflow-hidden h-full max-h-screen"
       >
         <VisuallyHidden>
           <SheetTitle>Detalhe da filial</SheetTitle>
@@ -154,7 +154,7 @@ function DrawerInner({
           type="button"
           className="px-4 h-9 text-[13px] font-sans font-medium bg-planton-accent text-white hover:bg-planton-accent/90 transition-colors"
         >
-          Abrir planilha
+          Histórico de chat
         </button>
       </div>
     </>
@@ -296,11 +296,14 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
               {ev.detail && (
                 <p className="text-[11px] font-sans text-muted-foreground mt-0.5">{ev.detail}</p>
               )}
+              {ev.meta && (
+                <p className="text-[11px] font-sans text-muted-foreground/70 mt-0.5">{ev.meta}</p>
+              )}
               {ev.action && (
-                <p className={`text-[11px] font-sans leading-snug mt-1.5 px-2.5 py-2 border-l-2 ${
+                <p className={`text-[11px] font-sans leading-snug mt-1.5 px-2.5 py-2 ${
                   ev.state === 'fail'
-                    ? 'border-l-destructive bg-destructive-surface text-destructive/90'
-                    : 'border-l-warning bg-warning-surface text-warning/90'
+                    ? 'bg-destructive-surface text-destructive/90'
+                    : 'bg-warning-surface text-warning/90'
                 }`}>
                   {ev.action}
                 </p>
