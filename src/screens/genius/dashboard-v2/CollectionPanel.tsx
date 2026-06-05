@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import {
   Search,
-  Users,
+  Building2,
   Layers,
   ChevronDown,
   ArrowUpDown,
@@ -15,9 +15,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/shadcn/tooltip'
-import { STATUS_META, getCategoriaRollup } from '../dashboard-gerencial/dashboard-data'
-import { StatusPill } from '../dashboard-gerencial/StatusPill'
-import { getFilialRows, type FilialRow, type StatusDot } from './v2-derive'
+import { STATUS_META, getCategoriaRollup, FILIAIS, CATEGORIA_COLS } from '../dashboard-gerencial/dashboard-data'
+import { getFilialRows, getCategoriaStatusStrip, type FilialRow, type StatusDot, type FilialDot } from './v2-derive'
 
 type Axis = 'filial' | 'categoria'
 // Sem Z–A por spec: cada coluna alterna A–Z ↔ ordem de inserção.
@@ -34,63 +33,50 @@ export function CollectionPanel({
 
   return (
     <section className="flex flex-col gap-3">
-      {/* Cabeçalho: título + toggle + busca */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="font-heading text-[15px] font-semibold text-foreground">
-          {axis === 'filial' ? 'Progresso por filial' : 'Coleta por categoria'}
-        </h2>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search
-              size={14}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-            />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar…"
-              className="h-8 w-44 pl-8 pr-2.5 text-[12px] font-sans bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-planton-accent"
-            />
-          </div>
-          <div className="flex items-center border border-border overflow-hidden">
-            <ToggleBtn
-              active={axis === 'filial'}
-              onClick={() => setAxis('filial')}
-              icon={<Users size={14} />}
-              label="Por filial"
-            />
-            <ToggleBtn
-              active={axis === 'categoria'}
-              onClick={() => setAxis('categoria')}
-              icon={<Layers size={14} />}
-              label="Por categoria"
-            />
-          </div>
+      {/* Barra única: toggle esquerda · busca + sort direita */}
+      <div className="flex items-center gap-3">
+        {/* Toggle vira o "título" da seção */}
+        <div className="flex items-center border border-border overflow-hidden shrink-0">
+          <ToggleBtn
+            active={axis === 'filial'}
+            onClick={() => setAxis('filial')}
+            icon={<Building2 size={14} />}
+            label="Por filial"
+          />
+          <ToggleBtn
+            active={axis === 'categoria'}
+            onClick={() => setAxis('categoria')}
+            icon={<Layers size={14} />}
+            label="Por categoria"
+          />
         </div>
-      </div>
 
-      {/* Barra de ordenação (A–Z ↔ inserção) */}
-      <div className="flex items-center gap-1.5 text-[11px] font-sans text-muted-foreground">
-        <span>Ordenar:</span>
-        <SortBtn
-          label="Nome"
-          active={sort?.key === 'nome'}
-          onClick={() =>
-            setSort((s) => (s?.key === 'nome' ? null : { key: 'nome', asc: true }))
-          }
-        />
-        <SortBtn
-          label="Conclusão"
-          active={sort?.key === 'pct'}
-          onClick={() =>
-            setSort((s) => (s?.key === 'pct' ? null : { key: 'pct', asc: true }))
-          }
-        />
-        {sort && (
-          <span className="text-muted-foreground/60">
-            (clique de novo p/ voltar à ordem de inserção)
-          </span>
-        )}
+        <div className="flex-1" />
+
+        {/* Sort discreto */}
+        <div className="flex items-center gap-1.5">
+          <SortBtn
+            label="Nome"
+            active={sort?.key === 'nome'}
+            onClick={() => setSort((s) => (s?.key === 'nome' ? null : { key: 'nome', asc: true }))}
+          />
+          <SortBtn
+            label="Conclusão"
+            active={sort?.key === 'pct'}
+            onClick={() => setSort((s) => (s?.key === 'pct' ? null : { key: 'pct', asc: true }))}
+          />
+        </div>
+
+        {/* Busca */}
+        <div className="relative shrink-0">
+          <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Filial, categoria, responsável…"
+            className="h-8 w-56 pl-8 pr-2.5 text-[12px] font-sans bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-planton-accent"
+          />
+        </div>
       </div>
 
       {axis === 'filial' ? (
@@ -117,12 +103,20 @@ function FilialList({
     let list = getFilialRows()
     if (search.trim()) {
       const q = search.trim().toLowerCase()
-      list = list.filter(
-        (r) =>
-          r.nome.toLowerCase().includes(q) ||
-          r.sigla.toLowerCase().includes(q) ||
-          (r.respondenteNome?.toLowerCase().includes(q) ?? false),
-      )
+      // Índice: filialId → todos os nomes de respondentes das combinações
+      const respByFilial = new Map<string, string[]>()
+      for (const f of FILIAIS) {
+        const nomes = CATEGORIA_COLS
+          .map((c) => f.combinacoes[c.id].respondente?.nome)
+          .filter((n): n is string => !!n)
+        respByFilial.set(f.id, nomes)
+      }
+      list = list.filter((r) => {
+        if (r.nome.toLowerCase().includes(q)) return true
+        if (r.sigla.toLowerCase().includes(q)) return true
+        const resps = respByFilial.get(r.id) ?? []
+        return resps.some((n) => n.toLowerCase().includes(q))
+      })
     }
     if (sort) {
       const dir = sort.asc ? 1 : -1
@@ -162,14 +156,14 @@ function FilialRowItem({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-3 px-3.5 py-3 text-left hover:bg-muted/30 transition-colors"
+        className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors overflow-hidden"
       >
         <ChevronDown
           size={15}
           className={`text-muted-foreground shrink-0 transition-transform ${open ? '' : '-rotate-90'}`}
         />
         <span
-          className={`flex items-center justify-center w-9 h-9 shrink-0 font-heading text-[12px] font-semibold ${
+          className={`flex items-center justify-center w-10 h-10 shrink-0 font-heading text-[12px] font-semibold ${
             hasResp
               ? 'bg-planton-forest text-planton-accent'
               : 'bg-warning-surface text-warning border border-warning-border'
@@ -177,32 +171,23 @@ function FilialRowItem({
         >
           {row.sigla}
         </span>
-        <div className="min-w-0 w-40 shrink-0">
-          <p className="text-[13px] font-sans font-medium text-foreground truncate">{row.nome}</p>
-          <p className="text-[11px] font-sans text-muted-foreground truncate">
-            {row.respondenteNome ?? 'Sem responsável'}
-          </p>
+        <div className="min-w-0 flex-1">
+          <p className="text-[14px] font-sans font-medium text-foreground truncate">{row.nome}</p>
         </div>
 
-        {/* Strip de status por categoria */}
-        <StatusStrip strip={row.strip} />
+        {/* Strip de status por categoria — centralizado */}
+        <div className="flex-1 flex justify-center">
+          <StatusStrip strip={row.strip} />
+        </div>
 
-        {/* Progresso */}
-        <div className="ml-auto flex items-center gap-3 shrink-0">
-          <div className="hidden sm:flex flex-col items-end w-28">
-            <div className="h-1.5 w-full bg-muted overflow-hidden">
-              <div
-                className={`h-full ${STATUS_META[row.worstStatus].barClass}`}
-                style={{ width: `${row.pct}%` }}
-              />
-            </div>
-            <span className="text-[10px] font-sans text-muted-foreground mt-1 tabular-nums">
-              {row.done}/{row.total} cats
-            </span>
-          </div>
-          <span className="font-heading text-[15px] font-semibold text-foreground tabular-nums w-10 text-right">
-            {row.pct}%
+        {/* % + barra */}
+        <div className="flex items-center gap-4 shrink-0">
+          <span className="font-heading text-2xl font-normal text-foreground tabular-nums leading-none w-14 text-right">
+            {row.pct}<span className="text-base text-muted-foreground">%</span>
           </span>
+          <div className="hidden sm:flex w-56 shrink-0 overflow-hidden">
+            <TickBar pct={row.pct} colorClass="text-planton-accent" />
+          </div>
         </div>
       </button>
 
@@ -258,6 +243,31 @@ function StatusStrip({ strip }: { strip: StatusDot[] }) {
   )
 }
 
+function FilialStrip({ strip }: { strip: FilialDot[] }) {
+  return (
+    <TooltipProvider delayDuration={120}>
+      <div className="hidden md:flex items-center gap-1 shrink-0">
+        {strip.map((dot) => {
+          const meta = STATUS_META[dot.status]
+          return (
+            <Tooltip key={dot.filialId}>
+              <TooltipTrigger asChild>
+                <span
+                  className={`w-2.5 h-2.5 rounded-full ${meta.dotClass}`}
+                  aria-label={`${dot.filialNome}: ${meta.label}`}
+                />
+              </TooltipTrigger>
+              <TooltipContent className="text-[11px]">
+                {dot.filialSigla} · {meta.label}
+              </TooltipContent>
+            </Tooltip>
+          )
+        })}
+      </div>
+    </TooltipProvider>
+  )
+}
+
 // ── Lista por categoria ───────────────────────────────────────────────────────
 
 function CategoriaList({
@@ -273,7 +283,16 @@ function CategoriaList({
     let list = getCategoriaRollup()
     if (search.trim()) {
       const q = search.trim().toLowerCase()
-      list = list.filter((r) => r.label.toLowerCase().includes(q))
+      list = list.filter((r) => {
+        if (r.label.toLowerCase().includes(q)) return true
+        // filiais que têm dados nessa categoria
+        if (r.unidades.some((u) => u.nome.toLowerCase().includes(q))) return true
+        // respondentes de cada filial nessa categoria
+        return FILIAIS.some((f) => {
+          const resp = f.combinacoes[r.id]?.respondente?.nome
+          return resp?.toLowerCase().includes(q)
+        })
+      })
     }
     if (sort) {
       const dir = sort.asc ? 1 : -1
@@ -312,59 +331,61 @@ function CategoriaRowItem({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-3 px-3.5 py-3 text-left hover:bg-muted/30 transition-colors"
+        className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-muted/30 transition-colors overflow-hidden"
       >
         <ChevronDown
           size={15}
           className={`text-muted-foreground shrink-0 transition-transform ${open ? '' : '-rotate-90'}`}
         />
-        <span className="flex items-center justify-center w-9 h-9 shrink-0 bg-planton-forest text-planton-accent">
-          <Icon size={17} />
+        <span className="flex items-center justify-center w-10 h-10 shrink-0 bg-planton-forest text-planton-accent">
+          <Icon size={18} />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-sans font-medium text-foreground truncate">{cat.label}</p>
-          <p className="text-[11px] font-sans text-muted-foreground">
-            Escopo {cat.scope} · {cat.unidadesComDados} c/ dados · {cat.unidadesSemDados} s/ dados
+          <p className="text-[14px] font-sans font-medium text-foreground truncate">{cat.label}</p>
+          <p className="text-[11px] font-sans text-muted-foreground truncate">
+            Escopo {cat.scope} · {cat.unidadesComDados} {cat.unidadesComDados === 1 ? 'filial com dados' : 'filiais com dados'} · {cat.unidadesSemDados} sem dados
           </p>
         </div>
-        <StatusPill status={cat.status} size="xs" />
-        <div className="hidden sm:flex flex-col items-end w-28 shrink-0">
-          <div className="h-1.5 w-full bg-muted overflow-hidden">
-            <div
-              className={`h-full ${STATUS_META[cat.status].barClass}`}
-              style={{ width: `${cat.pctConclusao}%` }}
-            />
-          </div>
-          <span className="text-[10px] font-sans text-muted-foreground mt-1 tabular-nums">
-            {cat.pctConclusao}% concluído
+
+        {/* Strip de status por filial — centralizado */}
+        <div className="flex-1 flex justify-center">
+          <FilialStrip strip={getCategoriaStatusStrip(cat.id)} />
+        </div>
+
+        {/* % + barra */}
+        <div className="flex items-center gap-4 shrink-0">
+          <span className="font-heading text-2xl font-normal text-foreground tabular-nums leading-none w-14 text-right">
+            {cat.pctConclusao}<span className="text-base text-muted-foreground">%</span>
           </span>
+          <div className="hidden sm:flex w-56 shrink-0 overflow-hidden">
+            <TickBar pct={cat.pctConclusao} colorClass="text-planton-accent" />
+          </div>
         </div>
       </button>
 
-      {/* Expansão: unidades */}
+      {/* Expansão: filiais em grid 3 colunas */}
       {open && (
-        <div className="border-t border-border bg-muted/20">
+        <div className="border-t border-border bg-muted/20 px-5 py-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {cat.unidades.map((u) => (
             <button
               key={u.filialId}
               type="button"
               onClick={() => onOpenDrawer(u.filialId, cat.id)}
-              className="w-full flex items-center gap-3 px-3.5 py-2 text-left border-b border-border/40 last:border-b-0 hover:bg-card transition-colors"
+              className="group flex items-center justify-between gap-3 bg-card border border-border px-4 py-3 text-left hover:border-planton-accent/50 transition-colors"
             >
-              <span className="text-[10px] font-mono text-muted-foreground/60 w-10 shrink-0">
-                {u.codigo}
-              </span>
-              <span className="text-[12px] font-sans text-foreground truncate flex-1">{u.nome}</span>
-              <span className="text-[11px] font-sans text-muted-foreground truncate hidden sm:block max-w-[40%]">
-                {u.observacao}
-              </span>
-              <span
-                className={`inline-flex items-center gap-1.5 px-2 py-0.5 border text-[10px] font-sans font-medium whitespace-nowrap shrink-0 ${STATUS_META[u.status].cellClass}`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_META[u.status].dotClass}`} />
-                {STATUS_META[u.status].label}
-              </span>
-              <ChevronRight size={13} className="text-muted-foreground shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[13px] font-sans font-medium text-foreground truncate">{u.nome}</p>
+                <p className="text-[11px] font-sans text-muted-foreground truncate mt-0.5">{u.observacao}</p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 border text-[10px] font-sans font-medium whitespace-nowrap ${STATUS_META[u.status].cellClass}`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_META[u.status].dotClass}`} />
+                  {STATUS_META[u.status].label}
+                </span>
+                <ChevronRight size={12} className="text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+              </div>
             </button>
           ))}
         </div>
@@ -413,7 +434,7 @@ function SortBtn({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1 px-2 py-0.5 border transition-colors ${
+      className={`inline-flex items-center gap-1 px-2 py-0.5 h-8 border text-[12px] font-sans transition-colors ${
         active
           ? 'border-planton-accent text-planton-accent bg-planton-accent/10'
           : 'border-border text-muted-foreground hover:text-foreground'
@@ -422,6 +443,62 @@ function SortBtn({
       <ArrowUpDown size={11} />
       {label}
     </button>
+  )
+}
+
+// Barra de progresso em "ticks" (traços verticais) — estilo editorial premium.
+// Preenchidos herdam a cor via colorClass (currentColor); vazios usam border.
+const TICK_COUNT = 40
+
+// Barra: bloco sólido preenchido (width=pct%) + ticks finos no restante.
+// Container flex w-full. Preenchido = 1 span sólido. Vazio = N ticks separados.
+function TickBar({ pct, colorClass }: { pct: number; colorClass: string }) {
+  const clampedPct = Math.min(Math.max(pct, 0), 100)
+
+  return (
+    <div
+      className={`flex items-center w-full ${colorClass}`}
+      style={{ height: 14 }}
+      aria-label={`${pct}%`}
+    >
+      {/* Parte preenchida: bloco sólido */}
+      {clampedPct > 0 && (
+        <span
+          style={{
+            width: `${clampedPct}%`,
+            height: 14,
+            backgroundColor: 'currentColor',
+            flexShrink: 0,
+          }}
+        />
+      )}
+      {/* Parte vazia: sempre renderiza (flex-1) pra manter espaço no 100%. */}
+      <span
+          style={{
+            flex: 1,
+            height: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            paddingLeft: clampedPct > 0 ? 4 : 0,
+            boxSizing: 'border-box',
+            overflow: 'hidden',
+          }}
+        >
+          {Array.from({ length: TICK_COUNT }).map((_, i) => (
+            <span
+              key={i}
+              style={{
+                flex: 1,
+                height: 14,
+                minWidth: 2,
+                maxWidth: 8,
+                backgroundColor: 'var(--color-border)',
+              }}
+            />
+          ))}
+        </span>
+    </div>
   )
 }
 

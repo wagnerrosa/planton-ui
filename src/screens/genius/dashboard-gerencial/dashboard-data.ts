@@ -155,6 +155,10 @@ const RESPONDENTES: Respondente[] = [
   { nome: 'Bruno Lima', email: 'bruno.lima@renovalog.com', alocadaEm: '14 jan 2025' },
   { nome: 'Carla Neves', email: 'carla.neves@renovalog.com', alocadaEm: '09 jan 2025' },
   { nome: 'Diego Martins', email: 'diego.martins@renovalog.com', alocadaEm: '20 jan 2025' },
+  { nome: 'Fernanda Souza', email: 'fernanda.souza@renovalog.com', alocadaEm: '05 fev 2025' },
+  { nome: 'Gustavo Prado', email: 'gustavo.prado@renovalog.com', alocadaEm: '10 fev 2025' },
+  { nome: 'Helena Rocha', email: 'helena.rocha@renovalog.com', alocadaEm: '17 fev 2025' },
+  { nome: 'Igor Fonseca', email: 'igor.fonseca@renovalog.com', alocadaEm: '03 mar 2025' },
 ]
 
 // Plano de status por filial × categoria. Index das CATEGORIA_COLS (6 categorias):
@@ -192,6 +196,30 @@ const FILIAL_SEEDS: FilialSeed[] = [
   {
     id: 'santos', sigla: 'ST', nome: 'Santos', respIdx: 3,
     status: ['aprovado', 'enviado', 'em-preenchimento', 'nao-aplicavel', 'enviado', 'aguardando'],
+  },
+  {
+    id: 'fortaleza', sigla: 'FZ', nome: 'Fortaleza', respIdx: 4,
+    status: ['reprovado', 'reprovado', 'aguardando', 'em-preenchimento', 'nao-aplicavel', 'enviado'],
+  },
+  {
+    id: 'manaus', sigla: 'MN', nome: 'Manaus', respIdx: null,
+    status: ['sem-respondente', 'sem-respondente', 'nao-aplicavel', 'sem-respondente', 'sem-respondente', 'nao-aplicavel'],
+  },
+  {
+    id: 'porto-alegre', sigla: 'PA', nome: 'Porto Alegre', respIdx: 5,
+    status: ['aprovado', 'aprovado', 'aprovado', 'enviado', 'aprovado', 'aprovado'],
+  },
+  {
+    id: 'salvador', sigla: 'SV', nome: 'Salvador', respIdx: 6,
+    status: ['em-preenchimento', 'reprovado', 'enviado', 'aguardando', 'em-preenchimento', 'nao-aplicavel'],
+  },
+  {
+    id: 'goiania', sigla: 'GO', nome: 'Goiânia', respIdx: 7,
+    status: ['aguardando', 'aguardando', 'sem-respondente', 'nao-aplicavel', 'aguardando', 'em-preenchimento'],
+  },
+  {
+    id: 'campinas', sigla: 'CP', nome: 'Campinas', respIdx: 4,
+    status: ['enviado', 'aprovado', 'enviado', 'aprovado', 'nao-aplicavel', 'enviado'],
   },
 ]
 

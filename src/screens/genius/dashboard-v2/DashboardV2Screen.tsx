@@ -8,14 +8,15 @@ import {
   getOverview,
   getAttentionItems,
 } from '../dashboard-gerencial/dashboard-data'
-import { FilialDrawer, type DrawerTarget } from '../dashboard-gerencial/FilialDrawer'
+import { FilialDrawerV2, type DrawerTarget } from './FilialDrawerV2'
+import { AttentionSheet } from './AttentionSheet'
 import { getTotalLinhas } from './v2-derive'
-import { HeroSummary, type MiniStat } from './HeroSummary'
-import { AttentionList } from './AttentionList'
+import { DashboardTop, type MiniStat } from './DashboardTop'
 import { CollectionPanel } from './CollectionPanel'
 
 export function DashboardV2Screen() {
   const [drawerTarget, setDrawerTarget] = useState<DrawerTarget>(null)
+  const [attentionOpen, setAttentionOpen] = useState(false)
 
   const overview = useMemo(() => getOverview(), [])
   const attentionItems = useMemo(() => getAttentionItems(), [])
@@ -57,37 +58,45 @@ export function DashboardV2Screen() {
 
   return (
     <div className="flex flex-col h-full">
-      <GeniusNavbarSync breadcrumbs={[{ label: 'Dashboard Gerencial' }]} />
+      <GeniusNavbarSync />
 
       <div className="flex flex-col flex-1 overflow-hidden bg-background">
-        {/* Header da tela */}
-        <div className="shrink-0 px-6 pt-5 pb-4 border-b border-border">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground">
-              Inventário GEE {ANO_BASE}
-            </span>
-          </div>
-          <div className="flex flex-wrap items-baseline justify-between gap-2 mt-1">
-            <h1 className="font-heading text-xl font-semibold text-foreground">
-              Rastreamento de Coleta de Dados
-            </h1>
-            <span className="text-[12px] font-sans text-muted-foreground">
-              {EMPRESA} · ano-base {ANO_BASE}
-            </span>
-          </div>
+        {/* Header */}
+        <div className="shrink-0 px-6 h-12 flex items-center gap-2 border-b border-border">
+          <span className="text-[13px] font-sans text-muted-foreground shrink-0">{EMPRESA}</span>
+          <span className="text-muted-foreground/40 shrink-0">/</span>
+          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-border text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+            Inventário GEE {ANO_BASE}
+          </span>
+          <span className="text-muted-foreground/40 shrink-0">/</span>
+          <h1 className="text-[13px] font-sans font-semibold text-foreground truncate">
+            Rastreamento de Coleta de Dados
+          </h1>
         </div>
 
         {/* Corpo */}
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          <div className="flex flex-col gap-6 max-w-[1280px] mx-auto w-full">
-            <HeroSummary overview={overview} stats={stats} />
-            <AttentionList items={attentionItems} onOpen={openDrawer} />
+        <div className="flex-1 overflow-y-auto px-6 py-8">
+          <div className="flex flex-col gap-12 max-w-[1280px] mx-auto w-full">
+            <DashboardTop
+              overview={overview}
+              stats={stats}
+              attentionItems={attentionItems}
+              onAttentionOpen={openDrawer}
+              onSeeAllAttention={() => setAttentionOpen(true)}
+            />
             <CollectionPanel onOpenDrawer={openDrawer} />
           </div>
         </div>
       </div>
 
-      <FilialDrawer target={drawerTarget} onClose={() => setDrawerTarget(null)} />
+      <AttentionSheet
+        open={attentionOpen}
+        items={attentionItems}
+        onOpenChange={setAttentionOpen}
+        onOpenItem={openDrawer}
+      />
+      <FilialDrawerV2 target={drawerTarget} onClose={() => setDrawerTarget(null)} />
     </div>
   )
 }

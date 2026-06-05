@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useGeniusNavbar } from './GeniusNavbarContext'
 import type { BreadcrumbItem } from './AcademyNavbar'
 
-export function GeniusNavbarSync({ breadcrumbs }: { breadcrumbs: BreadcrumbItem[] }) {
+export function GeniusNavbarSync({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItem[] }) {
   const { setBreadcrumbs } = useGeniusNavbar()
 
   useEffect(() => {
