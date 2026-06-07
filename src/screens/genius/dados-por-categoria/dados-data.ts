@@ -42,6 +42,8 @@ export function findReviewCategory(id: string): EmissionCategory {
 // Erros/avisos do _cellStatus são contados para sinalização na tabela e carrinho.
 export type ReviewRow = {
   id: string
+  /** código curto único na categoria (ex: L1, K2) — identifica a linha tabela↔carrinho */
+  code: string
   categoriaId: string
   schemaId: string
   schemaLabel: string
@@ -74,23 +76,51 @@ export function getReviewRows(categoriaId: string): ReviewRow[] {
   const rows: ReviewRow[] = []
   for (const schema of cat.schemas) {
     schema.rows.forEach((raw, idx) => {
-      const cellStatus = (raw._cellStatus as Record<string, CellStatus>) ?? {}
+      // Na revisão, os dados já chegaram preenchidos: o respondente nunca envia
+      // célula vazia. O pior caso é um aviso. Convertemos qualquer 'error' do
+      // mock em 'warning' e preenchemos eventuais valores vazios de forma
+      // determinística (sem mexer no mock compartilhado do Chat).
+      const rawStatus = (raw._cellStatus as Record<string, CellStatus>) ?? {}
+      const cellStatus: Record<string, CellStatus> = {}
+      const filled: SchemaRow = { ...raw }
+      const seedNum = (idx * 37 + schema.id.charCodeAt(0)) % 100
+
+      for (const [colId, status] of Object.entries(rawStatus)) {
+        cellStatus[colId] = status === 'error' ? 'warning' : status
+        const v = filled[colId]
+        if (v === '' || v === undefined) {
+          filled[colId] = fillEmpty(colId, seedNum)
+        }
+      }
+
       const statuses = Object.values(cellStatus)
+      const tco2eRaw = (filled.tco2e as string | undefined) ?? ''
+
       rows.push({
         id: `${cat.id}:${schema.id}:${idx}`,
+        code: `${schema.id.charAt(0).toUpperCase()}${idx + 1}`,
         categoriaId: cat.id,
         schemaId: schema.id,
         schemaLabel: schema.label,
-        unidade: unidadeOf(raw),
+        unidade: unidadeOf(filled),
         cellStatus,
-        errorCount: statuses.filter((s) => s === 'error').length,
-        warningCount: statuses.filter((s) => s === 'warning').length,
-        tco2e: parseTco2e(raw.tco2e as string | undefined),
-        raw,
+        errorCount: 0,
+        warningCount: statuses.length,
+        tco2e: parseTco2e(tco2eRaw),
+        raw: filled,
       })
     })
   }
   return rows
+}
+
+// Valor determinístico para preencher uma célula que veio vazia no mock —
+// nunca exibimos "vazio" na revisão.
+function fillEmpty(colId: string, seed: number): string {
+  if (colId === 'tco2e') return (1 + (seed % 18) + (seed % 100) / 100).toFixed(2).replace('.', ',')
+  if (colId === 'quantidade' || colId === 'consumo') return (500 + seed * 27).toLocaleString('pt-BR')
+  if (colId === 'responsavel') return ['Carlos Mendes', 'Patrícia Souza', 'Ana Beatriz Lima'][seed % 3]
+  return '—'
 }
 
 // Resumo de uma categoria para a toolbar/painel (linhas, erros, soma tCO₂e).
@@ -99,15 +129,53 @@ export type CategoriaResumo = {
   totalErros: number
   totalAvisos: number
   somaTco2e: number
+  /** nº de schemas (abas) somados na categoria */
+  totalSchemas: number
+  /** rótulos dos schemas somados, p/ explicar a origem da soma */
+  schemaLabels: string[]
+  /** quebra por aba/schema: linhas e soma tCO₂e de cada guia */
+  porSchema: { id: string; label: string; linhas: number; soma: number }[]
+  /** quebra por unidade/filial: linhas e soma tCO₂e de cada unidade */
+  porUnidade: { id: string; label: string; linhas: number; soma: number }[]
 }
 
 export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
+  const cat = findReviewCategory(categoriaId)
   const rows = getReviewRows(categoriaId)
+  const porSchema = cat.schemas.map((s) => {
+    const sr = rows.filter((r) => r.schemaId === s.id)
+    return {
+      id: s.id,
+      label: s.label,
+      linhas: sr.length,
+      soma: sr.reduce((a, r) => a + r.tco2e, 0),
+    }
+  })
+  // Quebra por unidade/filial — agrupa por r.unidade preservando 1ª aparição.
+  const unidadeOrdem: string[] = []
+  const porUnidadeMap = new Map<string, { linhas: number; soma: number }>()
+  for (const r of rows) {
+    const u = r.unidade || '—'
+    if (!porUnidadeMap.has(u)) {
+      porUnidadeMap.set(u, { linhas: 0, soma: 0 })
+      unidadeOrdem.push(u)
+    }
+    const acc = porUnidadeMap.get(u)!
+    acc.linhas += 1
+    acc.soma += r.tco2e
+  }
+  const porUnidade = unidadeOrdem
+    .map((u) => ({ id: u, label: u, ...porUnidadeMap.get(u)! }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { sensitivity: 'base' }))
   return {
     totalLinhas: rows.length,
     totalErros: rows.reduce((a, r) => a + r.errorCount, 0),
     totalAvisos: rows.reduce((a, r) => a + r.warningCount, 0),
     somaTco2e: rows.reduce((a, r) => a + r.tco2e, 0),
+    totalSchemas: cat.schemas.length,
+    schemaLabels: cat.schemas.map((s) => s.label),
+    porSchema,
+    porUnidade,
   }
 }
 
@@ -115,6 +183,21 @@ export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
 // É o que, no produto real, flipa o ciclo de coleta no dashboard-v2:
 // 'aprovado' / 'reprovado'. 'pendente' = ainda em revisão.
 export type ReviewDecision = 'pendente' | 'aprovado' | 'reprovado'
+
+// ── Grupo de recusa (carrinho) ───────────────────────────────────────────────
+// Um grupo = 1 motivo aplicado a N linhas. O engenheiro marca linhas na tabela,
+// escolhe o motivo uma vez e adiciona o conjunto como um grupo. Justifica em lote.
+export type RejectionGroup = {
+  id: string
+  motivoId: string
+  texto: string
+  rowIds: string[]
+}
+
+// Rótulo do motivo a partir do id (para render dos grupos).
+export function motivoLabel(motivoId: string): string {
+  return MOTIVOS_RECUSA.find((m) => m.id === motivoId)?.label ?? motivoId
+}
 
 // ── Motivos de recusa pré-definidos (para o carrinho de erros) ────────────────
 export const MOTIVOS_RECUSA: { id: string; label: string }[] = [

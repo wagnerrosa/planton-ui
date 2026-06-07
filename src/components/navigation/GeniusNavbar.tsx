@@ -51,7 +51,12 @@ export function GeniusNavbar({
               return (
                 <span key={index} className="flex items-center gap-2 min-w-0">
                   <span className="text-sidebar-foreground/40 text-sm select-none">/</span>
-                  {isLast || !item.href ? (
+                  {item.variant === 'pill' ? (
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-sidebar-border text-[10px] font-heading font-semibold uppercase tracking-wider text-sidebar-foreground/70 shrink-0">
+                      {item.dot && <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />}
+                      {item.label}
+                    </span>
+                  ) : isLast || !item.href ? (
                     <span className={`font-sans text-[13px] truncate ${isLast ? 'text-sidebar-foreground font-medium' : 'text-sidebar-foreground/60'}`}>
                       {item.label}
                     </span>

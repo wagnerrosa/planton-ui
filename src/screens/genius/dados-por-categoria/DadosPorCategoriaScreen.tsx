@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { GeniusNavbarSync } from '@/components/navigation/GeniusNavbarSync'
 import { EMPRESA, ANO_BASE as DASH_ANO } from '../dashboard-v2/dashboard-data'
 import {
@@ -9,98 +9,101 @@ import {
   getReviewRows,
   getCategoriaResumo,
   getPeriodos,
-  PERIODICIDADE,
   type ReviewDecision,
+  type RejectionGroup,
 } from './dados-data'
+import { ReviewSidebar } from './ReviewSidebar'
 import { ReviewToolbar } from './ReviewToolbar'
 import { ReviewTable } from './ReviewTable'
-import { ErrorCart, type Justificativa } from './ErrorCart'
+import { ErrorCart } from './ErrorCart'
 import { ApprovePanel } from './ApprovePanel'
 
 export function DadosPorCategoriaScreen() {
   const periodos = useMemo(() => getPeriodos(), [])
-  const periodoTipoLabel = PERIODICIDADE === 'anual' ? 'Ano' : 'Mês'
 
   const [categoriaId, setCategoriaId] = useState(REVIEW_CATEGORIES[0].id)
   const [periodoId, setPeriodoId] = useState(periodos[0].id)
+  // Sidebar de categorias colapsável (espelha o Chat).
+  const [categoriesOpen, setCategoriesOpen] = useState(true)
 
   // Decisão por categoria (mock — no produto real flipa o ciclo no dashboard-v2)
   const [decisions, setDecisions] = useState<Record<string, ReviewDecision>>({})
   // Resultados aprovados: categoriaId → tCO₂e confirmado
   const [aprovados, setAprovados] = useState<Record<string, number>>({})
 
-  // Seleção (carrinho) + justificativas, escopadas por categoria.
-  // Reset ao trocar de categoria via key no DrawerLikeBody.
+  // Seleção transitória na tabela (ainda não no carrinho).
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
-  const [justificativas, setJustificativas] = useState<Map<string, Justificativa>>(new Map())
+  // Carrinho = grupos de recusa (motivo + N linhas), escopado por categoria.
+  const [groups, setGroups] = useState<RejectionGroup[]>([])
+  const groupSeq = useRef(0)
+
+  // Drawer overlay (aprovar / carrinho) por cima da tabela. Abre nas ações que
+  // ativam o carrinho (marcar linhas / criar grupo); engenheiro fecha/reabre pelo toggle.
+  const [panelOpen, setPanelOpen] = useState(false)
 
   const cat = findReviewCategory(categoriaId)
   const rows = useMemo(() => getReviewRows(categoriaId), [categoriaId])
   const resumo = useMemo(() => getCategoriaResumo(categoriaId), [categoriaId])
+  const rowsById = useMemo(() => new Map(rows.map((r) => [r.id, r])), [rows])
 
-  const cartRows = useMemo(() => rows.filter((r) => selectedIds.has(r.id)), [rows, selectedIds])
+  // Linhas já dentro de algum grupo (não selecionáveis na tabela).
+  const groupedIds = useMemo(
+    () => new Set(groups.flatMap((g) => g.rowIds)),
+    [groups],
+  )
 
-  function resetSelection() {
+  function clearSelection() {
     setSelectedIds(new Set())
-    setJustificativas(new Map())
+  }
+
+  function resetCart() {
+    setSelectedIds(new Set())
+    setGroups([])
   }
 
   function changeCategoria(id: string) {
     setCategoriaId(id)
-    resetSelection()
+    resetCart()
   }
 
-  function toggleRow(id: string) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-        setJustificativas((jm) => {
-          const njm = new Map(jm)
-          njm.delete(id)
-          return njm
-        })
-      } else {
-        next.add(id)
+  // Define a seleção transitória = linhas marcadas no schema ativo do grid
+  // (ignora as já no carrinho). A seleção vive sempre num único schema por vez.
+  function setSelection(_schemaId: string, rowIds: string[]) {
+    const next = new Set(rowIds.filter((id) => !groupedIds.has(id)))
+    setSelectedIds(next)
+    if (next.size > 0) setPanelOpen(true)
+  }
+
+  // Seleção atual → grupo de recusa, agrupado por motivo: o mesmo motivo cai
+  // sempre no mesmo grupo (linhas se acumulam, sem duplicar). Exceção: 'outro'
+  // (texto livre) — cada justificativa é um grupo próprio.
+  function addGroup(motivoId: string, texto: string) {
+    const rowIds = [...selectedIds]
+    if (rowIds.length === 0) return
+    setGroups((g) => {
+      const alvo =
+        motivoId !== 'outro' ? g.find((x) => x.motivoId === motivoId) : undefined
+      if (alvo) {
+        const merged = [...new Set([...alvo.rowIds, ...rowIds])]
+        return g.map((x) => (x.id === alvo.id ? { ...x, rowIds: merged } : x))
       }
-      return next
+      groupSeq.current += 1
+      return [...g, { id: `g${groupSeq.current}`, motivoId, texto, rowIds }]
     })
+    setSelectedIds(new Set())
+    setPanelOpen(true)
   }
 
-  function toggleMany(ids: string[], select: boolean) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      for (const id of ids) {
-        if (select) next.add(id)
-        else next.delete(id)
-      }
-      return next
-    })
-    if (!select) {
-      setJustificativas((jm) => {
-        const njm = new Map(jm)
-        for (const id of ids) njm.delete(id)
-        return njm
-      })
-    }
+  function removeGroup(groupId: string) {
+    setGroups((g) => g.filter((x) => x.id !== groupId))
   }
 
-  function setMotivo(rowId: string, motivoId: string) {
-    setJustificativas((jm) => {
-      const njm = new Map(jm)
-      const cur = njm.get(rowId) ?? { motivoId: '', texto: '' }
-      njm.set(rowId, { ...cur, motivoId })
-      return njm
-    })
-  }
-
-  function setTexto(rowId: string, texto: string) {
-    setJustificativas((jm) => {
-      const njm = new Map(jm)
-      const cur = njm.get(rowId) ?? { motivoId: '', texto: '' }
-      njm.set(rowId, { ...cur, texto })
-      return njm
-    })
+  function removeRowFromGroup(groupId: string, rowId: string) {
+    setGroups((g) =>
+      g
+        .map((x) => (x.id === groupId ? { ...x, rowIds: x.rowIds.filter((r) => r !== rowId) } : x))
+        .filter((x) => x.rowIds.length > 0),
+    )
   }
 
   function recusar() {
@@ -110,97 +113,120 @@ export function DadosPorCategoriaScreen() {
       delete next[categoriaId]
       return next
     })
-    resetSelection()
+    resetCart()
+    setPanelOpen(false)
   }
 
   function aprovar(tco2e: number) {
     setDecisions((d) => ({ ...d, [categoriaId]: 'aprovado' }))
     setAprovados((a) => ({ ...a, [categoriaId]: tco2e }))
-    resetSelection()
+    resetCart()
+    setPanelOpen(false)
   }
 
   const decision = decisions[categoriaId] ?? 'pendente'
-  const hasCart = cartRows.length > 0
+  const hasCart = groups.length > 0 || selectedIds.size > 0
 
   return (
     <div className="flex flex-col h-full">
-      <GeniusNavbarSync />
+      <GeniusNavbarSync
+        breadcrumbs={[
+          { label: EMPRESA },
+          { label: `Inventário GEE ${DASH_ANO}`, variant: 'pill', dot: true },
+          { label: 'Revisão de dados por categoria' },
+        ]}
+      />
 
       <div className="flex flex-col flex-1 overflow-hidden bg-background">
-        {/* Header */}
-        <div className="shrink-0 px-6 h-12 flex items-center gap-2 border-b border-border">
-          <span className="text-[13px] font-sans text-muted-foreground shrink-0">{EMPRESA}</span>
-          <span className="text-muted-foreground/40 shrink-0">/</span>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-border text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            Inventário GEE {DASH_ANO}
-          </span>
-          <span className="text-muted-foreground/40 shrink-0">/</span>
-          <h1 className="text-[13px] font-sans font-semibold text-foreground truncate">
-            Revisão de dados por categoria
-          </h1>
-        </div>
-
+        {/* Topo: contexto da categoria ativa + período + decisão (full-width) */}
         <ReviewToolbar
           categoriaId={categoriaId}
-          onCategoria={changeCategoria}
           periodos={periodos}
           periodoId={periodoId}
           onPeriodo={setPeriodoId}
-          periodoTipoLabel={periodoTipoLabel}
           decisions={decisions}
         />
 
-        {/* Corpo: tabela + painel lateral */}
-        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-4 px-6 py-4 overflow-hidden">
-          <div className="min-h-0 min-w-0 flex flex-col">
-            <ReviewTable
-              key={`${categoriaId}:${periodoId}`}
+        {/* Canvas — sidebar de categorias + tabela vivem juntos numa moldura
+            (border + shadow), espelhando o canvas do Chat. */}
+        <div className="flex-1 min-h-0 flex px-6 py-4">
+          <div className="flex flex-1 min-h-0 min-w-0 border border-border bg-background shadow-[4px_4px_0px_0px_hsl(var(--foreground))] overflow-hidden">
+            <ReviewSidebar
               categoriaId={categoriaId}
-              rows={rows}
-              selectedIds={selectedIds}
-              onToggleRow={toggleRow}
-              onToggleMany={toggleMany}
+              onCategoria={changeCategoria}
+              decisions={decisions}
+              open={categoriesOpen}
             />
-          </div>
 
-          {/* Painel: carrinho de erros OU aprovar. Carrinho ativo tem prioridade. */}
-          <aside className="min-h-0 hidden lg:flex flex-col">
-            {hasCart ? (
-              <ErrorCart
-                rows={cartRows}
-                justificativas={justificativas}
-                onSetMotivo={setMotivo}
-                onSetTexto={setTexto}
-                onRemove={toggleRow}
-                onClear={resetSelection}
-                onRecusar={recusar}
-              />
-            ) : (
-              <ApprovePanel
-                key={categoriaId}
-                resumo={resumo}
-                categoriaLabel={cat.label}
-                onAprovar={aprovar}
-              />
-            )}
-          </aside>
+            {/* Corpo: tabela; drawer overlay vive dentro da ReviewTable,
+                sobre a área do grid (não cobre barra/abas) e reserva scroll-x. */}
+            <div className="flex-1 min-h-0 min-w-0 flex flex-col">
+          <ReviewTable
+            key={`${categoriaId}:${periodoId}`}
+            categoriaId={categoriaId}
+            rows={rows}
+            selectedIds={selectedIds}
+            groupedIds={groupedIds}
+            onSetSelection={setSelection}
+            onClearSelection={clearSelection}
+            onAddGroup={addGroup}
+            sidebarOpen={categoriesOpen}
+            onToggleSidebar={() => setCategoriesOpen((v) => !v)}
+            panelOpen={panelOpen}
+            onTogglePanel={() => setPanelOpen((v) => !v)}
+            hasCart={hasCart}
+            drawerOpen={panelOpen}
+            drawer={
+              <aside
+                className={`absolute inset-y-0 right-0 z-30 w-[420px] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                  panelOpen ? 'translate-x-0' : 'translate-x-full pointer-events-none'
+                }`}
+              >
+                {/* Leito de vidro — translúcido p/ ver a tabela borrada atrás durante o scroll.
+                    Fechar é pelo toggle na barra superior (sem X redundante aqui). */}
+                <div className="relative h-full flex flex-col bg-background/35 backdrop-blur-2xl backdrop-saturate-150 ring-1 ring-border/40 overflow-hidden">
+                  <div className="flex-1 min-h-0 p-1.5">
+                    {hasCart ? (
+                      <ErrorCart
+                        groups={groups}
+                        rowsById={rowsById}
+                        onRemoveGroup={removeGroup}
+                        onRemoveRow={removeRowFromGroup}
+                        onClear={resetCart}
+                        onRecusar={recusar}
+                      />
+                    ) : (
+                      <ApprovePanel
+                        key={categoriaId}
+                        resumo={resumo}
+                        categoriaLabel={cat.label}
+                        locked={decision === 'reprovado'}
+                        onAprovar={aprovar}
+                      />
+                    )}
+                  </div>
+                </div>
+              </aside>
+            }
+          />
+
+              {/* Faixa de resultado da decisão */}
+              {decision !== 'pendente' && (
+                <div
+                  className={`shrink-0 px-6 py-2 text-[12px] border-t ${
+                    decision === 'aprovado'
+                      ? 'bg-success-surface border-success-border text-success'
+                      : 'bg-destructive-surface border-destructive-border text-destructive'
+                  }`}
+                >
+                  {decision === 'aprovado'
+                    ? `${cat.label} aprovada · ${(aprovados[categoriaId] ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} tCO₂e consolidado.`
+                    : `${cat.label} reprovada e devolvida ao respondente. O ciclo de coleta volta para correção.`}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-
-        {/* Faixa de resultado da decisão */}
-        {decision !== 'pendente' && (
-          <div
-            className={`shrink-0 px-6 py-2 text-[12px] border-t ${
-              decision === 'aprovado'
-                ? 'bg-success-surface border-success-border text-success'
-                : 'bg-destructive-surface border-destructive-border text-destructive'
-            }`}
-          >
-            {decision === 'aprovado'
-              ? `${cat.label} aprovada · ${(aprovados[categoriaId] ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} tCO₂e consolidado.`
-              : `${cat.label} reprovada e devolvida ao respondente. O ciclo de coleta volta para correção.`}
-          </div>
-        )}
       </div>
     </div>
   )

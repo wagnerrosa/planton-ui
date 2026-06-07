@@ -23,6 +23,10 @@ import { ProfileSheet } from './ProfileSheet'
 export interface BreadcrumbItem {
   label: string
   href?: string
+  /** 'pill' renderiza num chip com borda (ex: badge de inventário) */
+  variant?: 'pill'
+  /** mostra um ponto verde pulsante antes do label (status ativo) */
+  dot?: boolean
 }
 
 export interface AcademyNavbarProps {

@@ -14,6 +14,7 @@ import {
   type GridMouseEventArgs,
   type Highlight,
   type DrawCellCallback,
+  type DrawHeaderCallback,
   type GridSelection,
   type CellClickedEventArgs,
 } from '@glideapps/glide-data-grid'
@@ -128,8 +129,27 @@ type Props = {
   readOnly?: boolean
   highlightedRows?: number[]
   onSelectionChange?: (info: GridSelectionInfo) => void
+  /** índices das linhas marcadas (via row markers) — para fluxos de revisão/seleção */
+  onRowSelectionChange?: (rowIndexes: number[]) => void
+  /** linhas que não podem ser selecionadas (ex: já no carrinho) */
+  disabledRows?: number[]
+  /** tipo do row marker: 'number' (default) ou 'both' (número + checkbox de seleção) */
+  rowMarkerKind?: 'number' | 'checkbox' | 'both'
+  /** 'multi' = clique simples no marker acumula (sem segurar shift) */
+  rowSelectionMode?: 'auto' | 'multi'
   clearSelectionRef?: React.MutableRefObject<(() => void) | null>
   onEdit?: () => void
+  /** id da coluna ordenada (desenha seta no header) */
+  sortColumnId?: string
+  sortDir?: 'asc' | 'desc'
+  /** clique no header de uma coluna ordenável */
+  onHeaderClicked?: (columnId: string) => void
+  /** ids de colunas que podem ser ordenadas por clique no header */
+  sortableColumnIds?: string[]
+  /** nº de colunas iniciais congeladas (sticky) no scroll horizontal */
+  freezeColumns?: number
+  /** readOnly aplica aparência cinza (muted) por padrão; false = bloqueia edição mas mantém cor normal */
+  mutedReadOnly?: boolean
 }
 
 function getSelectionInfo(sel: GridSelection, totalCols: number, totalRows: number): GridSelectionInfo {
@@ -161,7 +181,7 @@ type DropdownState = {
   y: number
 }
 
-export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, clearSelectionRef, onEdit }: Props) {
+export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, onRowSelectionChange, disabledRows, rowMarkerKind = 'number', rowSelectionMode = 'auto', clearSelectionRef, onEdit, sortColumnId, sortDir, onHeaderClicked, sortableColumnIds, freezeColumns, mutedReadOnly = true }: Props) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [monoFamily, setMonoFamily] = useState<string>('ui-monospace, monospace')
@@ -182,16 +202,24 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
     const empty: GridSelection = { columns: CompactSelection.empty(), rows: CompactSelection.empty() }
     setGridSelection(empty)
     onSelectionChange?.({ type: 'cells', count: 0 })
-  }, [onSelectionChange])
+    onRowSelectionChange?.([])
+  }, [onSelectionChange, onRowSelectionChange])
 
   useEffect(() => {
     if (clearSelectionRef) clearSelectionRef.current = clearSelection
   }, [clearSelectionRef, clearSelection])
 
   const handleGridSelectionChange = useCallback((sel: GridSelection) => {
-    setGridSelection(sel)
-    onSelectionChange?.(getSelectionInfo(sel, columns.length, rows.length))
-  }, [onSelectionChange, columns.length, rows.length])
+    // Impede marcar linhas desabilitadas (ex: já no carrinho).
+    let rowSel = sel.rows
+    if (disabledRows && disabledRows.length > 0) {
+      for (const d of disabledRows) rowSel = rowSel.remove(d)
+    }
+    const next = { ...sel, rows: rowSel }
+    setGridSelection(next)
+    onSelectionChange?.(getSelectionInfo(next, columns.length, rows.length))
+    onRowSelectionChange?.(rowSel.toArray())
+  }, [onSelectionChange, onRowSelectionChange, disabledRows, columns.length, rows.length])
 
   const onItemHovered = useCallback((args: GridMouseEventArgs) => {
     if (args.kind === 'cell') {
@@ -232,10 +260,15 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
       const val = typeof rawVal === 'string' ? rawVal : ''
       const cellStatus = r._cellStatus?.[colId]
 
+      // Em readOnly (revisão) erros já foram corrigidos numa etapa anterior —
+      // a tabela só carrega avisos (amarelo) p/ o engenheiro analisar. O vermelho
+      // fica reservado p/ a decisão dele (linha enviada ao carrinho de recusa).
+      const effectiveStatus = readOnly && cellStatus === 'error' ? 'warning' : cellStatus
+
       const errorOverride: Partial<Theme> | undefined =
-        cellStatus === 'error'
+        effectiveStatus === 'error'
           ? { bgCell: 'rgba(239, 68, 68, 0.10)', textDark: '#b91c1c' }
-          : cellStatus === 'warning'
+          : effectiveStatus === 'warning'
             ? { bgCell: 'rgba(234, 179, 8, 0.12)', textDark: '#a16207' }
             : undefined
 
@@ -291,16 +324,23 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
   const baseTheme = resolvedTheme === 'dark' ? DARK_THEME : LIGHT_THEME
   const theme: Partial<Theme> = { ...baseTheme, fontFamily: monoFamily }
 
-  const strokeColor = readOnly
+  const strokeColor = readOnly && mutedReadOnly
     ? resolvedTheme === 'dark' ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)'
     : resolvedTheme === 'dark' ? BUBBLE_STROKE_DARK : BUBBLE_STROKE_LIGHT
 
   const getRowThemeOverride = (row: number): Partial<Theme> | undefined => {
+    // Linha destacada = enviada ao carrinho de recusa. Vermelho suave = "vai ser
+    // devolvida". No editável (Chat) segue verde — ali destaque é neutro/positivo.
     if (highlightedRows?.includes(row)) {
-      return {
-        bgCell: 'rgba(74, 153, 120, 0.08)',
-        bgCellMedium: 'rgba(74, 153, 120, 0.12)',
-      }
+      return readOnly
+        ? {
+            bgCell: 'rgba(239, 68, 68, 0.07)',
+            bgCellMedium: 'rgba(239, 68, 68, 0.10)',
+          }
+        : {
+            bgCell: 'rgba(74, 153, 120, 0.08)',
+            bgCellMedium: 'rgba(74, 153, 120, 0.12)',
+          }
     }
     const r = rows[row]
     if (!r?._cellStatus) return undefined
@@ -312,13 +352,15 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
       }
       if (status === 'warning') worst = 'warning'
     }
-    if (worst === 'error') {
+    // Em revisão (readOnly) não há erro bloqueante — erro entra como aviso.
+    const effectiveWorst = readOnly && worst === 'error' ? 'warning' : worst
+    if (effectiveWorst === 'error') {
       return {
         bgCell: 'rgba(239, 68, 68, 0.04)',
         bgCellMedium: 'rgba(239, 68, 68, 0.06)',
       }
     }
-    if (worst === 'warning') {
+    if (effectiveWorst === 'warning') {
       return {
         bgCell: 'rgba(234, 179, 8, 0.04)',
         bgCellMedium: 'rgba(234, 179, 8, 0.06)',
@@ -338,6 +380,41 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
     }
   }
 
+  // Seta de ordenação (▲/▼) à direita do título, na coluna ordenada.
+  const drawHeader: DrawHeaderCallback | undefined = onHeaderClicked
+    ? (args, draw) => {
+        draw()
+        const colId = columns[args.columnIndex]?.id
+        if (!colId || colId !== sortColumnId) return
+        const { ctx, rect, theme: t } = args
+        const cx = rect.x + rect.width - 14
+        const cy = rect.y + rect.height / 2
+        const up = sortDir !== 'desc'
+        ctx.save()
+        ctx.fillStyle = (t.textHeaderSelected as string) || (t.textHeader as string) || '#5b5b5b'
+        ctx.beginPath()
+        if (up) {
+          ctx.moveTo(cx, cy - 3)
+          ctx.lineTo(cx + 5, cy + 3)
+          ctx.lineTo(cx - 5, cy + 3)
+        } else {
+          ctx.moveTo(cx, cy + 3)
+          ctx.lineTo(cx + 5, cy - 3)
+          ctx.lineTo(cx - 5, cy - 3)
+        }
+        ctx.closePath()
+        ctx.fill()
+        ctx.restore()
+      }
+    : undefined
+
+  const handleHeaderClicked = (colIndex: number) => {
+    const colId = columns[colIndex]?.id
+    if (!colId) return
+    if (sortableColumnIds && !sortableColumnIds.includes(colId)) return
+    onHeaderClicked?.(colId)
+  }
+
   const hoverColor = resolvedTheme === 'dark' ? 'rgba(255, 255, 255, 0.25)' : 'rgba(10, 45, 48, 0.35)'
   const highlightRegions: Highlight[] | undefined =
     hoveredCell && hoveredCell[0] >= 0 && hoveredCell[1] >= 0
@@ -350,7 +427,7 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
         ]
       : undefined
 
-  const readOnlyTheme: Partial<Theme> = readOnly
+  const readOnlyTheme: Partial<Theme> = readOnly && mutedReadOnly
     ? {
         bgCell: resolvedTheme === 'dark' ? '#0d0d0d' : '#fafafa',
         bgCellMedium: resolvedTheme === 'dark' ? '#111111' : '#f7f7f7',
@@ -387,18 +464,22 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
         smoothScrollY
         rowHeight={40}
         headerHeight={36}
-        rowMarkers={{ kind: 'number', theme: { fontFamily: monoFamily, baseFontStyle: '11px' } }}
+        rowMarkers={{ kind: rowMarkerKind, theme: { fontFamily: monoFamily, baseFontStyle: '11px' } }}
         rowMarkerWidth={44}
+        freezeColumns={freezeColumns}
         fixedShadowX={false}
         gridSelection={gridSelection}
         onGridSelectionChange={handleGridSelectionChange}
         rowSelect="multi"
+        rowSelectionMode={rowSelectionMode}
         rowSelectionBlending="mixed"
         rangeSelect="multi-rect"
         rangeSelectionBlending="mixed"
         onItemHovered={onItemHovered}
         highlightRegions={highlightRegions}
         drawCell={drawCell}
+        drawHeader={drawHeader}
+        onHeaderClicked={onHeaderClicked ? handleHeaderClicked : undefined}
         getRowThemeOverride={getRowThemeOverride}
         onCellClicked={handleCellClicked}
         onRowAppended={readOnly ? undefined : () => { onEdit?.() }}

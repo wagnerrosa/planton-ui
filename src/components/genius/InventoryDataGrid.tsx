@@ -26,8 +26,23 @@ type Props = {
   readOnly?: boolean
   highlightedRows?: number[]
   onSelectionChange?: (info: GridSelectionInfo) => void
+  onRowSelectionChange?: (rowIndexes: number[]) => void
+  disabledRows?: number[]
+  rowMarkerKind?: 'number' | 'checkbox' | 'both'
+  rowSelectionMode?: 'auto' | 'multi'
   clearSelectionRef?: React.MutableRefObject<(() => void) | null>
   onEdit?: () => void
+  /** id da coluna ordenada (desenha seta no header) */
+  sortColumnId?: string
+  sortDir?: 'asc' | 'desc'
+  /** clique no header de uma coluna ordenável */
+  onHeaderClicked?: (columnId: string) => void
+  /** ids de colunas que podem ser ordenadas por clique no header */
+  sortableColumnIds?: string[]
+  /** nº de colunas iniciais congeladas (sticky) no scroll horizontal */
+  freezeColumns?: number
+  /** readOnly aplica aparência cinza (muted) por padrão; false = bloqueia edição mas mantém cor normal */
+  mutedReadOnly?: boolean
 }
 
 export function InventoryDataGrid(props: Props) {

@@ -58,23 +58,15 @@ export function DashboardV2Screen() {
 
   return (
     <div className="flex flex-col h-full">
-      <GeniusNavbarSync />
+      <GeniusNavbarSync
+        breadcrumbs={[
+          { label: EMPRESA },
+          { label: `Inventário GEE ${ANO_BASE}`, variant: 'pill', dot: true },
+          { label: 'Rastreamento de Coleta de Dados' },
+        ]}
+      />
 
       <div className="flex flex-col flex-1 overflow-hidden bg-background">
-        {/* Header */}
-        <div className="shrink-0 px-6 h-12 flex items-center gap-2 border-b border-border">
-          <span className="text-[13px] font-sans text-muted-foreground shrink-0">{EMPRESA}</span>
-          <span className="text-muted-foreground/40 shrink-0">/</span>
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-border text-[10px] font-heading font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
-            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-            Inventário GEE {ANO_BASE}
-          </span>
-          <span className="text-muted-foreground/40 shrink-0">/</span>
-          <h1 className="text-[13px] font-sans font-semibold text-foreground truncate">
-            Rastreamento de Coleta de Dados
-          </h1>
-        </div>
-
         {/* Corpo */}
         <div className="flex-1 overflow-y-auto px-6 py-8">
           <div className="flex flex-col gap-12 max-w-[1280px] mx-auto w-full">
