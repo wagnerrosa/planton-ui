@@ -39,6 +39,12 @@ type Props = {
   onHeaderClicked?: (columnId: string) => void
   /** ids de colunas que podem ser ordenadas por clique no header */
   sortableColumnIds?: string[]
+  /** clique no header de qualquer coluna (não filtra por sortable) */
+  onAnyHeaderClicked?: (columnId: string) => void
+  /** ids de colunas que exibem ícone de filtro no header */
+  filterColumnIds?: string[]
+  /** ids de colunas com filtro ativo — ícone preenchido */
+  activeFilterColumnIds?: string[]
   /** nº de colunas iniciais congeladas (sticky) no scroll horizontal */
   freezeColumns?: number
   /** readOnly aplica aparência cinza (muted) por padrão; false = bloqueia edição mas mantém cor normal */

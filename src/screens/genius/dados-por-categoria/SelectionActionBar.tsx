@@ -70,7 +70,7 @@ export function SelectionActionBar({
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             placeholder="Descreva o problema…"
-            className="h-7 text-[12px] min-w-[160px] bg-background"
+            className="h-7 text-[12px]! min-w-[220px] bg-background"
           />
         )}
 

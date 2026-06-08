@@ -150,10 +150,7 @@ function HeroCard({
               )
             })}
           </div>
-          <div
-            className="flex items-center gap-x-3.5 overflow-x-auto"
-            style={{ scrollbarWidth: 'none' }}
-          >
+          <div className="grid grid-cols-3 gap-x-3.5 gap-y-1.5">
             {segments.map((seg) => {
               const meta = STATUS_META[seg.status]
               return (
@@ -161,7 +158,7 @@ function HeroCard({
                   key={seg.status}
                   type="button"
                   onClick={() => onSegmentClick?.(seg.status)}
-                  className="inline-flex items-center gap-1.5 text-[11px] font-sans text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap shrink-0"
+                  className="inline-flex items-center gap-1.5 text-[11px] font-sans text-muted-foreground hover:text-foreground transition-colors"
                 >
                   <span className={`w-2 h-2 rounded-full shrink-0 ${meta.dotClass}`} />
                   {meta.label}

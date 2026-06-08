@@ -146,6 +146,12 @@ type Props = {
   onHeaderClicked?: (columnId: string) => void
   /** ids de colunas que podem ser ordenadas por clique no header */
   sortableColumnIds?: string[]
+  /** clique no header de qualquer coluna (não filtra por sortable) — para filtros custom */
+  onAnyHeaderClicked?: (columnId: string) => void
+  /** ids de colunas que exibem ícone de filtro (funil) no header */
+  filterColumnIds?: string[]
+  /** ids de colunas com filtro ativo — funil preenchido */
+  activeFilterColumnIds?: string[]
   /** nº de colunas iniciais congeladas (sticky) no scroll horizontal */
   freezeColumns?: number
   /** readOnly aplica aparência cinza (muted) por padrão; false = bloqueia edição mas mantém cor normal */
@@ -181,7 +187,7 @@ type DropdownState = {
   y: number
 }
 
-export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, onRowSelectionChange, disabledRows, rowMarkerKind = 'number', rowSelectionMode = 'auto', clearSelectionRef, onEdit, sortColumnId, sortDir, onHeaderClicked, sortableColumnIds, freezeColumns, mutedReadOnly = true }: Props) {
+export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, onRowSelectionChange, disabledRows, rowMarkerKind = 'number', rowSelectionMode = 'auto', clearSelectionRef, onEdit, sortColumnId, sortDir, onHeaderClicked, sortableColumnIds, onAnyHeaderClicked, filterColumnIds, activeFilterColumnIds, freezeColumns, mutedReadOnly = true }: Props) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [monoFamily, setMonoFamily] = useState<string>('ui-monospace, monospace')
@@ -380,37 +386,59 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
     }
   }
 
-  // Seta de ordenação (▲/▼) à direita do título, na coluna ordenada.
-  const drawHeader: DrawHeaderCallback | undefined = onHeaderClicked
+  // Ícones no header: seta de sort (▲/▼) na coluna ordenada; funil nas colunas filtráveis.
+  const hasHeaderIcons = onHeaderClicked || (filterColumnIds && filterColumnIds.length > 0)
+  const drawHeader: DrawHeaderCallback | undefined = hasHeaderIcons
     ? (args, draw) => {
         draw()
         const colId = columns[args.columnIndex]?.id
-        if (!colId || colId !== sortColumnId) return
+        if (!colId) return
         const { ctx, rect, theme: t } = args
+        const iconColor = (t.textHeaderSelected as string) || (t.textHeader as string) || '#5b5b5b'
         const cx = rect.x + rect.width - 14
         const cy = rect.y + rect.height / 2
-        const up = sortDir !== 'desc'
-        ctx.save()
-        ctx.fillStyle = (t.textHeaderSelected as string) || (t.textHeader as string) || '#5b5b5b'
-        ctx.beginPath()
-        if (up) {
-          ctx.moveTo(cx, cy - 3)
-          ctx.lineTo(cx + 5, cy + 3)
-          ctx.lineTo(cx - 5, cy + 3)
-        } else {
-          ctx.moveTo(cx, cy + 3)
-          ctx.lineTo(cx + 5, cy - 3)
-          ctx.lineTo(cx - 5, cy - 3)
+
+        if (colId === sortColumnId) {
+          // Seta de sort
+          const up = sortDir !== 'desc'
+          ctx.save()
+          ctx.fillStyle = iconColor
+          ctx.beginPath()
+          if (up) {
+            ctx.moveTo(cx, cy - 3)
+            ctx.lineTo(cx + 5, cy + 3)
+            ctx.lineTo(cx - 5, cy + 3)
+          } else {
+            ctx.moveTo(cx, cy + 3)
+            ctx.lineTo(cx + 5, cy - 3)
+            ctx.lineTo(cx - 5, cy - 3)
+          }
+          ctx.closePath()
+          ctx.fill()
+          ctx.restore()
+        } else if (filterColumnIds?.includes(colId)) {
+          const isActive = activeFilterColumnIds?.includes(colId) ?? false
+          ctx.save()
+          const fillColor = isActive ? '#5f8f3a' : iconColor
+          ctx.fillStyle = fillColor
+          ctx.beginPath()
+          ctx.moveTo(cx - 3.5, cy - 3.5)
+          ctx.lineTo(cx + 3.5, cy - 3.5)
+          ctx.lineTo(cx + 1,   cy + 0.5)
+          ctx.lineTo(cx + 1,   cy + 3.5)
+          ctx.lineTo(cx - 1,   cy + 3.5)
+          ctx.lineTo(cx - 1,   cy + 0.5)
+          ctx.closePath()
+          ctx.fill()
+          ctx.restore()
         }
-        ctx.closePath()
-        ctx.fill()
-        ctx.restore()
       }
     : undefined
 
   const handleHeaderClicked = (colIndex: number) => {
     const colId = columns[colIndex]?.id
     if (!colId) return
+    onAnyHeaderClicked?.(colId)
     if (sortableColumnIds && !sortableColumnIds.includes(colId)) return
     onHeaderClicked?.(colId)
   }

@@ -16,7 +16,7 @@ import { ReviewSidebar } from './ReviewSidebar'
 import { ReviewToolbar } from './ReviewToolbar'
 import { ReviewTable } from './ReviewTable'
 import { ErrorCart } from './ErrorCart'
-import { ApprovePanel } from './ApprovePanel'
+import { FilialOverviewPanel } from './ApprovePanel'
 
 export function DadosPorCategoriaScreen() {
   const periodos = useMemo(() => getPeriodos(), [])
@@ -28,8 +28,6 @@ export function DadosPorCategoriaScreen() {
 
   // Decisão por categoria (mock — no produto real flipa o ciclo no dashboard-v2)
   const [decisions, setDecisions] = useState<Record<string, ReviewDecision>>({})
-  // Resultados aprovados: categoriaId → tCO₂e confirmado
-  const [aprovados, setAprovados] = useState<Record<string, number>>({})
 
   // Seleção transitória na tabela (ainda não no carrinho).
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -108,20 +106,48 @@ export function DadosPorCategoriaScreen() {
 
   function recusar() {
     setDecisions((d) => ({ ...d, [categoriaId]: 'reprovado' }))
-    setAprovados((a) => {
-      const next = { ...a }
-      delete next[categoriaId]
-      return next
-    })
     resetCart()
     setPanelOpen(false)
   }
 
-  function aprovar(tco2e: number) {
+  function aprovar() {
     setDecisions((d) => ({ ...d, [categoriaId]: 'aprovado' }))
-    setAprovados((a) => ({ ...a, [categoriaId]: tco2e }))
     resetCart()
     setPanelOpen(false)
+  }
+
+  function exportCSV() {
+    const cat = findReviewCategory(categoriaId)
+    // Une todas as colunas de todos os schemas, deduplicando por id.
+    const allColIds: string[] = []
+    const colLabels: Record<string, string> = {}
+    for (const schema of cat.schemas) {
+      for (const col of schema.columns) {
+        if (!allColIds.includes(col.id)) {
+          allColIds.push(col.id)
+          colLabels[col.id] = col.title
+        }
+      }
+    }
+    const header = ['Schema', ...allColIds.map((id) => colLabels[id])].join(',')
+    const bodyLines = rows.map((r) => {
+      const schema = cat.schemas.find((s) => s.id === r.schemaId)?.label ?? r.schemaId
+      const cells = allColIds.map((id) => {
+        const v = String(r.raw[id] ?? '')
+        return v.includes(',') || v.includes('"') || v.includes('\n')
+          ? `"${v.replace(/"/g, '""')}"`
+          : v
+      })
+      return [schema, ...cells].join(',')
+    })
+    const csv = [header, ...bodyLines].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${cat.label.replace(/\s+/g, '_')}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   const decision = decisions[categoriaId] ?? 'pendente'
@@ -138,19 +164,18 @@ export function DadosPorCategoriaScreen() {
       />
 
       <div className="flex flex-col flex-1 overflow-hidden bg-background">
-        {/* Topo: contexto da categoria ativa + período + decisão (full-width) */}
-        <ReviewToolbar
-          categoriaId={categoriaId}
-          periodos={periodos}
-          periodoId={periodoId}
-          onPeriodo={setPeriodoId}
-          decisions={decisions}
-        />
-
-        {/* Canvas — sidebar de categorias + tabela vivem juntos numa moldura
-            (border + shadow), espelhando o canvas do Chat. */}
-        <div className="flex-1 min-h-0 flex px-6 py-4">
-          <div className="flex flex-1 min-h-0 min-w-0 border border-border bg-background shadow-[4px_4px_0px_0px_hsl(var(--foreground))] overflow-hidden">
+        {/* Canvas — toolbar + sidebar + tabela numa moldura (border + shadow) */}
+        <div className="flex-1 min-h-0 flex px-6 py-4 bg-muted">
+          <div className="flex flex-col flex-1 min-h-0 min-w-0 border border-border bg-background shadow-[4px_4px_0px_0px_hsl(var(--foreground))] overflow-hidden">
+            <ReviewToolbar
+              categoriaId={categoriaId}
+              periodos={periodos}
+              periodoId={periodoId}
+              onPeriodo={setPeriodoId}
+              decisions={decisions}
+              decision={decision}
+            />
+            <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
             <ReviewSidebar
               categoriaId={categoriaId}
               onCategoria={changeCategoria}
@@ -176,6 +201,7 @@ export function DadosPorCategoriaScreen() {
             onTogglePanel={() => setPanelOpen((v) => !v)}
             hasCart={hasCart}
             drawerOpen={panelOpen}
+            onExport={exportCSV}
             drawer={
               <aside
                 className={`absolute inset-y-0 right-0 z-30 w-[420px] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
@@ -196,7 +222,7 @@ export function DadosPorCategoriaScreen() {
                         onRecusar={recusar}
                       />
                     ) : (
-                      <ApprovePanel
+                      <FilialOverviewPanel
                         key={categoriaId}
                         resumo={resumo}
                         categoriaLabel={cat.label}
@@ -210,20 +236,7 @@ export function DadosPorCategoriaScreen() {
             }
           />
 
-              {/* Faixa de resultado da decisão */}
-              {decision !== 'pendente' && (
-                <div
-                  className={`shrink-0 px-6 py-2 text-[12px] border-t ${
-                    decision === 'aprovado'
-                      ? 'bg-success-surface border-success-border text-success'
-                      : 'bg-destructive-surface border-destructive-border text-destructive'
-                  }`}
-                >
-                  {decision === 'aprovado'
-                    ? `${cat.label} aprovada · ${(aprovados[categoriaId] ?? 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} tCO₂e consolidado.`
-                    : `${cat.label} reprovada e devolvida ao respondente. O ciclo de coleta volta para correção.`}
-                </div>
-              )}
+            </div>
             </div>
           </div>
         </div>

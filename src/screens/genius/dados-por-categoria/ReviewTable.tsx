@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { PanelRightOpen, PanelRightClose, PanelLeftOpen, PanelLeftClose } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { PanelRightOpen, PanelRightClose, PanelLeftOpen, PanelLeftClose, ChevronDown, Download } from 'lucide-react'
 import { InventoryDataGrid } from '@/components/genius/InventoryDataGrid'
 import { SelectionActionBar } from './SelectionActionBar'
 import { findReviewCategory, type ReviewRow } from './dados-data'
@@ -21,6 +21,7 @@ export function ReviewTable({
   hasCart = false,
   drawer,
   drawerOpen = false,
+  onExport,
 }: {
   categoriaId: string
   rows: ReviewRow[]
@@ -44,6 +45,8 @@ export function ReviewTable({
   drawer?: ReactNode
   /** drawer aberto → reserva largura no grid p/ habilitar scroll-x das colunas escondidas */
   drawerOpen?: boolean
+  /** exporta todas as linhas da categoria como CSV */
+  onExport?: () => void
 }) {
   const cat = findReviewCategory(categoriaId)
   const [schemaId, setSchemaId] = useState(cat.schemas[0]?.id)
@@ -57,29 +60,75 @@ export function ReviewTable({
   )
   const unidadeColId = unidadeColIdx >= 0 ? activeSchema.columns[unidadeColIdx].id : undefined
 
-  // Congela do início até a coluna Unidade (inclusive) — fica sticky no scroll-x,
-  // junto da coluna de números. Se não houver Unidade, não congela nada.
-  const freezeColumns = unidadeColIdx >= 0 ? unidadeColIdx + 1 : 0
+  // Responsável: move para ANTES de Unidade — responsável é a 1ª coluna sticky,
+  // unidade vem logo depois. Não altera o mock compartilhado.
+  const reorderedColumns = useMemo(() => {
+    const cols = [...activeSchema.columns]
+    const respIdx = cols.findIndex((c) => c.id === 'responsavel')
+    if (respIdx < 0 || unidadeColIdx < 0) return cols
+    const [respCol] = cols.splice(respIdx, 1)
+    // Recalcula unidadeColIdx após remoção de respCol (se estava antes de unidade, índice cai 1).
+    const adjustedUnidadeIdx = respIdx < unidadeColIdx ? unidadeColIdx - 1 : unidadeColIdx
+    cols.splice(adjustedUnidadeIdx, 0, respCol)
+    return cols
+  }, [activeSchema.columns, unidadeColIdx])
 
-  // Com o drawer aberto, anexa uma coluna-spacer vazia (≈ largura do painel) ao
-  // fim do grid. Dá folga de scroll-x p/ trazer todas as colunas reais p/ a
-  // esquerda do vidro sem encolher a tabela (preserva o efeito glass).
+  const responsavelColId = useMemo(
+    () => activeSchema.columns.find((c) => c.id === 'responsavel')?.id,
+    [activeSchema],
+  )
+
+  // Freeze até Unidade + Responsável (quando ambos existem).
+  const freezeColumns = useMemo(() => {
+    if (unidadeColIdx < 0) return 0
+    const hasResp = !!responsavelColId
+    return unidadeColIdx + (hasResp ? 2 : 1)
+  }, [unidadeColIdx, responsavelColId])
+
   const gridColumns = useMemo(
     () =>
       drawerOpen
-        ? [...activeSchema.columns, { id: '__spacer', title: '', width: 440 }]
-        : activeSchema.columns,
-    [activeSchema.columns, drawerOpen],
+        ? [...reorderedColumns, { id: '__spacer', title: '', width: 440 }]
+        : reorderedColumns,
+    [reorderedColumns, drawerOpen],
   )
 
-  // Ordenação por clique no header. null = ordem original (como veio do respondente).
-  // Default: já ordenada por Unidade (A→Z) ao abrir a tela.
   const [sort, setSort] = useState<{ colId: string; dir: 'asc' | 'desc' } | null>(() =>
     unidadeColId ? { colId: unidadeColId, dir: 'asc' } : null,
   )
 
-  // Troca de aba → volta à ordem original.
+  const [filtroRespondente, setFiltroRespondente] = useState<string | null>(null)
+  const [filterOpen, setFilterOpen] = useState(false)
+  // Posição X do dropdown relativa ao container do grid (px).
+  const [filterX, setFilterX] = useState(0)
+  const gridContainerRef = useRef<HTMLDivElement>(null)
+
+  const respondentes = useMemo(
+    () =>
+      [...new Set(rows.filter((r) => r.schemaId === activeSchema.id).map((r) => r.respondente))].sort(),
+    [rows, activeSchema.id],
+  )
+
+  // Índice da coluna responsável dentro das colunas reordenadas do grid.
+  const responsavelGridIdx = useMemo(
+    () => gridColumns.findIndex((c) => c.id === 'responsavel'),
+    [gridColumns],
+  )
+
   function cycleSort(colId: string) {
+    if (colId === responsavelColId) {
+      // Calcula posição X da coluna no grid: rowMarkerWidth(44) + soma das larguras anteriores.
+      const ROW_MARKER = 44
+      const colsBeforeResp = gridColumns.slice(0, responsavelGridIdx)
+      const x = ROW_MARKER + colsBeforeResp.reduce((acc, c) => acc + (c.width ?? 150), 0)
+      const containerRect = gridContainerRef.current?.getBoundingClientRect()
+      // Clamp para não sair pela direita.
+      const containerW = containerRect?.width ?? 800
+      const dropdownW = 220
+      setFilterX(Math.min(x, containerW - dropdownW - 8))
+      setFilterOpen((v) => !v)
+      return
+    }
     setSort((s) => {
       if (!s || s.colId !== colId) return { colId, dir: 'asc' }
       if (s.dir === 'asc') return { colId, dir: 'desc' }
@@ -89,16 +138,21 @@ export function ReviewTable({
 
   // Linhas do schema ativo, na ordem do grid (índice = posição). Aplica ordenação
   // pela coluna escolhida (localeCompare pt-BR); sem sort = ordem original.
+  // Filtra por respondente quando ativo.
   const schemaRows = useMemo(() => {
     const base = rows.filter((r) => r.schemaId === activeSchema.id)
-    if (!sort) return base
-    const get = (r: ReviewRow) => String(r.raw[sort.colId] ?? '')
-    const sorted = [...base].sort((a, b) =>
-      get(a).localeCompare(get(b), 'pt-BR', { numeric: true, sensitivity: 'base' }),
-    )
-    if (sort.dir === 'desc') sorted.reverse()
-    return sorted
-  }, [rows, activeSchema.id, sort])
+    let sorted: ReviewRow[]
+    if (!sort) {
+      sorted = base
+    } else {
+      const get = (r: ReviewRow) => String(r.raw[sort.colId] ?? '')
+      sorted = [...base].sort((a, b) =>
+        get(a).localeCompare(get(b), 'pt-BR', { numeric: true, sensitivity: 'base' }),
+      )
+      if (sort.dir === 'desc') sorted.reverse()
+    }
+    return filtroRespondente ? sorted.filter((r) => r.respondente === filtroRespondente) : sorted
+  }, [rows, activeSchema.id, sort, filtroRespondente])
 
   // Índice no grid → rowId.
   const idByIndex = useMemo(() => schemaRows.map((r) => r.id), [schemaRows])
@@ -121,11 +175,13 @@ export function ReviewTable({
 
   const selCount = selectedIndexes.length
 
-  // Troca de aba zera a seleção transitória (o grid remonta e perde a sua) e
-  // volta a ordenação ao padrão (Unidade A→Z).
+  // Troca de aba zera a seleção transitória (o grid remonta e perde a sua),
+  // volta a ordenação ao padrão (Unidade A→Z) e reseta o filtro de respondente.
   useEffect(() => {
     onClearSelection()
     setSort(unidadeColId ? { colId: unidadeColId, dir: 'asc' } : null)
+    setFiltroRespondente(null)
+    setFilterOpen(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schemaId])
 
@@ -167,6 +223,19 @@ export function ReviewTable({
                     <span className="shrink-0">{groupedIndexes.length} no carrinho</span>
                   </>
                 )}
+                {filtroRespondente && (
+                  <>
+                    <span className="text-muted-foreground/40 select-none">·</span>
+                    <button
+                      type="button"
+                      onClick={() => setFiltroRespondente(null)}
+                      className="flex items-center gap-1 text-[12px] font-medium text-planton-accent hover:text-planton-accent/70 shrink-0"
+                    >
+                      {filtroRespondente}
+                      <ChevronDown className="h-3 w-3 -rotate-90" />
+                    </button>
+                  </>
+                )}
                 <span className="text-muted-foreground/40 select-none">·</span>
                 <span className="text-muted-foreground/60 truncate">marque pelos números à esquerda</span>
               </div>
@@ -176,6 +245,16 @@ export function ReviewTable({
           {/* Toggles dos painéis — sidebar de categorias (esq) e aprovar/carrinho
               (dir), juntos à direita (espelha o Chat). */}
           <div className="flex items-center gap-0.5 shrink-0">
+            {onExport && (
+              <button
+                onClick={onExport}
+                className="grid place-content-center h-7 w-7 rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                aria-label="Exportar CSV"
+                title="Exportar categoria como CSV"
+              >
+                <Download className="h-4 w-4" />
+              </button>
+            )}
             {onToggleSidebar && (
               <button
                 onClick={onToggleSidebar}
@@ -208,7 +287,7 @@ export function ReviewTable({
               Com o drawer aberto, o grid ganha colunas-spacer vazias à direita
               (≈ largura do painel) p/ que o scroll-x interno consiga trazer todas
               as colunas reais p/ a esquerda do vidro. */}
-          <div className="h-full">
+          <div className="h-full" ref={gridContainerRef}>
             <InventoryDataGrid
               key={`${categoriaId}:${activeSchema.id}`}
               columns={gridColumns}
@@ -224,9 +303,46 @@ export function ReviewTable({
               sortDir={sort?.dir}
               sortableColumnIds={unidadeColId ? [unidadeColId] : []}
               onHeaderClicked={cycleSort}
+              onAnyHeaderClicked={(colId) => {
+                if (colId === responsavelColId) cycleSort(colId)
+              }}
+              filterColumnIds={responsavelColId ? [responsavelColId] : []}
+              activeFilterColumnIds={filtroRespondente && responsavelColId ? [responsavelColId] : []}
               freezeColumns={freezeColumns}
             />
           </div>
+
+          {/* Dropdown filtro responsável — posicionado sobre o header da coluna */}
+          {filterOpen && responsavelColId && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setFilterOpen(false)} />
+              <div
+                className="absolute z-50 min-w-[200px] border border-border bg-background shadow-lg overflow-hidden"
+                style={{ top: 36, left: filterX }}
+              >
+                <div className="px-3 py-1.5 border-b border-border/50 text-[10px] font-heading uppercase tracking-wider text-muted-foreground">
+                  Filtrar por responsável
+                </div>
+                <button
+                  onClick={() => { setFiltroRespondente(null); setFilterOpen(false) }}
+                  className={`w-full text-left px-3 py-2 text-[12px] hover:bg-muted flex items-center gap-2 ${!filtroRespondente ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
+                >
+                  {!filtroRespondente && <span className="w-1.5 h-1.5 rounded-full bg-planton-accent shrink-0" />}
+                  <span className={!filtroRespondente ? '' : 'pl-[18px]'}>Todos</span>
+                </button>
+                {respondentes.map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => { setFiltroRespondente(r); setFilterOpen(false) }}
+                    className={`w-full text-left px-3 py-2 text-[12px] hover:bg-muted flex items-center gap-2 ${filtroRespondente === r ? 'font-medium text-foreground' : 'text-muted-foreground'}`}
+                  >
+                    {filtroRespondente === r && <span className="w-1.5 h-1.5 rounded-full bg-planton-accent shrink-0" />}
+                    <span className={filtroRespondente === r ? '' : 'pl-[18px]'}>{r}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Drawer overlay — sobre a área do grid apenas (não cobre barra/abas) */}
           {drawer}

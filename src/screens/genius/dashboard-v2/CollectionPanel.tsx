@@ -17,7 +17,7 @@ import {
   TooltipTrigger,
 } from '@/components/shadcn/tooltip'
 import { STATUS_META, getCategoriaRollup, FILIAIS, CATEGORIA_COLS } from './dashboard-data'
-import { getFilialRows, getCategoriaStatusStrip, type FilialRow, type StatusDot, type FilialDot } from './v2-derive'
+import { getFilialRows, getCategoriaStatusStrip, type FilialRow, type StatusDot, type FilialDot, SEGMENT_ORDER } from './v2-derive'
 
 type Axis = 'filial' | 'categoria'
 // Sem Z–A por spec: cada coluna alterna A–Z ↔ ordem de inserção.
@@ -127,6 +127,10 @@ function FilialList({
           ? a.nome.localeCompare(b.nome, 'pt-BR') * dir
           : (a.pct - b.pct) * dir,
       )
+    } else {
+      list = [...list].sort((a, b) =>
+        SEGMENT_ORDER.indexOf(a.worstStatus) - SEGMENT_ORDER.indexOf(b.worstStatus),
+      )
     }
     return list
   }, [search, sort])
@@ -192,9 +196,16 @@ function FilialRowItem({
       </button>
 
       {/* Expansão: mini-matriz de categorias */}
-      {open && (
-        <div className="border-t border-border px-3.5 py-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5 bg-muted/20">
-          {row.strip.map((dot) => (
+      {open && (() => {
+        const sorted = [...row.strip].sort((a, b) => SEGMENT_ORDER.indexOf(a.status) - SEGMENT_ORDER.indexOf(b.status))
+        const cols = 3
+        const rows = Math.ceil(sorted.length / cols)
+        return (
+        <div
+          className="border-t border-border px-3.5 py-3 grid gap-1.5 bg-muted/20"
+          style={{ gridTemplateRows: `repeat(${rows}, auto)`, gridAutoFlow: 'column', gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+        >
+          {sorted.map((dot) => (
             <button
               key={dot.categoriaId}
               type="button"
@@ -213,7 +224,8 @@ function FilialRowItem({
             </button>
           ))}
         </div>
-      )}
+        )
+      })()}
     </div>
   )
 }
@@ -305,6 +317,12 @@ function CategoriaList({
           ? a.label.localeCompare(b.label, 'pt-BR') * dir
           : (a.pctConclusao - b.pctConclusao) * dir,
       )
+    } else {
+      list = [...list].sort((a, b) =>
+        a.scope !== b.scope
+          ? a.scope - b.scope
+          : SEGMENT_ORDER.indexOf(a.status) - SEGMENT_ORDER.indexOf(b.status),
+      )
     }
     return list
   }, [search, sort])
@@ -333,7 +351,9 @@ function CategoriaRowItem({
   const [page, setPage] = useState(0)
   const Icon = cat.icon
 
-  const aplicaveis = cat.unidades.filter((u) => u.status !== 'nao-aplicavel')
+  const aplicaveis = [...cat.unidades.filter((u) => u.status !== 'nao-aplicavel')].sort(
+    (a, b) => SEGMENT_ORDER.indexOf(a.status) - SEGMENT_ORDER.indexOf(b.status),
+  )
   const totalPages = Math.ceil(aplicaveis.length / PAGE_SIZE)
   const pageUnidades = aplicaveis.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
   const from = page * PAGE_SIZE + 1
@@ -389,7 +409,14 @@ function CategoriaRowItem({
       {/* Expansão: filiais em grid 3 colunas com paginação */}
       {open && (
         <div className="border-t border-border bg-muted/20 px-5 py-3">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div
+            className="grid gap-2"
+            style={{
+              gridTemplateRows: `repeat(${Math.ceil(PAGE_SIZE / 3)}, auto)`,
+              gridAutoFlow: 'column',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+            }}
+          >
             {pageUnidades.map((u) => (
               <button
                 key={u.filialId}

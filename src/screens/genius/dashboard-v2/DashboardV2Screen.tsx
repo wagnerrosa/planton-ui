@@ -26,25 +26,25 @@ export function DashboardV2Screen() {
     () => [
       {
         key: 'concluidas',
-        label: 'combinações concluídas',
+        label: 'combinações coletadas e aprovadas',
         value: String(overview.concluidas),
         tone: 'success',
       },
       {
         key: 'sem-resp',
-        label: 'sem responsável',
+        label: 'filiais sem responsável designado',
         value: String(overview.porStatus['sem-respondente']),
         tone: overview.porStatus['sem-respondente'] > 0 ? 'warning' : 'default',
       },
       {
         key: 'reprovadas',
-        label: 'reprovadas',
+        label: 'categorias reprovadas pelo gestor',
         value: String(overview.porStatus['reprovado']),
         tone: overview.porStatus['reprovado'] > 0 ? 'destructive' : 'default',
       },
       {
         key: 'linhas',
-        label: 'linhas coletadas',
+        label: 'linhas coletadas no inventário',
         value: totalLinhas.toLocaleString('pt-BR'),
         tone: 'accent',
       },

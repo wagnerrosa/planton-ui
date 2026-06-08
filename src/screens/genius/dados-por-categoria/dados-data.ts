@@ -49,6 +49,8 @@ export type ReviewRow = {
   schemaLabel: string
   /** unidade/filial de origem do dado (coluna do próprio schema) */
   unidade: string
+  /** respondente responsável pela filial/unidade */
+  respondente: string
   /** células com problema, por coluna */
   cellStatus: Record<string, CellStatus>
   errorCount: number
@@ -68,6 +70,11 @@ function parseTco2e(value: string | undefined): number {
 
 function unidadeOf(row: SchemaRow): string {
   const v = row.unidade_empresa ?? (row as Record<string, unknown>)['unidade-op']
+  return typeof v === 'string' && v ? v : '—'
+}
+
+function respondenteOf(row: SchemaRow): string {
+  const v = row.responsavel
   return typeof v === 'string' && v ? v : '—'
 }
 
@@ -103,6 +110,7 @@ export function getReviewRows(categoriaId: string): ReviewRow[] {
         schemaId: schema.id,
         schemaLabel: schema.label,
         unidade: unidadeOf(filled),
+        respondente: respondenteOf(filled),
         cellStatus,
         errorCount: 0,
         warningCount: statuses.length,
@@ -137,6 +145,11 @@ export type CategoriaResumo = {
   porSchema: { id: string; label: string; linhas: number; soma: number }[]
   /** quebra por unidade/filial: linhas e soma tCO₂e de cada unidade */
   porUnidade: { id: string; label: string; linhas: number; soma: number }[]
+  /** filiais por respondente: quem tem dados e quem não tem */
+  porRespondente: {
+    respondente: string
+    filiais: { unidade: string; temDados: boolean; linhas: number }[]
+  }[]
 }
 
 export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
@@ -167,6 +180,31 @@ export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
   const porUnidade = unidadeOrdem
     .map((u) => ({ id: u, label: u, ...porUnidadeMap.get(u)! }))
     .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { sensitivity: 'base' }))
+  // Agrupa filiais por respondente.
+  const respOrdem: string[] = []
+  const respMap = new Map<string, Map<string, number>>()
+  for (const r of rows) {
+    if (!respMap.has(r.respondente)) {
+      respMap.set(r.respondente, new Map())
+      respOrdem.push(r.respondente)
+    }
+    const filiais = respMap.get(r.respondente)!
+    filiais.set(r.unidade, (filiais.get(r.unidade) ?? 0) + 1)
+  }
+  const porRespondente = respOrdem.map((resp) => {
+    const filiais = respMap.get(resp)!
+    const list = [...filiais.entries()].map(([unidade, linhas]) => ({
+      unidade,
+      temDados: true,
+      linhas,
+    }))
+    // Respondentes com apenas 1 filial ganham uma filial fictícia sem dados para demo.
+    if (list.length === 1) {
+      list.push({ unidade: `${list[0].unidade} (filial 2)`, temDados: false, linhas: 0 })
+    }
+    return { respondente: resp, filiais: list }
+  })
+
   return {
     totalLinhas: rows.length,
     totalErros: rows.reduce((a, r) => a + r.errorCount, 0),
@@ -176,6 +214,7 @@ export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
     schemaLabels: cat.schemas.map((s) => s.label),
     porSchema,
     porUnidade,
+    porRespondente,
   }
 }
 
