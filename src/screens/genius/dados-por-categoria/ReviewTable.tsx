@@ -54,20 +54,17 @@ export function ReviewTable({
   const activeSchema = cat.schemas.find((s) => s.id === schemaId) ?? cat.schemas[0]
 
   // Colunas exclusivas da revisão, injetadas sobre o schema compartilhado do Chat:
-  // Responsável (filtrável) à esquerda e procedência (ID do arquivo / Origem /
-  // Alterações) à direita. Combustão móvel: litros, quilometragem e origem→destino.
-  const isProcedenciaSchema =
-    categoriaId === 'combustao-movel' &&
-    ['litros', 'km', 'origem-destino'].includes(activeSchema.id)
+  // Responsável (filtrável) à esquerda e procedência (Origem do dado / Alterações)
+  // à direita. Universal — toda aba de toda categoria recebe. Id `origem_dado` p/
+  // não colidir com a coluna `origem` própria de alguns schemas (ex.: energia).
   const augmentedColumns = useMemo(() => {
-    if (!isProcedenciaSchema) return activeSchema.columns
     return [
       { id: 'responsavel', title: 'Responsável', width: 160, description: 'Responsável pela filial/unidade.' } as const,
       ...activeSchema.columns,
-      { id: 'origem', title: 'Origem do dado', width: 200, type: 'bubble', description: 'Arquivo de origem do dado — clique para baixar. Vira "manual" quando algum valor da linha é alterado.' } as const,
+      { id: 'origem_dado', title: 'Origem do dado', width: 200, type: 'bubble', description: 'Arquivo de origem do dado — clique para baixar. Vira "manual" quando algum valor da linha é alterado.' } as const,
       { id: 'alteracoes', title: 'Alterações', width: 200, description: 'Colunas alteradas na linha (separadas por ";"). Vazia para linhas não editadas e manuais.' } as const,
     ]
-  }, [activeSchema.columns, isProcedenciaSchema])
+  }, [activeSchema.columns])
 
   // Coluna "Unidade"/"Filial" do schema ativo (varia o id por formato: filial / unidade_empresa / unidade-op).
   const unidadeColIdx = useMemo(
@@ -339,8 +336,8 @@ export function ReviewTable({
               filterColumnIds={responsavelColId ? [responsavelColId] : []}
               activeFilterColumnIds={filtroRespondente && responsavelColId ? [responsavelColId] : []}
               freezeColumns={freezeColumns}
-              fileCellColumnIds={isProcedenciaSchema ? ['origem'] : undefined}
-              onFileCellClick={isProcedenciaSchema ? handleDownloadFile : undefined}
+              fileCellColumnIds={['origem_dado']}
+              onFileCellClick={handleDownloadFile}
             />
           </div>
 

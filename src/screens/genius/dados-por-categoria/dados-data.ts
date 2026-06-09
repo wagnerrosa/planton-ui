@@ -86,41 +86,36 @@ const ARQUIVOS_IMPORTADOS = [
   'relatorio-frota.pdf',
 ]
 
-export type Procedencia = { fileId: string; origem: string; alteracoes: string }
-
-// Schemas de Combustão móvel que recebem as colunas extras da revisão
-// (Responsável / Origem do dado / Alterações). Mantém em sincronia com a tabela.
-const PROCEDENCIA_SCHEMAS = new Set(['litros', 'km', 'origem-destino'])
-
-function isProcedenciaSchema(categoriaId: string, schemaId: string): boolean {
-  return categoriaId === 'combustao-movel' && PROCEDENCIA_SCHEMAS.has(schemaId)
-}
+export type Procedencia = { fileId: string; origemDado: string; alteracoes: string }
 
 // Rótulo da 1ª coluna "de valor" alterada, por schema — usado no mock de Alterações.
+// Schemas sem entrada caem no fallback genérico 'Valor'.
 const ALTERACAO_VALOR_POR_SCHEMA: Record<string, string> = {
   litros: 'Consumo; Unidade de medida',
   km: 'Distância; Unidade de medida',
   'origem-destino': 'Endereço de Chegada',
 }
 
-function procedenciaOf(schemaId: string, idx: number): Procedencia {
+// Procedência (Origem do dado / Alterações) — universal: toda aba a recebe.
+// `hasAnoVeiculo` evita citar "Ano do veículo" em schemas sem essa coluna.
+function procedenciaOf(schemaId: string, idx: number, hasAnoVeiculo: boolean): Procedencia {
   const arquivo = ARQUIVOS_IMPORTADOS[idx % ARQUIVOS_IMPORTADOS.length]
   const fileId = `arq_${schemaId}_${String(1000 + (idx % ARQUIVOS_IMPORTADOS.length)).slice(-4)}`
 
   // ~7% linhas digitadas à mão (sem arquivo).
   if (idx % 15 === 4) {
-    return { fileId: '', origem: 'manual', alteracoes: '' }
+    return { fileId: '', origemDado: 'manual', alteracoes: '' }
   }
   // ~16% linhas importadas e depois editadas (1–2 colunas alteradas) — origem
   // continua o arquivo; o que mudou fica registrado em Alterações.
   if (idx % 13 === 2) {
-    return { fileId, origem: arquivo, alteracoes: ALTERACAO_VALOR_POR_SCHEMA[schemaId] ?? 'Valor' }
+    return { fileId, origemDado: arquivo, alteracoes: ALTERACAO_VALOR_POR_SCHEMA[schemaId] ?? 'Valor' }
   }
-  if (idx % 19 === 6) {
-    return { fileId, origem: arquivo, alteracoes: 'Ano do veículo' }
+  if (hasAnoVeiculo && idx % 19 === 6) {
+    return { fileId, origemDado: arquivo, alteracoes: 'Ano do veículo' }
   }
   // Resto: importada e intacta.
-  return { fileId, origem: arquivo, alteracoes: '' }
+  return { fileId, origemDado: arquivo, alteracoes: '' }
 }
 
 function respondenteOf(row: SchemaRow): string {
@@ -150,13 +145,13 @@ export function getReviewRows(categoriaId: string): ReviewRow[] {
         }
       }
 
-      // Colunas de procedência (Combustão móvel: litros, quilometragem e origem→destino).
-      if (isProcedenciaSchema(cat.id, schema.id)) {
-        const proc = procedenciaOf(schema.id, idx)
-        filled.fileId = proc.fileId
-        filled.origem = proc.origem
-        filled.alteracoes = proc.alteracoes
-      }
+      // Procedência (Origem do dado / Alterações) — toda aba recebe. Id
+      // `origem_dado` p/ não colidir com a coluna `origem` própria de alguns
+      // schemas (ex.: energia: SIN/ACL/fonte).
+      const proc = procedenciaOf(schema.id, idx, 'ano_veiculo' in filled)
+      filled.fileId = proc.fileId
+      filled.origem_dado = proc.origemDado
+      filled.alteracoes = proc.alteracoes
 
       const statuses = Object.values(cellStatus)
       const tco2eRaw = (filled.tco2e as string | undefined) ?? ''

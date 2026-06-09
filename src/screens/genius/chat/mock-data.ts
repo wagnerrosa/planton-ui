@@ -1,4 +1,4 @@
-import { Truck, Flame, Zap, Snowflake, Plane, Trash2, type LucideIcon } from 'lucide-react'
+import { Truck, Flame, Zap, Snowflake, Plane, Trash2, Helicopter, Anchor, type LucideIcon } from 'lucide-react'
 
 export type SchemaColumn = {
   id: string
@@ -251,10 +251,201 @@ function buildCombustaoMovelEnderecos(): SchemaRow[] {
   return rows
 }
 
+// ── Combustão móvel aéreo / hidroviário ──────────────────────────────────────
+// Mesma forma do rodoviário "Por litros" (consumo em volume de combustível), mas
+// sem tipo/ano de veículo — a frota é aeronave/embarcação, identificada só pelo
+// código. Combustíveis e fatores específicos de cada modal.
+const CM_AEREO_COMBUSTIVEIS = [
+  { nome: 'Querosene de Aviação (QAV)', fator: '3,15 kg/L', mult: 3.15 },
+  { nome: 'Gasolina de Aviação (AvGas)', fator: '3,10 kg/L', mult: 3.10 },
+  { nome: 'Jet A-1', fator: '3,16 kg/L', mult: 3.16 },
+]
+const CM_HIDRO_COMBUSTIVEIS = [
+  { nome: 'Óleo Diesel Marítimo (MDO)', fator: '3,21 kg/L', mult: 3.21 },
+  { nome: 'Óleo Combustível Pesado (HFO)', fator: '3,11 kg/L', mult: 3.11 },
+  { nome: 'Diesel S10', fator: '2,67 kg/L', mult: 2.67 },
+  { nome: 'GNV', fator: '1,87 kg/m³', mult: 1.87 },
+]
+
+function buildCombustaoMovelModal(
+  combustiveis: { nome: string; fator: string; mult: number }[],
+  idPrefix: string,
+): SchemaRow[] {
+  const rows: SchemaRow[] = []
+  for (let i = 0; i < 100; i++) {
+    const comb = combustiveis[i % combustiveis.length]
+    const consumoNum = 800 + ((i * 211) % 64000)
+    const tco2eNum = (consumoNum * comb.mult) / 1000
+
+    const row: SchemaRow = {
+      filial: UNIDADES_EMPRESA[i % UNIDADES_EMPRESA.length],
+      mes_emissao: CM_PERIODOS[i % CM_PERIODOS.length],
+      identificador: `${idPrefix}-${String(1000 + i * 13).slice(-4)}`,
+      consumo: consumoNum.toLocaleString('pt-BR'),
+      unidade: comb.nome === 'GNV' ? 'm³' : 'litros',
+      tipo_combustivel: comb.nome,
+      // Campos retidos p/ a revisão (não-colunas no Chat).
+      periodo: CM_PERIODOS[i % CM_PERIODOS.length],
+      fator: comb.fator,
+      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+      responsavel: CM_RESPONSAVEIS[i % CM_RESPONSAVEIS.length],
+    }
+
+    if (i % 17 === 3) {
+      row.consumo = ''
+      row.tco2e = ''
+      row._cellStatus = { consumo: 'error' }
+    } else if (i % 23 === 7) {
+      row._cellStatus = { tipo_combustivel: 'warning' }
+    } else if (i % 29 === 11) {
+      row._cellStatus = { unidade: 'warning' }
+    }
+
+    rows.push(row)
+  }
+  return rows
+}
+
+// Colunas do schema "Por litros" dos modais aéreo/hidroviário (sem tipo/ano de
+// veículo). `identificadorDesc` varia: frota/aeronave vs frota/embarcação.
+function modalLitrosColumns(identificadorDesc: string, combustiveis: string[]): SchemaColumn[] {
+  return [
+    { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+    { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+    { id: 'identificador', title: 'Identificador', width: 150, description: identificadorDesc },
+    { id: 'consumo', title: 'Consumo', width: 130, description: 'Quantidade de combustível consumido.' },
+    { id: 'unidade', title: 'Unidade de medida', width: 150, type: 'bubble', options: ['litros', 'm³', 'kg'], description: 'Unidade de medida (litros, m³, kg, etc.).' },
+    { id: 'tipo_combustivel', title: 'Tipo de combustível', width: 200, type: 'bubble', options: combustiveis, description: 'Tipo de combustível utilizado.' },
+  ]
+}
+
+// ── Aquisição de energia elétrica (escopo 2) ─────────────────────────────────
+// 3 ambientes de contratação: SIN (rede/cativo), ACL (mercado livre) e geração
+// própria. Consumo em kWh/MWh; tCO₂e retido p/ revisão (fator SIN ~0,0385).
+const EE_UNIDADES = ['kWh', 'MWh', 'GWh']
+const EE_FONTES_ACL = ['Solar', 'Eólica', 'Hídrica', 'Biomassa']
+const EE_FATOR_SIN = 0.0385 // tCO₂/MWh (rede)
+
+function eeConsumoMWh(i: number): number {
+  // 8–520 MWh determinístico.
+  return 8 + ((i * 173) % 512)
+}
+
+function buildEnergiaSIN(): SchemaRow[] {
+  const rows: SchemaRow[] = []
+  for (let i = 0; i < 100; i++) {
+    const mwh = eeConsumoMWh(i)
+    const usaMWh = i % 3 !== 0
+    const consumoNum = usaMWh ? mwh : mwh * 1000
+    const tco2eNum = mwh * EE_FATOR_SIN
+
+    const row: SchemaRow = {
+      filial: UNIDADES_EMPRESA[i % UNIDADES_EMPRESA.length],
+      mes_emissao: CM_PERIODOS[i % CM_PERIODOS.length],
+      consumo: consumoNum.toLocaleString('pt-BR'),
+      unidade: usaMWh ? 'MWh' : 'kWh',
+      origem: 'SIN',
+      periodo: CM_PERIODOS[i % CM_PERIODOS.length],
+      fator: '0,0385 tCO₂/MWh',
+      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+      responsavel: CM_RESPONSAVEIS[i % CM_RESPONSAVEIS.length],
+    }
+
+    if (i % 17 === 3) {
+      row.consumo = ''
+      row.tco2e = ''
+      row._cellStatus = { consumo: 'error' }
+    } else if (i % 29 === 11) {
+      row._cellStatus = { unidade: 'warning' }
+    }
+    rows.push(row)
+  }
+  return rows
+}
+
+function buildEnergiaACL(): SchemaRow[] {
+  const rows: SchemaRow[] = []
+  for (let i = 0; i < 100; i++) {
+    const mwh = eeConsumoMWh(i)
+    const usaMWh = i % 3 !== 0
+    const consumoNum = usaMWh ? mwh : mwh * 1000
+    const fonte = EE_FONTES_ACL[i % EE_FONTES_ACL.length]
+    // ~60% têm certificado I-REC (zera a emissão); resto fica pendente de autodeclaração.
+    const temIrec = i % 5 < 3
+    // I-REC presente → fonte renovável certificada, fator 0. Sem → usa o fator da rede.
+    const tco2eNum = temIrec ? 0 : mwh * EE_FATOR_SIN
+
+    const row: SchemaRow = {
+      filial: UNIDADES_EMPRESA[i % UNIDADES_EMPRESA.length],
+      mes_emissao: CM_PERIODOS[i % CM_PERIODOS.length],
+      consumo: consumoNum.toLocaleString('pt-BR'),
+      unidade: usaMWh ? 'MWh' : 'kWh',
+      origem: 'ACL',
+      fonte,
+      // Registro: observação p/ o Inventory Calculator. Com I-REC vira doc
+      // comprobatório (código do certificado); sem, fica autodeclaração pendente.
+      registro: temIrec ? `I-REC ${String(100000 + i * 37).slice(-6)}` : 'Autodeclaração Pendente',
+      periodo: CM_PERIODOS[i % CM_PERIODOS.length],
+      fator: temIrec ? '0,00 tCO₂/MWh (I-REC)' : '0,0385 tCO₂/MWh',
+      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+      responsavel: CM_RESPONSAVEIS[i % CM_RESPONSAVEIS.length],
+    }
+
+    if (i % 17 === 3) {
+      row.consumo = ''
+      row.tco2e = ''
+      row._cellStatus = { consumo: 'error' }
+    } else if (i % 23 === 7) {
+      row._cellStatus = { registro: 'warning' }
+    } else if (i % 29 === 11) {
+      row._cellStatus = { fonte: 'warning' }
+    }
+    rows.push(row)
+  }
+  return rows
+}
+
+function buildEnergiaGeracaoPropria(): SchemaRow[] {
+  const rows: SchemaRow[] = []
+  for (let i = 0; i < 100; i++) {
+    const mwh = eeConsumoMWh(i)
+    const usaMWh = i % 3 !== 0
+    const consumoNum = usaMWh ? mwh : mwh * 1000
+    // Geração própria cobre 40–110% do consumo (excedente injetado na rede).
+    const geracaoMWh = Math.round(mwh * (0.4 + ((i * 7) % 70) / 100))
+    const geracaoNum = usaMWh ? geracaoMWh : geracaoMWh * 1000
+    const fonte = EE_FONTES_ACL[i % EE_FONTES_ACL.length]
+    // Geração própria renovável → emissão associada ~0 (mock).
+    const tco2eNum = 0
+
+    const row: SchemaRow = {
+      filial: UNIDADES_EMPRESA[i % UNIDADES_EMPRESA.length],
+      mes_emissao: CM_PERIODOS[i % CM_PERIODOS.length],
+      consumo: consumoNum.toLocaleString('pt-BR'),
+      unidade_consumo: usaMWh ? 'MWh' : 'kWh',
+      geracao: geracaoNum.toLocaleString('pt-BR'),
+      unidade_geracao: usaMWh ? 'MWh' : 'kWh',
+      origem: fonte,
+      periodo: CM_PERIODOS[i % CM_PERIODOS.length],
+      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+      responsavel: CM_RESPONSAVEIS[i % CM_RESPONSAVEIS.length],
+    }
+
+    if (i % 17 === 3) {
+      row.geracao = ''
+      row._cellStatus = { geracao: 'error' }
+    } else if (i % 29 === 11) {
+      row._cellStatus = { origem: 'warning' }
+    }
+    rows.push(row)
+  }
+  return rows
+}
+
 export const CATEGORIES: EmissionCategory[] = [
   {
     id: 'combustao-movel',
-    label: 'Combustão móvel',
+    label: 'Combustão Móvel (Rodoviário)',
     icon: Truck,
     scope: 1,
     hint: 'Envie consumos em litros, quilometragem percorrida ou rotas origem→destino da sua frota.',
@@ -262,7 +453,7 @@ export const CATEGORIES: EmissionCategory[] = [
       {
         id: 'cm-1',
         role: 'assistant',
-        content: 'Categoria de Combustão móvel ativa. Envie dados em litros, quilometragem ou pontos de origem/destino.',
+        content: 'Categoria de Combustão Móvel (Rodoviário) ativa. Envie dados em litros, quilometragem ou pontos de origem/destino.',
         timestamp: t(60),
       },
     ],
@@ -315,53 +506,111 @@ export const CATEGORIES: EmissionCategory[] = [
     ],
   },
   {
+    id: 'combustao-movel-aereo',
+    label: 'Combustão Móvel (Aéreo)',
+    icon: Helicopter,
+    scope: 1,
+    hint: 'Envie o consumo de combustível em litros da sua frota de aeronaves.',
+    initialChat: [
+      {
+        id: 'cma-1',
+        role: 'assistant',
+        content: 'Categoria de Combustão Móvel (Aéreo) ativa. Envie o consumo de combustível por aeronave.',
+        timestamp: t(58),
+      },
+    ],
+    schemas: [
+      {
+        id: 'litros',
+        label: 'Por litros',
+        columns: modalLitrosColumns(
+          'Identificação da frota/aeronave.',
+          ['Querosene de Aviação (QAV)', 'Gasolina de Aviação (AvGas)', 'Jet A-1'],
+        ),
+        rows: buildCombustaoMovelModal(CM_AEREO_COMBUSTIVEIS, 'AER'),
+      },
+    ],
+  },
+  {
+    id: 'combustao-movel-hidroviario',
+    label: 'Combustão Móvel (Hidroviário)',
+    icon: Anchor,
+    scope: 1,
+    hint: 'Envie o consumo de combustível em litros da sua frota de embarcações.',
+    initialChat: [
+      {
+        id: 'cmh-1',
+        role: 'assistant',
+        content: 'Categoria de Combustão Móvel (Hidroviário) ativa. Envie o consumo de combustível por embarcação.',
+        timestamp: t(56),
+      },
+    ],
+    schemas: [
+      {
+        id: 'litros',
+        label: 'Por litros',
+        columns: modalLitrosColumns(
+          'Identificação da frota/embarcação.',
+          ['Óleo Diesel Marítimo (MDO)', 'Óleo Combustível Pesado (HFO)', 'Diesel S10', 'GNV'],
+        ),
+        rows: buildCombustaoMovelModal(CM_HIDRO_COMBUSTIVEIS, 'EMB'),
+      },
+    ],
+  },
+  {
     id: 'energia-eletrica',
-    label: 'Energia elétrica',
+    label: 'Aquisição de Energia Elétrica',
     icon: Zap,
     scope: 2,
-    hint: 'Envie consumo em kWh por unidade ou valores das faturas em BRL com tarifa média.',
+    hint: 'Envie o consumo de energia elétrica por ambiente de contratação: SIN (cativo), ACL (mercado livre) ou geração própria.',
     initialChat: [
       {
         id: 'ee-1',
         role: 'assistant',
-        content: 'Categoria de Energia elétrica ativa. Envie consumo em kWh ou valor das faturas em BRL.',
+        content: 'Categoria de Aquisição de Energia Elétrica ativa. Envie o consumo por ambiente: SIN, ACL ou geração própria.',
         timestamp: t(40),
       },
     ],
     schemas: [
       {
-        id: 'kwh',
-        label: 'Por kWh',
+        id: 'sin',
+        label: 'SIN',
         columns: [
-          { id: 'unidade-op', title: 'Unidade', width: 180, type: 'bubble' },
-          { id: 'consumo', title: 'Consumo', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['kWh', 'MWh', 'GWh'] },
-          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
-          { id: 'fator', title: 'Fator SIN', width: 150 },
-          { id: 'tco2e', title: 'tCO₂e', width: 100 },
-          { id: 'fornecedor', title: 'Fornecedor', width: 160, type: 'bubble' },
+          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+          { id: 'consumo', title: 'Consumo', width: 130, description: 'Consumo de energia elétrica.' },
+          { id: 'unidade', title: 'Unidade de medida', width: 150, type: 'bubble', options: ['kWh', 'MWh', 'GWh'], description: 'Unidade de medida (kWh, MWh, etc.).' },
+          { id: 'origem', title: 'Origem', width: 140, type: 'bubble', options: ['SIN'], description: 'Tipo da fonte de energia elétrica. Vai ser sempre: SIN.' },
         ],
-        rows: [
-          { 'unidade-op': 'Matriz SP', consumo: '87.300', unidade: 'kWh', periodo: 'Jan/2026', fator: '0,0385 tCO₂/MWh', tco2e: '3,36', fornecedor: 'Enel' },
-          { 'unidade-op': 'Fábrica Campinas', consumo: '124.500', unidade: 'kWh', periodo: 'Jan/2026', fator: '0,0385 tCO₂/MWh', tco2e: '4,79', fornecedor: 'CPFL' },
-          { 'unidade-op': 'CD Guarulhos', consumo: '52.200', unidade: 'kWh', periodo: 'Jan/2026', fator: '0,0385 tCO₂/MWh', tco2e: '2,01', fornecedor: 'Enel' },
-        ],
+        rows: buildEnergiaSIN(),
       },
       {
-        id: 'fatura',
-        label: 'Por fatura',
+        id: 'acl',
+        label: 'ACL',
         columns: [
-          { id: 'unidade-op', title: 'Unidade', width: 180, type: 'bubble' },
-          { id: 'valor', title: 'Valor fatura', width: 140 },
-          { id: 'tarifa', title: 'Tarifa média', width: 140 },
-          { id: 'kwh-est', title: 'kWh estimado', width: 140 },
-          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
-          { id: 'tco2e', title: 'tCO₂e', width: 100 },
+          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+          { id: 'consumo', title: 'Consumo', width: 130, description: 'Consumo de energia elétrica (ACL).' },
+          { id: 'unidade', title: 'Unidade de medida', width: 150, type: 'bubble', options: ['kWh', 'MWh', 'GWh'], description: 'Unidade de medida (kWh, MWh, etc.).' },
+          { id: 'origem', title: 'Origem', width: 140, type: 'bubble', options: ['ACL'], description: 'Tipo da fonte de energia elétrica. Vai ser sempre: ACL.' },
+          { id: 'fonte', title: 'Fonte', width: 150, type: 'bubble', options: ['Solar', 'Eólica', 'Hídrica', 'Biomassa'], description: 'Fonte renovável da energia: solar, eólica, hídrica.' },
+          { id: 'registro', title: 'Registro', width: 220, description: 'Observação para o cálculo: com I-REC vira documento comprobatório; sem, fica como autodeclaração pendente.' },
         ],
-        rows: [
-          { 'unidade-op': 'Matriz SP', valor: 'R$ 62.400', tarifa: 'R$ 0,715/kWh', 'kwh-est': '87.272', periodo: 'Jan/2026', tco2e: '3,36' },
-          { 'unidade-op': 'Fábrica Campinas', valor: 'R$ 84.200', tarifa: 'R$ 0,676/kWh', 'kwh-est': '124.556', periodo: 'Jan/2026', tco2e: '4,79' },
+        rows: buildEnergiaACL(),
+      },
+      {
+        id: 'geracao-propria',
+        label: 'Geração própria',
+        columns: [
+          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+          { id: 'consumo', title: 'Consumo', width: 130, description: 'Consumo de energia elétrica.' },
+          { id: 'unidade_consumo', title: 'Unidade de Medida Consumo', width: 200, type: 'bubble', options: ['kWh', 'MWh', 'GWh'], description: 'Unidade de medida do consumo (kWh, MWh, etc.).' },
+          { id: 'geracao', title: 'Geração', width: 130, description: 'Quantidade de energia gerada.' },
+          { id: 'unidade_geracao', title: 'Unidade de Medida Geração', width: 200, type: 'bubble', options: ['kWh', 'MWh', 'GWh'], description: 'Unidade de medida da geração (kWh, MWh, etc.).' },
+          { id: 'origem', title: 'Origem', width: 160, type: 'bubble', options: ['Solar', 'Eólica', 'Hídrica', 'Biomassa'], description: 'Tipo da fonte de energia elétrica (geração própria).' },
         ],
+        rows: buildEnergiaGeracaoPropria(),
       },
     ],
   },
