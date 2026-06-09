@@ -62,6 +62,45 @@ const STATUS_DOT_CLASS: Record<CellStatus, string> = {
   warning: 'bg-warning',
 }
 
+// Coluna "Origem do dado" — só Combustão móvel (litros / km / origem→destino).
+// Espelha a regra de procedência da tela de revisão (dados-data.ts): por índice,
+// determinístico. Aqui é apenas leitura/exibição (não clicável p/ download).
+const PROCEDENCIA_SCHEMAS = new Set(['litros', 'km', 'origem-destino'])
+const ARQUIVOS_IMPORTADOS = [
+  'frota-jan-2026.xlsx',
+  'consumo-diesel-Q1.csv',
+  'abastecimento_matriz.xlsx',
+  'relatorio-frota.pdf',
+]
+
+function isProcedenciaSchema(categoryId: string, schemaId: string): boolean {
+  return categoryId === 'combustao-movel' && PROCEDENCIA_SCHEMAS.has(schemaId)
+}
+
+// Nome do arquivo de origem (ou "manual") por índice. Só linhas digitadas à mão
+// são "manual"; linhas importadas mantêm o arquivo mesmo após edição — o que
+// mudou fica registrado na coluna Alterações.
+function origemDoDado(idx: number): string {
+  if (idx % 15 === 4) return 'manual'      // ~7% linhas digitadas à mão
+  return ARQUIVOS_IMPORTADOS[idx % ARQUIVOS_IMPORTADOS.length]
+}
+
+// Rótulo da 1ª coluna "de valor" alterada, por schema — usado na coluna Alterações.
+const ALTERACAO_VALOR_POR_SCHEMA: Record<string, string> = {
+  litros: 'Consumo; Unidade de medida',
+  km: 'Distância; Unidade de medida',
+  'origem-destino': 'Endereço de Chegada',
+}
+
+// Colunas alteradas na linha (";" entre elas) — mesma regra/precedência da revisão.
+// Linhas manuais e não-editadas ficam vazias.
+function alteracoesDoDado(schemaId: string, idx: number): string {
+  if (idx % 15 === 4) return ''            // manual
+  if (idx % 13 === 2) return ALTERACAO_VALOR_POR_SCHEMA[schemaId] ?? 'Valor'
+  if (idx % 19 === 6) return 'Ano do veículo'
+  return ''
+}
+
 
 type ViewMode = 'empty' | 'chat' | 'split'
 
@@ -167,12 +206,15 @@ function buildInitialSchemas(): Record<string, string> {
 
 export function ChatScreen({ userName = 'Usuário', daysRemaining: daysRemainingProp, onUpgradeClick }: { userName?: string; daysRemaining?: number; onUpgradeClick?: () => void } = {}) {
   const isMobile = useIsMobile()
-  const [daysRemaining] = useState<number | undefined>(() => {
-    if (daysRemainingProp !== undefined) return daysRemainingProp
+  // Mock randômico só pode rodar no client — Math.random() no SSR diverge do
+  // client e quebra a hidratação (banner mostra dias diferentes). Inicia vazio
+  // e sorteia após o mount.
+  const [daysRemaining, setDaysRemaining] = useState<number | undefined>(daysRemainingProp)
+  useEffect(() => {
+    if (daysRemainingProp !== undefined) return
     // Mock: 50% chance de mostrar banner, com 1–14 dias aleatórios
-    if (Math.random() < 0.5) return undefined
-    return Math.floor(Math.random() * 14) + 1
-  })
+    setDaysRemaining(Math.random() < 0.5 ? undefined : Math.floor(Math.random() * 14) + 1)
+  }, [daysRemainingProp])
   const { setInventoryStatus } = useGeniusNavbar()
   const [input, setInput] = useState('')
   const [hoveredCategoryId, setHoveredCategoryId] = useState<string | null>(null)
@@ -483,6 +525,22 @@ export function ChatScreen({ userName = 'Usuário', daysRemaining: daysRemaining
   const activeSchemaId = activeSchemaByCategory[activeCategoryId] ?? activeCategory.schemas[0].id
   const isResumoActive = activeSchemaId === RESUMO_ID
   const activeSchema = activeCategory.schemas.find((s) => s.id === activeSchemaId) ?? activeCategory.schemas[0]
+
+  // Combustão móvel ganha as colunas "Origem do dado" e "Alterações" ao final
+  // (mesmas da revisão, mas só leitura — Origem não é clicável). Injeta as colunas
+  // e preenche os valores por linha.
+  const showOrigem = isProcedenciaSchema(activeCategoryId, activeSchema.id)
+  const gridColumns = showOrigem
+    ? [
+        ...activeSchema.columns,
+        { id: 'origem', title: 'Origem do dado', width: 200, description: 'Arquivo de origem do dado. Vira "manual" quando algum valor da linha é alterado.' } as const,
+        { id: 'alteracoes', title: 'Alterações', width: 200, description: 'Colunas alteradas na linha (separadas por ";"). Vazia para linhas não editadas e manuais.' } as const,
+      ]
+    : activeSchema.columns
+  const gridRows = showOrigem
+    ? activeSchema.rows.map((r, i) => ({ ...r, origem: origemDoDado(i), alteracoes: alteracoesDoDado(activeSchema.id, i) }))
+    : activeSchema.rows
+
   const activeChat = chatsByCategory[activeCategoryId] ?? []
   const hasInventoryInChat = activeChat.some((m) => m.hasInventoryData)
   function schemaProcessingCount(schemaId: string) {
@@ -1409,7 +1467,7 @@ export function ChatScreen({ userName = 'Usuário', daysRemaining: daysRemaining
                       />
                     )}
                     <div className="flex-1 min-h-0">
-                      <InventoryDataGrid columns={activeSchema.columns} rows={activeSchema.rows} readOnly={submitted || schemaProcessingCount(activeSchemaId) > 0} highlightedRows={highlightedRows} onSelectionChange={setSelectedCellInfo} clearSelectionRef={clearGridSelectionRef} onEdit={markDirty} />
+                      <InventoryDataGrid columns={gridColumns} rows={gridRows} readOnly={submitted || schemaProcessingCount(activeSchemaId) > 0} highlightedRows={highlightedRows} onSelectionChange={setSelectedCellInfo} clearSelectionRef={clearGridSelectionRef} onEdit={markDirty} fileCellColumnIds={showOrigem ? ['origem'] : undefined} />
                     </div>
                   </div>
                 )}

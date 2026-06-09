@@ -35,16 +35,11 @@ export function ReviewToolbar({
         <span className="text-muted-foreground font-normal ml-2 text-[12px]">· Escopo {cat.scope}</span>
       </h2>
 
-      {/* Banner de decisão — inline no header, espelha aviso do ChatScreen */}
-      {decision !== 'pendente' && (
-        <span
-          className={`flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium shrink-0 border ${
-            decision === 'aprovado'
-              ? 'bg-success-surface border-success-border text-success'
-              : 'bg-destructive/10 border-destructive/30 text-destructive'
-          }`}
-        >
-          {decision === 'aprovado' ? 'Categoria aprovada' : 'Reprovada · devolvida ao respondente'}
+      {/* Banner de decisão — inline no header. A categoria nunca "fecha": só
+          sinaliza quando todos os respondentes visíveis já foram aprovados. */}
+      {decision === 'aprovado' && (
+        <span className="flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium shrink-0 border bg-success-surface border-success-border text-success">
+          Respondentes aprovados
         </span>
       )}
 

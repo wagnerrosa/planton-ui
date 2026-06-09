@@ -53,17 +53,33 @@ export function ReviewTable({
 
   const activeSchema = cat.schemas.find((s) => s.id === schemaId) ?? cat.schemas[0]
 
-  // Coluna "Unidade" do schema ativo (varia o id por formato: unidade_empresa / unidade-op).
+  // Colunas exclusivas da revisão, injetadas sobre o schema compartilhado do Chat:
+  // Responsável (filtrável) à esquerda e procedência (ID do arquivo / Origem /
+  // Alterações) à direita. Combustão móvel: litros, quilometragem e origem→destino.
+  const isProcedenciaSchema =
+    categoriaId === 'combustao-movel' &&
+    ['litros', 'km', 'origem-destino'].includes(activeSchema.id)
+  const augmentedColumns = useMemo(() => {
+    if (!isProcedenciaSchema) return activeSchema.columns
+    return [
+      { id: 'responsavel', title: 'Responsável', width: 160, description: 'Responsável pela filial/unidade.' } as const,
+      ...activeSchema.columns,
+      { id: 'origem', title: 'Origem do dado', width: 200, type: 'bubble', description: 'Arquivo de origem do dado — clique para baixar. Vira "manual" quando algum valor da linha é alterado.' } as const,
+      { id: 'alteracoes', title: 'Alterações', width: 200, description: 'Colunas alteradas na linha (separadas por ";"). Vazia para linhas não editadas e manuais.' } as const,
+    ]
+  }, [activeSchema.columns, isProcedenciaSchema])
+
+  // Coluna "Unidade"/"Filial" do schema ativo (varia o id por formato: filial / unidade_empresa / unidade-op).
   const unidadeColIdx = useMemo(
-    () => activeSchema.columns.findIndex((c) => c.title === 'Unidade'),
-    [activeSchema],
+    () => augmentedColumns.findIndex((c) => c.title === 'Unidade' || c.title === 'Filial'),
+    [augmentedColumns],
   )
-  const unidadeColId = unidadeColIdx >= 0 ? activeSchema.columns[unidadeColIdx].id : undefined
+  const unidadeColId = unidadeColIdx >= 0 ? augmentedColumns[unidadeColIdx].id : undefined
 
   // Responsável: move para ANTES de Unidade — responsável é a 1ª coluna sticky,
   // unidade vem logo depois. Não altera o mock compartilhado.
   const reorderedColumns = useMemo(() => {
-    const cols = [...activeSchema.columns]
+    const cols = [...augmentedColumns]
     const respIdx = cols.findIndex((c) => c.id === 'responsavel')
     if (respIdx < 0 || unidadeColIdx < 0) return cols
     const [respCol] = cols.splice(respIdx, 1)
@@ -71,19 +87,21 @@ export function ReviewTable({
     const adjustedUnidadeIdx = respIdx < unidadeColIdx ? unidadeColIdx - 1 : unidadeColIdx
     cols.splice(adjustedUnidadeIdx, 0, respCol)
     return cols
-  }, [activeSchema.columns, unidadeColIdx])
+  }, [augmentedColumns, unidadeColIdx])
 
   const responsavelColId = useMemo(
-    () => activeSchema.columns.find((c) => c.id === 'responsavel')?.id,
-    [activeSchema],
+    () => augmentedColumns.find((c) => c.id === 'responsavel')?.id,
+    [augmentedColumns],
   )
 
-  // Freeze até Unidade + Responsável (quando ambos existem).
+  // Freeze até Unidade/Filial (inclusive) na ordem final do grid — Responsável,
+  // quando existe, já foi movido para antes dela, então fica dentro do freeze.
+  // Demais colunas (Mês de Emissão etc.) ficam livres para scroll.
   const freezeColumns = useMemo(() => {
     if (unidadeColIdx < 0) return 0
-    const hasResp = !!responsavelColId
-    return unidadeColIdx + (hasResp ? 2 : 1)
-  }, [unidadeColIdx, responsavelColId])
+    const idx = reorderedColumns.findIndex((c) => c.id === unidadeColId)
+    return idx >= 0 ? idx + 1 : 0
+  }, [reorderedColumns, unidadeColId, unidadeColIdx])
 
   const gridColumns = useMemo(
     () =>
@@ -187,6 +205,18 @@ export function ReviewTable({
 
   function handleRowSelection(indexes: number[]) {
     onSetSelection(activeSchema.id, indexes.map((i) => idByIndex[i]).filter(Boolean))
+  }
+
+  // Download do arquivo de origem (mock): no produto real baixa o arquivo enviado
+  // pelo respondente; aqui gera um placeholder com o mesmo nome.
+  function handleDownloadFile(_rowIndex: number, fileName: string) {
+    const blob = new Blob([`Arquivo de origem (mock): ${fileName}\n`], { type: 'text/plain;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = fileName
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   return (
@@ -309,6 +339,8 @@ export function ReviewTable({
               filterColumnIds={responsavelColId ? [responsavelColId] : []}
               activeFilterColumnIds={filtroRespondente && responsavelColId ? [responsavelColId] : []}
               freezeColumns={freezeColumns}
+              fileCellColumnIds={isProcedenciaSchema ? ['origem'] : undefined}
+              onFileCellClick={isProcedenciaSchema ? handleDownloadFile : undefined}
             />
           </div>
 

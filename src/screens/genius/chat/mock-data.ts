@@ -6,6 +6,8 @@ export type SchemaColumn = {
   width: number
   type?: 'text' | 'bubble'
   options?: string[]
+  /** descrição da coluna (tooltip/ajuda) */
+  description?: string
 }
 
 export type CellStatus = 'error' | 'warning'
@@ -59,74 +61,189 @@ const UNIDADES_EMPRESA = [
   'Fábrica Campinas', 'CD Cajamar', 'CD Recife', 'Loja Santos', 'Loja Campinas',
 ]
 
-function buildCombustaoMovelLitros(): SchemaRow[] {
-  const veiculos = [
-    'Frota leve', 'Frota leve', 'Frota leve',
-    'Caminhões', 'Caminhões', 'Caminhões',
-    'Geradores', 'Geradores', 'Geradores',
-    'Frota executiva', 'Vans logística', 'Empilhadeiras a diesel',
-    'Caminhão coleta', 'Caminhão coleta', 'Frota comercial',
-    'Frota comercial', 'Frota técnica', 'Frota de apoio',
-    'Caminhões leves', 'Caminhões pesados',
-  ]
-  const combustiveis = [
-    { nome: 'Diesel S10', fator: '2,67 kg/L', mult: 2.67 },
-    { nome: 'Diesel S500', fator: '2,68 kg/L', mult: 2.68 },
-    { nome: 'Gasolina', fator: '2,21 kg/L', mult: 2.21 },
-    { nome: 'Etanol', fator: '1,52 kg/L', mult: 1.52 },
-    { nome: 'GNV', fator: '1,87 kg/m³', mult: 1.87 },
-    { nome: 'Biodiesel B10', fator: '2,40 kg/L', mult: 2.40 },
-  ]
-  const responsaveis = [
-    'Carlos Mendes', 'Patrícia Souza', 'Diego Martins', 'Ana Beatriz Lima',
-    'Roberto Carvalho', 'Juliana Pereira', 'Fernando Alves', 'Camila Rodrigues',
-    'Marcos Oliveira', 'Beatriz Santos',
-  ]
-  const periodos = [
-    'Jan/2026', 'Fev/2026', 'Mar/2026', 'Abr/2026', 'Mai/2026', 'Jun/2026',
-    'Jul/2026', 'Ago/2026', 'Set/2026', 'Out/2025', 'Nov/2025', 'Dez/2025',
-  ]
-  const statusOpts = ['Validado', 'Validado', 'Validado', 'Em revisão', 'Pendente']
+// ── Dados base de Combustão móvel (rodoviário) ───────────────────────────────
+// Compartilhados pelos 3 schemas (litros / quilometragem / origem→destino) p/
+// que as linhas tenham o mesmo vocabulário (frota, combustível, responsável).
+const CM_TIPOS_VEICULO = [
+  'Automóvel', 'Automóvel', 'Automóvel',
+  'Caminhão', 'Caminhão', 'Caminhão',
+  'Gerador', 'Gerador', 'Gerador',
+  'Utilitário', 'Van', 'Empilhadeira',
+  'Caminhão', 'Caminhão', 'Automóvel',
+  'Automóvel', 'Utilitário', 'Van',
+  'Caminhão', 'Caminhão',
+]
+const CM_COMBUSTIVEIS = [
+  { nome: 'Diesel S10', fator: '2,67 kg/L', mult: 2.67 },
+  { nome: 'Diesel S500', fator: '2,68 kg/L', mult: 2.68 },
+  { nome: 'Gasolina', fator: '2,21 kg/L', mult: 2.21 },
+  { nome: 'Etanol', fator: '1,52 kg/L', mult: 1.52 },
+  { nome: 'GNV', fator: '1,87 kg/m³', mult: 1.87 },
+  { nome: 'Biodiesel B10', fator: '2,40 kg/L', mult: 2.40 },
+]
+const CM_RESPONSAVEIS = [
+  'Carlos Mendes', 'Patrícia Souza', 'Diego Martins', 'Ana Beatriz Lima',
+  'Roberto Carvalho', 'Juliana Pereira', 'Fernando Alves', 'Camila Rodrigues',
+  'Marcos Oliveira', 'Beatriz Santos',
+]
+const CM_PERIODOS = [
+  'Jan/2026', 'Fev/2026', 'Mar/2026', 'Abr/2026', 'Mai/2026', 'Jun/2026',
+  'Jul/2026', 'Ago/2026', 'Set/2026', 'Out/2025', 'Nov/2025', 'Dez/2025',
+]
+// Prefixo do identificador (placa/frota) por tipo de veículo.
+const CM_PREFIXO_ID: Record<string, string> = {
+  Automóvel: 'CAR', Caminhão: 'TRK', Gerador: 'GEN',
+  Utilitário: 'UTL', Van: 'VAN', Empilhadeira: 'EMP',
+}
 
+function cmBase(i: number) {
+  const tipoVeiculo = CM_TIPOS_VEICULO[i % CM_TIPOS_VEICULO.length]
+  const comb = CM_COMBUSTIVEIS[i % CM_COMBUSTIVEIS.length]
+  return {
+    filial: UNIDADES_EMPRESA[i % UNIDADES_EMPRESA.length],
+    mes_emissao: CM_PERIODOS[i % CM_PERIODOS.length],
+    responsavel: CM_RESPONSAVEIS[i % CM_RESPONSAVEIS.length],
+    anoVeiculo: String(2012 + ((i * 7) % 13)),
+    tipoVeiculo,
+    comb,
+    identificador: `${CM_PREFIXO_ID[tipoVeiculo] ?? 'VEI'}-${String(1000 + i * 13).slice(-4)}`,
+  }
+}
+
+function buildCombustaoMovelLitros(): SchemaRow[] {
   const rows: SchemaRow[] = []
   for (let i = 0; i < 100; i++) {
-    const veiculo = veiculos[i % veiculos.length]
-    const comb = combustiveis[i % combustiveis.length]
-    const qtdNum = 500 + ((i * 137) % 28000)
-    const tco2eNum = (qtdNum * comb.mult) / 1000
-    const responsavel = responsaveis[i % responsaveis.length]
-    const periodo = periodos[i % periodos.length]
-    const status = statusOpts[i % statusOpts.length]
+    const b = cmBase(i)
+    const consumoNum = 500 + ((i * 137) % 28000)
+    const tco2eNum = (consumoNum * b.comb.mult) / 1000
 
     const row: SchemaRow = {
-      unidade_empresa: UNIDADES_EMPRESA[i % UNIDADES_EMPRESA.length],
-      veiculo,
-      combustivel: comb.nome,
-      quantidade: qtdNum.toLocaleString('pt-BR'),
-      unidade: comb.nome === 'GNV' ? 'm³' : 'litros',
-      periodo,
-      fator: comb.fator,
+      filial: b.filial,
+      mes_emissao: b.mes_emissao,
+      identificador: b.identificador,
+      consumo: consumoNum.toLocaleString('pt-BR'),
+      unidade: b.comb.nome === 'GNV' ? 'm³' : 'litros',
+      tipo_combustivel: b.comb.nome,
+      tipo_veiculo: b.tipoVeiculo,
+      ano_veiculo: b.anoVeiculo,
+      // Campos retidos para a revisão (tela Dados-por-categoria) — não são colunas
+      // visíveis no Chat, mas alimentam soma de tCO₂e, filtro de responsável e período.
+      periodo: b.mes_emissao,
+      fator: b.comb.fator,
       tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
-      responsavel,
-      status,
+      responsavel: b.responsavel,
     }
 
     // Sprinkle errors/warnings deterministically (~12% rows)
     if (i % 17 === 3) {
-      row.quantidade = ''
+      row.consumo = ''
       row.tco2e = ''
-      row._cellStatus = { quantidade: 'error', tco2e: 'error' }
-      row.status = 'Pendente'
+      row._cellStatus = { consumo: 'error' }
     } else if (i % 23 === 7) {
-      row._cellStatus = { fator: 'warning' }
-      row.status = 'Em revisão'
+      row._cellStatus = { tipo_combustivel: 'warning' }
     } else if (i % 31 === 5) {
-      row.responsavel = ''
-      row._cellStatus = { responsavel: 'error' }
-      row.status = 'Pendente'
+      row.ano_veiculo = ''
+      row._cellStatus = { ano_veiculo: 'error' }
     } else if (i % 29 === 11) {
-      row._cellStatus = { periodo: 'warning' }
-      row.status = 'Em revisão'
+      row._cellStatus = { unidade: 'warning' }
+    }
+
+    rows.push(row)
+  }
+  return rows
+}
+
+// Por quilometragem: mesma frota, mas o consumo entra como distância percorrida.
+// tCO₂e estimado por km·fator (mock determinístico, mesma ordem de grandeza).
+function buildCombustaoMovelDistancia(): SchemaRow[] {
+  const rows: SchemaRow[] = []
+  for (let i = 0; i < 100; i++) {
+    const b = cmBase(i)
+    const distNum = 1200 + ((i * 173) % 48000)
+    const isMilhas = i % 11 === 0
+    const tco2eNum = (distNum * b.comb.mult * 0.31) / 1000
+
+    const row: SchemaRow = {
+      filial: b.filial,
+      mes_emissao: b.mes_emissao,
+      identificador: b.identificador,
+      distancia: distNum.toLocaleString('pt-BR'),
+      unidade: isMilhas ? 'milhas' : 'km',
+      tipo_combustivel: b.comb.nome,
+      tipo_veiculo: b.tipoVeiculo,
+      ano_veiculo: b.anoVeiculo,
+      periodo: b.mes_emissao,
+      fator: b.comb.fator,
+      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+      responsavel: b.responsavel,
+    }
+
+    if (i % 17 === 3) {
+      row.distancia = ''
+      row.tco2e = ''
+      row._cellStatus = { distancia: 'error' }
+    } else if (i % 23 === 7) {
+      row._cellStatus = { tipo_combustivel: 'warning' }
+    } else if (i % 31 === 5) {
+      row.ano_veiculo = ''
+      row._cellStatus = { ano_veiculo: 'error' }
+    } else if (i % 29 === 11) {
+      row._cellStatus = { unidade: 'warning' }
+    }
+
+    rows.push(row)
+  }
+  return rows
+}
+
+// Origem → Destino: o sistema calcula a distância da rota; o respondente informa
+// endereços de partida/chegada. tCO₂e derivado da distância calculada da rota.
+function buildCombustaoMovelEnderecos(): SchemaRow[] {
+  const enderecos = [
+    'Av. Paulista, 1000 - São Paulo/SP',
+    'Rod. Anhanguera, km 25 - Jundiaí/SP',
+    'Rua das Indústrias, 450 - Guarulhos/SP',
+    'Av. das Nações, 200 - Campinas/SP',
+    'Porto de Santos - Santos/SP',
+    'Rod. Dutra, km 160 - Rio de Janeiro/RJ',
+    'Distrito Industrial - Cajamar/SP',
+    'Av. Brasil, 3000 - Belo Horizonte/MG',
+    'Centro de Distribuição - Recife/PE',
+  ]
+  const rows: SchemaRow[] = []
+  for (let i = 0; i < 100; i++) {
+    const b = cmBase(i)
+    const kmNum = 800 + ((i * 211) % 32000)
+    const tco2eNum = (kmNum * b.comb.mult * 0.31) / 1000
+
+    const row: SchemaRow = {
+      filial: b.filial,
+      mes_emissao: b.mes_emissao,
+      identificador: b.identificador,
+      endereco_partida: enderecos[i % enderecos.length],
+      endereco_chegada: enderecos[(i + 3) % enderecos.length],
+      tipo_combustivel: b.comb.nome,
+      tipo_veiculo: b.tipoVeiculo,
+      ano_veiculo: b.anoVeiculo,
+      // Campos retidos p/ a revisão (não-colunas no Chat).
+      periodo: b.mes_emissao,
+      km_calculado: kmNum.toLocaleString('pt-BR'),
+      fator: b.comb.fator,
+      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+      responsavel: b.responsavel,
+    }
+
+    if (i % 17 === 3) {
+      row.endereco_chegada = ''
+      row.tco2e = ''
+      row._cellStatus = { endereco_chegada: 'error' }
+    } else if (i % 23 === 7) {
+      row._cellStatus = { tipo_combustivel: 'warning' }
+    } else if (i % 31 === 5) {
+      row.ano_veiculo = ''
+      row._cellStatus = { ano_veiculo: 'error' }
+    } else if (i % 29 === 11) {
+      row._cellStatus = { endereco_partida: 'warning' }
     }
 
     rows.push(row)
@@ -154,16 +271,14 @@ export const CATEGORIES: EmissionCategory[] = [
         id: 'litros',
         label: 'Por litros',
         columns: [
-          { id: 'unidade_empresa', title: 'Unidade', width: 180, type: 'bubble' },
-          { id: 'veiculo', title: 'Veículo', width: 200 },
-          { id: 'combustivel', title: 'Combustível', width: 140, type: 'bubble', options: ['Diesel S10', 'Diesel S500', 'Gasolina', 'Etanol', 'GNV', 'Biodiesel B10'] },
-          { id: 'quantidade', title: 'Quantidade', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['litros', 'm³', 'kg'] },
-          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
-          { id: 'fator', title: 'Fator', width: 130 },
-          { id: 'tco2e', title: 'tCO₂e', width: 100 },
-          { id: 'responsavel', title: 'Responsável', width: 160 },
-          { id: 'status', title: 'Status', width: 130 },
+          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+          { id: 'identificador', title: 'Identificador', width: 150, description: 'Identificação da frota/veículo.' },
+          { id: 'consumo', title: 'Consumo', width: 130, description: 'Quantidade de combustível consumido.' },
+          { id: 'unidade', title: 'Unidade de medida', width: 150, type: 'bubble', options: ['litros', 'm³', 'kg'], description: 'Unidade de medida (litros, m³, kg, etc.).' },
+          { id: 'tipo_combustivel', title: 'Tipo de combustível', width: 160, type: 'bubble', options: ['Diesel S10', 'Diesel S500', 'Gasolina', 'Etanol', 'GNV', 'Biodiesel B10'], description: 'Tipo de combustível utilizado.' },
+          { id: 'tipo_veiculo', title: 'Tipo de veículo', width: 150, type: 'bubble', options: ['Automóvel', 'Caminhão', 'Gerador', 'Utilitário', 'Van', 'Empilhadeira'], description: 'Tipo de veículo utilizado.' },
+          { id: 'ano_veiculo', title: 'Ano do veículo', width: 130, description: 'Ano de fabricação do veículo.' },
         ],
         rows: buildCombustaoMovelLitros(),
       },
@@ -171,42 +286,31 @@ export const CATEGORIES: EmissionCategory[] = [
         id: 'km',
         label: 'Por quilometragem',
         columns: [
-          { id: 'unidade_empresa', title: 'Unidade', width: 180, type: 'bubble' },
-          { id: 'veiculo', title: 'Veículo', width: 200 },
-          { id: 'tipo', title: 'Tipo', width: 140, type: 'bubble' },
-          { id: 'km', title: 'Distância', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['km', 'milhas'] },
-          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
-          { id: 'fator', title: 'Fator', width: 130 },
-          { id: 'tco2e', title: 'tCO₂e', width: 100 },
-          { id: 'observacoes', title: 'Observações', width: 260 },
+          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+          { id: 'identificador', title: 'Identificador', width: 150, description: 'Identificação da frota/veículo.' },
+          { id: 'distancia', title: 'Distância', width: 130, description: 'Distância percorrida pelo veículo.' },
+          { id: 'unidade', title: 'Unidade de medida', width: 150, type: 'bubble', options: ['km', 'milhas', 'metros'], description: 'Unidade de medida da distância (metros, km, etc.).' },
+          { id: 'tipo_combustivel', title: 'Tipo de combustível', width: 160, type: 'bubble', options: ['Diesel S10', 'Diesel S500', 'Gasolina', 'Etanol', 'GNV', 'Biodiesel B10'], description: 'Tipo de combustível utilizado.' },
+          { id: 'tipo_veiculo', title: 'Tipo de veículo', width: 150, type: 'bubble', options: ['Automóvel', 'Caminhão', 'Gerador', 'Utilitário', 'Van', 'Empilhadeira'], description: 'Tipo de veículo utilizado.' },
+          { id: 'ano_veiculo', title: 'Ano do veículo', width: 130, description: 'Ano de fabricação do veículo.' },
         ],
-        rows: [
-          { unidade_empresa: 'Matriz SP', veiculo: 'Frota leve', tipo: 'Veículo leve', km: '124.500', unidade: 'km', periodo: 'Jan/2026', fator: '0,17 kg/km', tco2e: '21,17', observacoes: 'Média urbana SP' },
-          { unidade_empresa: 'CD Guarulhos', veiculo: 'Caminhões médios', tipo: 'Médio porte', km: '85.200', unidade: 'km', periodo: 'Jan/2026', fator: '0,42 kg/km', tco2e: '35,78', observacoes: 'Rotas regionais', _cellStatus: { observacoes: 'warning' } },
-          { unidade_empresa: 'CD Cajamar', veiculo: 'Caminhões pesados', tipo: 'Pesado', km: '42.300', unidade: 'km', periodo: 'Jan/2026', fator: '0,78 kg/km', tco2e: '32,99', observacoes: 'Interestadual' },
-          { unidade_empresa: 'Loja Rio de Janeiro', veiculo: 'Motos entrega', tipo: 'Motocicleta', km: '18.400', unidade: 'km', periodo: 'Jan/2026', fator: '0,074 kg/km', tco2e: '1,36', observacoes: 'Last mile' },
-        ],
+        rows: buildCombustaoMovelDistancia(),
       },
       {
         id: 'origem-destino',
         label: 'Origem → Destino',
         columns: [
-          { id: 'unidade_empresa', title: 'Unidade', width: 180, type: 'bubble' },
-          { id: 'origem', title: 'Origem', width: 220 },
-          { id: 'destino', title: 'Destino', width: 220 },
-          { id: 'veiculo', title: 'Veículo', width: 160, type: 'bubble' },
-          { id: 'viagens', title: 'Viagens', width: 100 },
-          { id: 'kmCalculado', title: 'Km calculado', width: 140 },
-          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
-          { id: 'tco2e', title: 'tCO₂e', width: 100 },
+          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+          { id: 'identificador', title: 'Identificador', width: 150, description: 'Identificação da frota/veículo.' },
+          { id: 'endereco_partida', title: 'Endereço de Partida', width: 240, description: 'Endereço de origem/partida (CEP, rua, cidade ou estado).' },
+          { id: 'endereco_chegada', title: 'Endereço de Chegada', width: 240, description: 'Endereço de destino/chegada (CEP, rua, cidade ou estado).' },
+          { id: 'tipo_combustivel', title: 'Tipo de combustível', width: 160, type: 'bubble', options: ['Diesel S10', 'Diesel S500', 'Gasolina', 'Etanol', 'GNV', 'Biodiesel B10'], description: 'Tipo de combustível utilizado.' },
+          { id: 'tipo_veiculo', title: 'Tipo de veículo', width: 150, type: 'bubble', options: ['Automóvel', 'Caminhão', 'Gerador', 'Utilitário', 'Van', 'Empilhadeira'], description: 'Tipo de veículo utilizado.' },
+          { id: 'ano_veiculo', title: 'Ano do veículo', width: 130, description: 'Ano de fabricação do veículo.' },
         ],
-        rows: [
-          { unidade_empresa: 'CD Guarulhos', origem: 'CD Guarulhos', destino: 'Loja Santos', veiculo: 'Caminhão médio', viagens: '24', kmCalculado: '1.872', periodo: 'Jan/2026', tco2e: '0,79' },
-          { unidade_empresa: 'CD Guarulhos', origem: 'CD Guarulhos', destino: 'Loja Campinas', veiculo: 'Caminhão médio', viagens: '32', kmCalculado: '3.200', periodo: 'Jan/2026', tco2e: '1,34' },
-          { unidade_empresa: 'CD Guarulhos', origem: 'CD Guarulhos', destino: 'Loja Rio de Janeiro', veiculo: 'Caminhão pesado', viagens: '12', kmCalculado: '5.220', periodo: 'Jan/2026', tco2e: '4,07' },
-          { unidade_empresa: 'Matriz SP', origem: 'Matriz SP', destino: 'Fábrica Campinas', veiculo: 'Veículo leve', viagens: '48', kmCalculado: '4.704', periodo: 'Jan/2026', tco2e: '0,80' },
-        ],
+        rows: buildCombustaoMovelEnderecos(),
       },
     ],
   },

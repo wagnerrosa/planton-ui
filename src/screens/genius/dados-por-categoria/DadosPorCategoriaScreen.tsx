@@ -10,6 +10,7 @@ import {
   getCategoriaResumo,
   getPeriodos,
   type ReviewDecision,
+  type RespStatus,
   type RejectionGroup,
 } from './dados-data'
 import { ReviewSidebar } from './ReviewSidebar'
@@ -26,8 +27,19 @@ export function DadosPorCategoriaScreen() {
   // Sidebar de categorias colapsável (espelha o Chat).
   const [categoriesOpen, setCategoriesOpen] = useState(true)
 
-  // Decisão por categoria (mock — no produto real flipa o ciclo no dashboard-v2)
-  const [decisions, setDecisions] = useState<Record<string, ReviewDecision>>({})
+  // Status por respondente, escopado por categoria (mock). A revisão é granular:
+  // recusar nega o envio inteiro de um respondente; aprovar registra o restante.
+  // Sem entrada = pendente. A categoria nunca "fecha" (dado novo pode chegar).
+  // Seed: Combustão móvel já entra com alguns respondentes resolvidos (2 aprovados,
+  // 2 recusados) p/ demonstrar a aprovação parcial e os 3 estados do painel.
+  const [respStatus, setRespStatus] = useState<Record<string, Record<string, RespStatus>>>({
+    'combustao-movel': {
+      'Carlos Mendes': 'aprovado',
+      'Patrícia Souza': 'aprovado',
+      'Diego Martins': 'recusado',
+      'Fernando Alves': 'recusado',
+    },
+  })
 
   // Seleção transitória na tabela (ainda não no carrinho).
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
@@ -39,9 +51,21 @@ export function DadosPorCategoriaScreen() {
   // ativam o carrinho (marcar linhas / criar grupo); engenheiro fecha/reabre pelo toggle.
   const [panelOpen, setPanelOpen] = useState(false)
 
-  const cat = findReviewCategory(categoriaId)
-  const rows = useMemo(() => getReviewRows(categoriaId), [categoriaId])
-  const resumo = useMemo(() => getCategoriaResumo(categoriaId), [categoriaId])
+  // Status dos respondentes da categoria atual (sub-mapa). Memoizado p/ ref
+  // estável — entra como dep de vários useMemo abaixo.
+  const statusCat = useMemo(() => respStatus[categoriaId] ?? {}, [respStatus, categoriaId])
+
+  // Todas as linhas da categoria; depois filtra os respondentes recusados — o
+  // envio recusado é negado por inteiro e sai da tabela/painel.
+  const allRows = useMemo(() => getReviewRows(categoriaId), [categoriaId])
+  const rows = useMemo(
+    () => allRows.filter((r) => statusCat[r.respondente] !== 'recusado'),
+    [allRows, statusCat],
+  )
+  const resumo = useMemo(
+    () => getCategoriaResumo(categoriaId, statusCat),
+    [categoriaId, statusCat],
+  )
   const rowsById = useMemo(() => new Map(rows.map((r) => [r.id, r])), [rows])
 
   // Linhas já dentro de algum grupo (não selecionáveis na tabela).
@@ -104,14 +128,36 @@ export function DadosPorCategoriaScreen() {
     )
   }
 
+  // Respondentes alcançados pelo carrinho: o envio é atômico, então recusar
+  // qualquer linha de um respondente nega TODAS as linhas/filiais dele.
+  const affectedRespondentes = useMemo(() => {
+    const set = new Set<string>()
+    for (const id of groupedIds) {
+      const resp = rowsById.get(id)?.respondente
+      if (resp) set.add(resp)
+    }
+    return [...set]
+  }, [groupedIds, rowsById])
+
   function recusar() {
-    setDecisions((d) => ({ ...d, [categoriaId]: 'reprovado' }))
+    if (affectedRespondentes.length === 0) return
+    setRespStatus((prev) => {
+      const cur = { ...(prev[categoriaId] ?? {}) }
+      for (const resp of affectedRespondentes) cur[resp] = 'recusado'
+      return { ...prev, [categoriaId]: cur }
+    })
     resetCart()
-    setPanelOpen(false)
   }
 
   function aprovar() {
-    setDecisions((d) => ({ ...d, [categoriaId]: 'aprovado' }))
+    // Aprova o que sobrou: respondentes ainda pendentes (visíveis e não recusados).
+    setRespStatus((prev) => {
+      const cur = { ...(prev[categoriaId] ?? {}) }
+      for (const r of rows) {
+        if (cur[r.respondente] !== 'recusado') cur[r.respondente] = 'aprovado'
+      }
+      return { ...prev, [categoriaId]: cur }
+    })
     resetCart()
     setPanelOpen(false)
   }
@@ -150,7 +196,22 @@ export function DadosPorCategoriaScreen() {
     URL.revokeObjectURL(url)
   }
 
-  const decision = decisions[categoriaId] ?? 'pendente'
+  // Decisão derivada p/ a toolbar/sidebar: 'aprovado' quando há ao menos um
+  // respondente aprovado e nenhum ainda pendente entre os visíveis; senão
+  // 'pendente'. Não existe mais 'reprovado' global — recusa é por respondente.
+  const decision: ReviewDecision = useMemo(() => {
+    const respondentesVisiveis = new Set(rows.map((r) => r.respondente))
+    const algumAprovado = [...respondentesVisiveis].some((r) => statusCat[r] === 'aprovado')
+    const algumPendente = [...respondentesVisiveis].some((r) => statusCat[r] == null)
+    return algumAprovado && !algumPendente ? 'aprovado' : 'pendente'
+  }, [rows, statusCat])
+
+  // Mapa categoria→decisão derivada, p/ toolbar/sidebar (badges por categoria).
+  const decisions: Record<string, ReviewDecision> = useMemo(
+    () => ({ [categoriaId]: decision }),
+    [categoriaId, decision],
+  )
+
   const hasCart = groups.length > 0 || selectedIds.size > 0
 
   return (
@@ -216,6 +277,7 @@ export function DadosPorCategoriaScreen() {
                       <ErrorCart
                         groups={groups}
                         rowsById={rowsById}
+                        affectedRespondentes={affectedRespondentes}
                         onRemoveGroup={removeGroup}
                         onRemoveRow={removeRowFromGroup}
                         onClear={resetCart}
@@ -225,8 +287,6 @@ export function DadosPorCategoriaScreen() {
                       <FilialOverviewPanel
                         key={categoriaId}
                         resumo={resumo}
-                        categoriaLabel={cat.label}
-                        locked={decision === 'reprovado'}
                         onAprovar={aprovar}
                       />
                     )}

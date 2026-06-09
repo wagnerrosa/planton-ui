@@ -69,8 +69,58 @@ function parseTco2e(value: string | undefined): number {
 }
 
 function unidadeOf(row: SchemaRow): string {
-  const v = row.unidade_empresa ?? (row as Record<string, unknown>)['unidade-op']
+  const v = row.filial ?? row.unidade_empresa ?? (row as Record<string, unknown>)['unidade-op']
   return typeof v === 'string' && v ? v : '—'
+}
+
+// ── Procedência do dado (colunas extras só da revisão) ───────────────────────
+// ID do arquivo: preenchido na importação, intacto após edições. Linhas manuais
+// ficam vazias. Origem: "manual" só para linhas digitadas à mão; linhas
+// importadas mantêm o nome do arquivo mesmo após edição. Alterações: nomes das
+// colunas alteradas (";" entre elas) — registra o que mudou numa linha importada;
+// vazia para linhas não-editadas e manuais. Aqui é mock determinístico por índice.
+const ARQUIVOS_IMPORTADOS = [
+  'frota-jan-2026.xlsx',
+  'consumo-diesel-Q1.csv',
+  'abastecimento_matriz.xlsx',
+  'relatorio-frota.pdf',
+]
+
+export type Procedencia = { fileId: string; origem: string; alteracoes: string }
+
+// Schemas de Combustão móvel que recebem as colunas extras da revisão
+// (Responsável / Origem do dado / Alterações). Mantém em sincronia com a tabela.
+const PROCEDENCIA_SCHEMAS = new Set(['litros', 'km', 'origem-destino'])
+
+function isProcedenciaSchema(categoriaId: string, schemaId: string): boolean {
+  return categoriaId === 'combustao-movel' && PROCEDENCIA_SCHEMAS.has(schemaId)
+}
+
+// Rótulo da 1ª coluna "de valor" alterada, por schema — usado no mock de Alterações.
+const ALTERACAO_VALOR_POR_SCHEMA: Record<string, string> = {
+  litros: 'Consumo; Unidade de medida',
+  km: 'Distância; Unidade de medida',
+  'origem-destino': 'Endereço de Chegada',
+}
+
+function procedenciaOf(schemaId: string, idx: number): Procedencia {
+  const arquivo = ARQUIVOS_IMPORTADOS[idx % ARQUIVOS_IMPORTADOS.length]
+  const fileId = `arq_${schemaId}_${String(1000 + (idx % ARQUIVOS_IMPORTADOS.length)).slice(-4)}`
+
+  // ~7% linhas digitadas à mão (sem arquivo).
+  if (idx % 15 === 4) {
+    return { fileId: '', origem: 'manual', alteracoes: '' }
+  }
+  // ~16% linhas importadas e depois editadas (1–2 colunas alteradas) — origem
+  // continua o arquivo; o que mudou fica registrado em Alterações.
+  if (idx % 13 === 2) {
+    return { fileId, origem: arquivo, alteracoes: ALTERACAO_VALOR_POR_SCHEMA[schemaId] ?? 'Valor' }
+  }
+  if (idx % 19 === 6) {
+    return { fileId, origem: arquivo, alteracoes: 'Ano do veículo' }
+  }
+  // Resto: importada e intacta.
+  return { fileId, origem: arquivo, alteracoes: '' }
 }
 
 function respondenteOf(row: SchemaRow): string {
@@ -100,6 +150,14 @@ export function getReviewRows(categoriaId: string): ReviewRow[] {
         }
       }
 
+      // Colunas de procedência (Combustão móvel: litros, quilometragem e origem→destino).
+      if (isProcedenciaSchema(cat.id, schema.id)) {
+        const proc = procedenciaOf(schema.id, idx)
+        filled.fileId = proc.fileId
+        filled.origem = proc.origem
+        filled.alteracoes = proc.alteracoes
+      }
+
       const statuses = Object.values(cellStatus)
       const tco2eRaw = (filled.tco2e as string | undefined) ?? ''
 
@@ -126,7 +184,8 @@ export function getReviewRows(categoriaId: string): ReviewRow[] {
 // nunca exibimos "vazio" na revisão.
 function fillEmpty(colId: string, seed: number): string {
   if (colId === 'tco2e') return (1 + (seed % 18) + (seed % 100) / 100).toFixed(2).replace('.', ',')
-  if (colId === 'quantidade' || colId === 'consumo') return (500 + seed * 27).toLocaleString('pt-BR')
+  if (colId === 'quantidade' || colId === 'consumo' || colId === 'distancia') return (500 + seed * 27).toLocaleString('pt-BR')
+  if (colId === 'ano_veiculo') return String(2012 + (seed % 13))
   if (colId === 'responsavel') return ['Carlos Mendes', 'Patrícia Souza', 'Ana Beatriz Lima'][seed % 3]
   return '—'
 }
@@ -148,13 +207,64 @@ export type CategoriaResumo = {
   /** filiais por respondente: quem tem dados e quem não tem */
   porRespondente: {
     respondente: string
+    /** decisão da revisão p/ este respondente nesta categoria (undefined = pendente) */
+    status?: RespStatus
     filiais: { unidade: string; temDados: boolean; linhas: number }[]
+    /** arquivos enviados por este respondente (mock) */
+    arquivos: RespondenteArquivo[]
   }[]
 }
 
-export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
+// Arquivo enviado por um respondente, exibido no painel de aprovação.
+export type RespondenteArquivo = {
+  id: string
+  name: string
+  ext: string
+  /** nº de linhas da categoria vinculadas a este arquivo */
+  linhas: number
+}
+
+// Mock determinístico de arquivos por respondente — derivado do nome para
+// variar sem aleatoriedade (Date.now/Math.random quebram render server).
+function arquivosDoRespondente(respondente: string, totalLinhas: number): RespondenteArquivo[] {
+  const slug = respondente.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, '')
+  const seed = respondente.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
+  const templates = [
+    { suffix: 'planilha-base', ext: 'xlsx' },
+    { suffix: 'comprovantes', ext: 'pdf' },
+    { suffix: 'consumo-detalhado', ext: 'csv' },
+    { suffix: 'notas-fiscais', ext: 'pdf' },
+    { suffix: 'medicoes-mensais', ext: 'xlsx' },
+    { suffix: 'relatorio-frota', ext: 'csv' },
+  ]
+  // 2 a 6 arquivos — varia por respondente p/ exercitar o threshold (carrossel).
+  const n = 2 + (seed % (templates.length - 1))
+  const chosen = templates.slice(0, n)
+  // Distribui as linhas entre os arquivos (último fica com o resto).
+  return chosen.map((t, i) => {
+    const base = Math.floor(totalLinhas / n)
+    const linhas = i === n - 1 ? totalLinhas - base * (n - 1) : base
+    return {
+      id: `arq_${slug}_${i}`,
+      name: `${slug}-${t.suffix}.${t.ext}`,
+      ext: t.ext,
+      linhas: Math.max(linhas, 0),
+    }
+  })
+}
+
+export function getCategoriaResumo(
+  categoriaId: string,
+  // Status por respondente nesta categoria. Recusados continuam na lista de
+  // porRespondente (o painel os mostra colapsados), mas suas linhas saem dos
+  // totais/quebras — recusar = negar o envio inteiro do respondente.
+  respStatus: Record<string, RespStatus> = {},
+): CategoriaResumo {
   const cat = findReviewCategory(categoriaId)
-  const rows = getReviewRows(categoriaId)
+  const allRows = getReviewRows(categoriaId)
+  const isRecusado = (resp: string) => respStatus[resp] === 'recusado'
+  // Linhas válidas p/ totais e quebras: exclui respondentes recusados.
+  const rows = allRows.filter((r) => !isRecusado(r.respondente))
   const porSchema = cat.schemas.map((s) => {
     const sr = rows.filter((r) => r.schemaId === s.id)
     return {
@@ -180,10 +290,11 @@ export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
   const porUnidade = unidadeOrdem
     .map((u) => ({ id: u, label: u, ...porUnidadeMap.get(u)! }))
     .sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { sensitivity: 'base' }))
-  // Agrupa filiais por respondente.
+  // Agrupa filiais por respondente. Itera TODAS as linhas (inclusive recusados)
+  // p/ preservar a ordem e a presença de quem foi recusado na lista.
   const respOrdem: string[] = []
   const respMap = new Map<string, Map<string, number>>()
-  for (const r of rows) {
+  for (const r of allRows) {
     if (!respMap.has(r.respondente)) {
       respMap.set(r.respondente, new Map())
       respOrdem.push(r.respondente)
@@ -192,6 +303,12 @@ export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
     filiais.set(r.unidade, (filiais.get(r.unidade) ?? 0) + 1)
   }
   const porRespondente = respOrdem.map((resp) => {
+    const status = respStatus[resp]
+    // Recusado: o envio foi negado por inteiro — painel mostra só o nome, sem
+    // filiais/arquivos. Não monta as quebras p/ não vazar dado descartado.
+    if (status === 'recusado') {
+      return { respondente: resp, status, filiais: [], arquivos: [] }
+    }
     const filiais = respMap.get(resp)!
     const list = [...filiais.entries()].map(([unidade, linhas]) => ({
       unidade,
@@ -202,7 +319,13 @@ export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
     if (list.length === 1) {
       list.push({ unidade: `${list[0].unidade} (filial 2)`, temDados: false, linhas: 0 })
     }
-    return { respondente: resp, filiais: list }
+    const linhasComDados = list.reduce((a, f) => a + f.linhas, 0)
+    return {
+      respondente: resp,
+      status,
+      filiais: list,
+      arquivos: arquivosDoRespondente(resp, linhasComDados),
+    }
   })
 
   return {
@@ -222,6 +345,13 @@ export function getCategoriaResumo(categoriaId: string): CategoriaResumo {
 // É o que, no produto real, flipa o ciclo de coleta no dashboard-v2:
 // 'aprovado' / 'reprovado'. 'pendente' = ainda em revisão.
 export type ReviewDecision = 'pendente' | 'aprovado' | 'reprovado'
+
+// ── Status do respondente dentro de uma categoria ────────────────────────────
+// A revisão é granular por respondente (cada um envia tudo de uma vez — todas as
+// suas filiais/linhas). Recusar nega o envio inteiro; aprovar registra o restante.
+// A categoria nunca "fecha": dado novo (reenvio ou outro respondente) pode chegar.
+// Sem entrada no mapa = pendente.
+export type RespStatus = 'aprovado' | 'recusado'
 
 // ── Grupo de recusa (carrinho) ───────────────────────────────────────────────
 // Um grupo = 1 motivo aplicado a N linhas. O engenheiro marca linhas na tabela,

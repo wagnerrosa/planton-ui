@@ -33,7 +33,7 @@ type ResumoMatrix = {
 }
 
 function getUnidade(row: SchemaRow): string | undefined {
-  const u = row.unidade_empresa ?? row['unidade-op']
+  const u = row.filial ?? row.unidade_empresa ?? row['unidade-op']
   return typeof u === 'string' ? u : undefined
 }
 

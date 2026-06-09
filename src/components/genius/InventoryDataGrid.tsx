@@ -49,6 +49,10 @@ type Props = {
   freezeColumns?: number
   /** readOnly aplica aparência cinza (muted) por padrão; false = bloqueia edição mas mantém cor normal */
   mutedReadOnly?: boolean
+  /** ids de colunas cujo valor é nome de arquivo — renderiza badge de tipo (XLS/PDF/CSV) */
+  fileCellColumnIds?: string[]
+  /** clique numa célula de arquivo com nome válido — ex: baixar */
+  onFileCellClick?: (rowIndex: number, fileName: string) => void
 }
 
 export function InventoryDataGrid(props: Props) {

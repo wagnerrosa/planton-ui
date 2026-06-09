@@ -38,7 +38,7 @@ export function DashboardV2Screen() {
       },
       {
         key: 'reprovadas',
-        label: 'categorias reprovadas pelo gestor',
+        label: 'combinações reprovadas pelo gestor',
         value: String(overview.porStatus['reprovado']),
         tone: overview.porStatus['reprovado'] > 0 ? 'destructive' : 'default',
       },

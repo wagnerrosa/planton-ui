@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Send, ShoppingCart, ChevronDown } from 'lucide-react'
+import { X, Send, ShoppingCart, ChevronDown, Users, AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/shadcn/button'
 import { motivoLabel, type RejectionGroup, type ReviewRow } from './dados-data'
@@ -8,6 +8,7 @@ import { motivoLabel, type RejectionGroup, type ReviewRow } from './dados-data'
 export function ErrorCart({
   groups,
   rowsById,
+  affectedRespondentes,
   onRemoveGroup,
   onRemoveRow,
   onClear,
@@ -16,6 +17,8 @@ export function ErrorCart({
   groups: RejectionGroup[]
   /** lookup id → linha, para render dos chips de unidade */
   rowsById: Map<string, ReviewRow>
+  /** respondentes que serão negados por inteiro ao recusar (envio é atômico) */
+  affectedRespondentes: string[]
   onRemoveGroup: (groupId: string) => void
   onRemoveRow: (groupId: string, rowId: string) => void
   onClear: () => void
@@ -23,6 +26,7 @@ export function ErrorCart({
 }) {
   const totalLinhas = groups.reduce((a, g) => a + g.rowIds.length, 0)
   const vazio = groups.length === 0
+  const nResp = affectedRespondentes.length
 
   return (
     <div className="flex flex-col h-full min-h-0 border border-destructive-border/50 rounded-md bg-transparent">
@@ -68,15 +72,40 @@ export function ErrorCart({
       </div>
 
       {/* Ação */}
-      <div className="shrink-0 px-3 py-2.5 border-t border-destructive-border">
+      <div className="shrink-0 px-3 py-2.5 border-t border-destructive-border flex flex-col gap-2">
+        {/* Aviso de escopo — recusar nega o envio INTEIRO de cada respondente
+            atingido (todas as filiais/linhas dele saem da tabela), não só as
+            linhas marcadas. Torna a cascata explícita antes de confirmar. */}
+        {!vazio && nResp > 0 && (
+          <div className="flex items-start gap-2 rounded-md border border-destructive-border bg-destructive/5 px-2.5 py-2">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5 text-destructive" />
+            <div className="flex flex-col gap-1 min-w-0">
+              <span className="text-[11px] text-destructive leading-snug">
+                Recusa o envio inteiro de {nResp} respondente{nResp !== 1 ? 's' : ''}. Todas as
+                filiais e linhas {nResp !== 1 ? 'deles' : 'dele'} serão devolvidas.
+              </span>
+              <div className="flex flex-wrap gap-1">
+                {affectedRespondentes.map((resp) => (
+                  <span
+                    key={resp}
+                    className="inline-flex items-center gap-1 rounded-sm bg-destructive/10 px-1.5 py-0.5 text-[10px] text-destructive"
+                  >
+                    <Users className="h-2.5 w-2.5 shrink-0" />
+                    {resp}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
         <Button variant="destructive" className="w-full" disabled={vazio} onClick={onRecusar}>
           <Send className="h-4 w-4" />
-          Recusar e devolver ({totalLinhas})
+          Recusar e devolver ({nResp} respondente{nResp !== 1 ? 's' : ''})
         </Button>
         {!vazio && (
-          <p className="text-[10px] text-muted-foreground text-center mt-1.5">
-            {totalLinhas} linha{totalLinhas !== 1 ? 's' : ''} em {groups.length} motivo
-            {groups.length !== 1 ? 's' : ''} de recusa.
+          <p className="text-[10px] text-muted-foreground text-center">
+            {totalLinhas} linha{totalLinhas !== 1 ? 's' : ''} marcada{totalLinhas !== 1 ? 's' : ''} em{' '}
+            {groups.length} motivo{groups.length !== 1 ? 's' : ''} de recusa.
           </p>
         )}
       </div>

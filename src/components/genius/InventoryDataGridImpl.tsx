@@ -65,6 +65,110 @@ function drawBubbleStroke(
   ctx.restore()
 }
 
+// Cores do badge de arquivo (espelha FILE_INFO do GeniusChatComposer).
+const FILE_BADGE: Record<string, { bg: string; fg: string }> = {
+  xlsx: { bg: '#dcfce7', fg: '#15803d' },
+  xls:  { bg: '#dcfce7', fg: '#15803d' },
+  csv:  { bg: '#dbeafe', fg: '#1d4ed8' },
+  pdf:  { bg: '#fee2e2', fg: '#b91c1c' },
+  json: { bg: '#fef9c3', fg: '#a16207' },
+}
+
+// Desenha badge de tipo (XLS/PDF/CSV) + nome do arquivo numa célula.
+// Sem extensão (ex: "manual") → texto cinza, sem badge.
+// Ícone de download (seta p/ baixo + bandeja) desenhado no canvas.
+function drawDownloadIcon(ctx: CanvasRenderingContext2D, cx: number, cy: number, color: string) {
+  ctx.save()
+  ctx.strokeStyle = color
+  ctx.fillStyle = color
+  ctx.lineWidth = 1.4
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  // Haste da seta.
+  ctx.beginPath()
+  ctx.moveTo(cx, cy - 5)
+  ctx.lineTo(cx, cy + 2)
+  ctx.stroke()
+  // Ponta da seta.
+  ctx.beginPath()
+  ctx.moveTo(cx - 3, cy - 1)
+  ctx.lineTo(cx, cy + 2)
+  ctx.lineTo(cx + 3, cy - 1)
+  ctx.stroke()
+  // Bandeja.
+  ctx.beginPath()
+  ctx.moveTo(cx - 4, cy + 4)
+  ctx.lineTo(cx + 4, cy + 4)
+  ctx.stroke()
+  ctx.restore()
+}
+
+function drawFileCell(
+  ctx: CanvasRenderingContext2D,
+  value: string,
+  rect: { x: number; y: number; width: number; height: number },
+  theme: { cellHorizontalPadding: number; baseFontFull: string; textDark: string; textLight: string; accentColor: string },
+  hovered: boolean,
+) {
+  const { x, y, width: w, height: h } = rect
+  const padX = theme.cellHorizontalPadding
+  const ext = value.includes('.') ? value.split('.').pop()!.toLowerCase() : ''
+  ctx.save()
+
+  if (!ext) {
+    // "manual" — texto cinza claro.
+    ctx.font = theme.baseFontFull
+    ctx.fillStyle = theme.textLight
+    ctx.textBaseline = 'middle'
+    ctx.fillText(value, x + padX, y + h / 2)
+    ctx.restore()
+    return
+  }
+
+  // Ícone de download no canto direito quando a célula está em hover.
+  const iconW = hovered ? 20 : 0
+  if (hovered) {
+    drawDownloadIcon(ctx, x + w - padX - 6, y + h / 2, theme.accentColor || theme.textDark)
+  }
+
+  const badge = FILE_BADGE[ext] ?? { bg: 'rgba(0,0,0,0.06)', fg: theme.textDark }
+  const label = ext.slice(0, 3).toUpperCase()
+  const badgeH = 14
+  const badgeW = 24
+  const bx = x + padX
+  const by = y + (h - badgeH) / 2
+  const r = 2
+  // Retângulo arredondado do badge.
+  ctx.beginPath()
+  ctx.moveTo(bx + r, by)
+  ctx.arcTo(bx + badgeW, by, bx + badgeW, by + badgeH, r)
+  ctx.arcTo(bx + badgeW, by + badgeH, bx, by + badgeH, r)
+  ctx.arcTo(bx, by + badgeH, bx, by, r)
+  ctx.arcTo(bx, by, bx + badgeW, by, r)
+  ctx.closePath()
+  ctx.fillStyle = badge.bg
+  ctx.fill()
+  // Rótulo do badge.
+  ctx.font = `700 8px ${theme.baseFontFull.replace(/^[\d.]+px\s*/, '')}`
+  ctx.fillStyle = badge.fg
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(label, bx + badgeW / 2, by + badgeH / 2 + 0.5)
+  // Nome do arquivo ao lado.
+  ctx.font = theme.baseFontFull
+  ctx.fillStyle = theme.textDark
+  ctx.textAlign = 'left'
+  const nameX = bx + badgeW + 8
+  const maxNameW = x + w - padX - nameX - iconW
+  let name = value
+  if (ctx.measureText(name).width > maxNameW && maxNameW > 12) {
+    while (name.length > 1 && ctx.measureText(name + '…').width > maxNameW) name = name.slice(0, -1)
+    name += '…'
+  }
+  ctx.fillText(name, nameX, y + h / 2)
+  ctx.restore()
+}
+
 const LIGHT_THEME: Partial<Theme> = {
   accentColor: '#ADCF78',
   accentLight: 'rgba(173, 207, 120, 0.15)',
@@ -156,6 +260,10 @@ type Props = {
   freezeColumns?: number
   /** readOnly aplica aparência cinza (muted) por padrão; false = bloqueia edição mas mantém cor normal */
   mutedReadOnly?: boolean
+  /** ids de colunas cujo valor é um nome de arquivo — renderiza badge de tipo (XLS/PDF/CSV) na célula */
+  fileCellColumnIds?: string[]
+  /** clique numa célula de arquivo (de fileCellColumnIds) com nome válido — ex: baixar */
+  onFileCellClick?: (rowIndex: number, fileName: string) => void
 }
 
 function getSelectionInfo(sel: GridSelection, totalCols: number, totalRows: number): GridSelectionInfo {
@@ -187,11 +295,13 @@ type DropdownState = {
   y: number
 }
 
-export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, onRowSelectionChange, disabledRows, rowMarkerKind = 'number', rowSelectionMode = 'auto', clearSelectionRef, onEdit, sortColumnId, sortDir, onHeaderClicked, sortableColumnIds, onAnyHeaderClicked, filterColumnIds, activeFilterColumnIds, freezeColumns, mutedReadOnly = true }: Props) {
+export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = false, highlightedRows, onSelectionChange, onRowSelectionChange, disabledRows, rowMarkerKind = 'number', rowSelectionMode = 'auto', clearSelectionRef, onEdit, sortColumnId, sortDir, onHeaderClicked, sortableColumnIds, onAnyHeaderClicked, filterColumnIds, activeFilterColumnIds, freezeColumns, mutedReadOnly = true, fileCellColumnIds, onFileCellClick }: Props) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [monoFamily, setMonoFamily] = useState<string>('ui-monospace, monospace')
   const [hoveredCell, setHoveredCell] = useState<Item | undefined>(undefined)
+  // Tooltip de descrição no header (posição em coords de viewport).
+  const [headerTip, setHeaderTip] = useState<{ colIdx: number; x: number; y: number } | null>(null)
   const [gridSelection, setGridSelection] = useState<GridSelection>({ columns: CompactSelection.empty(), rows: CompactSelection.empty() })
   const [localRows, setLocalRows] = useState<SchemaRow[]>(initialRows)
   const [dropdown, setDropdown] = useState<DropdownState | null>(null)
@@ -230,10 +340,28 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
   const onItemHovered = useCallback((args: GridMouseEventArgs) => {
     if (args.kind === 'cell') {
       setHoveredCell(args.location)
-    } else {
-      setHoveredCell(undefined)
+      setHeaderTip(null)
+      // Cursor pointer sobre célula de arquivo com nome válido (download).
+      const colId = columns[args.location[0]]?.id
+      const val = colId ? rows[args.location[1]]?.[colId] : undefined
+      const isFile = !!colId && !!fileCellColumnIds?.includes(colId) && typeof val === 'string' && val.includes('.')
+      if (containerRef.current) containerRef.current.style.cursor = isFile ? 'pointer' : 'default'
+      return
     }
-  }, [])
+    setHoveredCell(undefined)
+    if (containerRef.current) containerRef.current.style.cursor = 'default'
+    // Header com descrição → tooltip flutuante (canvas não tem title nativo).
+    if (args.kind === 'header') {
+      const colIdx = args.location[0]
+      const desc = columns[colIdx]?.description
+      if (desc) {
+        const b = args.bounds
+        setHeaderTip({ colIdx, x: b.x + b.width / 2, y: b.y + b.height })
+        return
+      }
+    }
+    setHeaderTip(null)
+  }, [columns, rows, fileCellColumnIds])
 
   useEffect(() => {
     setMounted(true)
@@ -278,6 +406,18 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
             ? { bgCell: 'rgba(234, 179, 8, 0.12)', textDark: '#a16207' }
             : undefined
 
+      // Coluna de arquivo: célula de texto crua (o badge é desenhado em drawCell).
+      if (fileCellColumnIds?.includes(colId)) {
+        return {
+          kind: GridCellKind.Text,
+          data: val,
+          displayData: val,
+          allowOverlay: false,
+          readonly: true,
+          themeOverride: errorOverride,
+        }
+      }
+
       const colType = columns[col].type
       if (colType === 'bubble' || colId === 'status') {
         return {
@@ -297,10 +437,19 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
         themeOverride: errorOverride,
       }
     },
-    [columns, rows, readOnly]
+    [columns, rows, readOnly, fileCellColumnIds]
   )
 
   const handleCellClicked = useCallback(([colIdx, rowIdx]: Item, event: CellClickedEventArgs) => {
+    // Célula de arquivo: clique baixa o arquivo (funciona mesmo em readOnly).
+    const clickedCol = columns[colIdx]
+    if (clickedCol && fileCellColumnIds?.includes(clickedCol.id)) {
+      const val = rows[rowIdx]?.[clickedCol.id]
+      if (typeof val === 'string' && val.includes('.')) {
+        onFileCellClick?.(rowIdx, val)
+      }
+      return
+    }
     if (readOnly) return
     if (event.shiftKey || event.ctrlKey || event.metaKey) return
     const col = columns[colIdx]
@@ -314,7 +463,7 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
       x: cellBounds.x,
       y: cellBounds.y + cellBounds.height,
     })
-  }, [readOnly, columns])
+  }, [readOnly, columns, rows, fileCellColumnIds, onFileCellClick])
 
   const handleSelectOption = useCallback((option: string) => {
     if (!dropdown) return
@@ -376,6 +525,23 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
   }
 
   const drawCell: DrawCellCallback = (args, draw) => {
+    const colId = columns[args.col]?.id
+    // Coluna de arquivo: pinta fundo + badge de tipo em vez do texto padrão.
+    if (colId && fileCellColumnIds?.includes(colId)) {
+      const { ctx, rect, theme: t } = args
+      const cell = args.cell
+      const value = cell.kind === GridCellKind.Text ? (cell as { data: string }).data : ''
+      ctx.save()
+      // Respeita o tom da linha (highlight/aviso) via bgCellMedium quando houver.
+      const rowOverride = getRowThemeOverride(args.row)
+      ctx.fillStyle = (rowOverride?.bgCell as string) || (t.bgCell as string) || '#ffffff'
+      ctx.fillRect(rect.x, rect.y, rect.width, rect.height)
+      ctx.restore()
+      // Ícone de download no hover só quando a célula é clicável (há onFileCellClick).
+      const isHovered = hoveredCell?.[0] === args.col && hoveredCell?.[1] === args.row
+      if (value) drawFileCell(ctx, value, rect, t as never, !!onFileCellClick && isHovered && value.includes('.'))
+      return
+    }
     draw()
     const cell = args.cell
     if (cell.kind === GridCellKind.Bubble) {
@@ -514,6 +680,14 @@ export function InventoryDataGridImpl({ columns, rows: initialRows, readOnly = f
         trailingRowOptions={readOnly ? undefined : { hint: '', sticky: false, tint: false }}
         getCellsForSelection
       />
+      {headerTip && columns[headerTip.colIdx]?.description && (
+        <div
+          className="pointer-events-none fixed z-50 max-w-[240px] -translate-x-1/2 mt-1.5 px-2.5 py-1.5 rounded-md bg-foreground text-background text-[11px] font-sans leading-snug shadow-md"
+          style={{ left: headerTip.x, top: headerTip.y }}
+        >
+          {columns[headerTip.colIdx].description}
+        </div>
+      )}
       {dropdown && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setDropdown(null)} />
