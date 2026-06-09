@@ -60,6 +60,7 @@ const screens = [
       { href: '/design-system/screens/genius/chat', label: 'Chat', description: 'Interface de chat com assistente de IA para pesquisa' },
       { href: '/design-system/screens/genius/dados-por-categoria', label: 'Dados por Categoria', description: 'Revisão e edição de dados de emissão por categoria com toolbar de ações' },
       { href: '/design-system/screens/genius/dashboard-v2', label: 'Dashboard V2', description: 'Dashboard gerencial de inventário com visão por matriz e categoria' },
+      { href: '/design-system/screens/genius/cadastro-emissoes', label: 'Cadastro de Emissões', description: 'Tela de cadastro e gestão de emissões de inventário' },
     ],
   },
   {
