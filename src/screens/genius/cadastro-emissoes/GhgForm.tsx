@@ -113,13 +113,13 @@ export function GhgForm({
   const set = (k: string) => (v: string) => onChange(k, v)
 
   return (
-    <div key={scopeId} className="flex flex-col gap-10 px-6 py-6 max-w-5xl mx-auto w-full">
-      {/* Logos GHG Protocol + FGV */}
-      <div className="flex items-center gap-5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/ghgprotocol_logo.png" alt="Programa Brasileiro GHG Protocol" className="h-10 w-auto shrink-0" />
+    <div key={scopeId} className="flex flex-col gap-10 px-6 pt-8 pb-6 max-w-5xl mx-auto w-full">
+      {/* Logos FGV + GHG Protocol — alinhados à direita */}
+      <div className="flex items-center justify-end gap-5 -mb-6">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/fgv.svg" alt="FGV" className="h-5 w-auto shrink-0" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/ghgprotocol_logo.png" alt="Programa Brasileiro GHG Protocol" className="h-10 w-auto shrink-0" />
       </div>
       {/* ── 2.1 Resumo das emissões totais ─────────────────────────────── */}
       <section className="flex flex-col gap-3">
