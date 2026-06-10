@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import { Check, X, Clock, AlertTriangle } from 'lucide-react'
+import { Check, X, AlertTriangle, Circle } from 'lucide-react'
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from '@/components/shadcn/sheet'
 import { StatusPill } from './StatusPill'
 import {
@@ -152,6 +152,9 @@ function DrawerInner({
         <div className="flex-1" />
         <button
           type="button"
+          // TODO: redirecionar p/ o histórico de chat do respondente já na aba
+          // da categoria ativa (activeCatId) — reusar o fluxo de chat existente
+          // (ChatScreen). Spec 6.7.
           className="px-4 h-9 text-[13px] font-sans font-medium bg-planton-accent text-white hover:bg-planton-accent/90 transition-colors"
         >
           Histórico de chat
@@ -159,23 +162,6 @@ function DrawerInner({
       </div>
     </>
   )
-}
-
-// Retorna done/fail/current + somente o próximo pending. Oculta pending futuros.
-function visibleTimeline(events: TimelineEvent[]): TimelineEvent[] {
-  const result: TimelineEvent[] = []
-  let pendingSeen = false
-  for (const ev of events) {
-    if (ev.state === 'pending') {
-      if (!pendingSeen) {
-        result.push(ev)
-        pendingSeen = true
-      }
-    } else {
-      result.push(ev)
-    }
-  }
-  return result
 }
 
 function CombinationDetail({
@@ -206,12 +192,13 @@ function CombinationDetail({
             </span>
             <span className="text-[12px] font-sans text-muted-foreground mt-0.5">
               {filialNome} ({sigla})
-              {comb.atividade.diasSemAtualizar > 0 && (
+              {/* "X dias sem atualizar" some quando aprovado (spec 6.7) */}
+              {comb.status !== 'aprovado' && comb.atividade.diasSemAtualizar > 0 && (
                 <span className="text-warning font-medium">
                   {' '}· {comb.atividade.diasSemAtualizar} dia{comb.atividade.diasSemAtualizar !== 1 ? 's' : ''} sem atualizar
                 </span>
               )}
-              {comb.atividade.diasSemAtualizar === 0 && (
+              {comb.status !== 'aprovado' && comb.atividade.diasSemAtualizar === 0 && (
                 <span className="text-success font-medium">
                   {' '}· atualizado {comb.atividade.ultimaAtualizacao}
                 </span>
@@ -235,7 +222,7 @@ function CombinationDetail({
             Ciclo de coleta
           </span>
         </div>
-        <Timeline events={visibleTimeline(timeline)} />
+        <Timeline events={timeline} />
       </div>
     </>
   )
@@ -253,17 +240,17 @@ const TL_STATE_META: Record<
     icon: <Check size={11} strokeWidth={3} />,
     labelClass: 'text-foreground',
   },
-  current: {
-    dot: 'bg-planton-accent text-white',
-    ring: 'bg-planton-accent/30',
-    icon: <Clock size={11} strokeWidth={2.5} />,
-    labelClass: 'text-foreground font-medium',
-  },
   fail: {
     dot: 'bg-destructive text-white',
     ring: 'bg-destructive/30',
     icon: <X size={11} strokeWidth={3} />,
     labelClass: 'text-destructive font-medium',
+  },
+  neutral: {
+    dot: 'bg-muted text-muted-foreground border border-border',
+    ring: 'bg-border/60',
+    icon: <Circle size={7} strokeWidth={0} className="fill-muted-foreground" />,
+    labelClass: 'text-foreground',
   },
   pending: {
     dot: 'bg-muted text-muted-foreground border border-border',

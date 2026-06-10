@@ -97,6 +97,36 @@ export type SchemaInfo = {
   status: CombinationStatus
 }
 
+// ── Log de eventos (spec 6.8) ─────────────────────────────────────────────────
+// Sequência cronológica append-only de tudo que aconteceu com a combinação.
+// Tom visual: positive = ✓ verde (conclusões), negative = ✗ vermelho
+// (problemas/recusas), neutral = ícone informativo.
+export type LogEventType =
+  | 'responsavel-alocado'      // 1
+  | 'sem-dados'                // 2
+  | 'responsavel-alterado'     // 3
+  | 'responsavel-removido'     // 4
+  | 'em-preenchimento'         // 5
+  | 'verificacao'              // 6
+  | 'enviado-revisao'          // 7
+  | 'recusado-gestor'          // 8
+  | 'reaberto-gestor'          // 9
+  | 'em-preenchimento-novo'    // 10
+  | 'aprovado-gestor'          // 11
+  | 'chat-reiniciado'          // 12
+
+export type LogEvent = {
+  type: LogEventType
+  data: string         // "20 jan 2025"
+  hora?: string        // "09h12" — eventos com timestamp preciso
+  // Dados contextuais opcionais, conforme o tipo:
+  respondente?: string       // nome (alocado / novo respondente)
+  respondenteAnterior?: string // nome anterior (responsável alterado)
+  linhas?: number            // qtd de linhas (em-preenchimento / enviado)
+  erros?: number             // erros bloqueantes (verificação)
+  observacao?: string        // texto livre (reabertura)
+}
+
 export type Combination = {
   status: CombinationStatus
   respondente?: Respondente
@@ -115,18 +145,8 @@ export type Combination = {
     ultimaVerificacao: string
     resultado: 'passou' | 'falhou' | 'nunca'
   }
-  // Datas auditáveis por etapa do ciclo
-  datas: {
-    alocado?: string
-    dadosRecebidos?: string
-    verificacaoFalhou?: string
-    correcaoReenvio?: string
-    verificacaoPassed?: string
-    enviado?: string
-    reprovado?: string
-    aprovado?: string
-    totalLinhas?: number
-  }
+  // Log cronológico de eventos (spec 6.8) — fonte da timeline do drawer.
+  log: LogEvent[]
 }
 
 export type Filial = {
@@ -173,9 +193,9 @@ const RESPONDENTES: Respondente[] = [
   { nome: 'Igor Fonseca', email: 'igor.fonseca@renovalog.com', alocadaEm: '03 mar 2025' },
 ]
 
-// Plano de status por filial × categoria. Index das CATEGORIA_COLS (6 categorias):
-// [combustao-movel, energia-eletrica, emissoes-fugitivas, combustao-estacionaria,
-//  viagens-negocios, residuos]
+// Plano de status por filial × categoria. Os seeds cobrem as 6 categorias
+// originais; categorias adicionadas depois recebem status determinístico via
+// STATUS_FALLBACK_POOL (ver buildCombination).
 type FilialSeed = {
   id: string
   sigla: string
@@ -254,8 +274,16 @@ const SCHEMA_LABELS: Record<string, string[]> = Object.fromEntries(
 const DATAS_PRIMEIRO = ['15 jan 2025', '18 jan 2025', '21 jan 2025', '11 jan 2025']
 const HORAS = ['09h12', '11h40', '14h22', '16h05', '17h48']
 
+// Pool de status para categorias sem entry no seed (categorias adicionadas
+// depois dos seeds). Determinístico por filial+categoria — sem Math.random.
+const STATUS_FALLBACK_POOL: CombinationStatus[] = [
+  'aprovado', 'enviado', 'em-preenchimento', 'aguardando', 'sem-respondente', 'reprovado', 'nao-aplicavel',
+]
+
 function buildCombination(seed: FilialSeed, catIdx: number): Combination {
-  const status = seed.status[catIdx]
+  const status =
+    seed.status[catIdx] ??
+    STATUS_FALLBACK_POOL[(seed.id.charCodeAt(0) + catIdx * 7) % STATUS_FALLBACK_POOL.length]
   const catId = CATEGORIA_COLS[catIdx].id
   const respondente = seed.respIdx === null ? undefined : RESPONDENTES[seed.respIdx]
 
@@ -266,18 +294,28 @@ function buildCombination(seed: FilialSeed, catIdx: number): Combination {
       atividade: { primeiroDado: '—', ultimaAtualizacao: '—', diasSemAtualizar: 0 },
       volume: { totalLinhas: 0, schemas: [] },
       qualidade: { linhasOk: 0, linhasProblema: 0, ultimaVerificacao: '—', resultado: 'nunca' },
-      datas: {},
+      log: [],
     }
   }
 
   if (status === 'sem-respondente') {
+    // Caso desalocado: já teve responsável e foi removido (evento #4) — só em
+    // algumas combinações, p/ demonstrar o tipo. Determinístico por seed.
+    const foiRemovido = (seed.id.charCodeAt(0) + catIdx) % 3 === 0
+    const log: LogEvent[] = foiRemovido
+      ? [
+          { type: 'responsavel-alocado', data: '08 jan 2025', respondente: RESPONDENTES[catIdx % RESPONDENTES.length].nome },
+          { type: 'sem-dados', data: '08 jan 2025' },
+          { type: 'responsavel-removido', data: '14 jan 2025' },
+        ]
+      : []
     return {
       status,
       respondente: undefined,
       atividade: { primeiroDado: '—', ultimaAtualizacao: '—', diasSemAtualizar: 8 },
       volume: { totalLinhas: 0, schemas: [] },
       qualidade: { linhasOk: 0, linhasProblema: 0, ultimaVerificacao: '—', resultado: 'nunca' },
-      datas: {},
+      log,
     }
   }
 
@@ -310,46 +348,10 @@ function buildCombination(seed: FilialSeed, catIdx: number): Combination {
   const ultimaVerificacao =
     resultado === 'nunca' ? '—' : diasSemAtualizar === 0 ? `hoje · ${HORAS[(seedNum + 1) % HORAS.length]}` : ultimaAtualizacao
 
-  // Datas determinísticas por etapa — derivadas dos mesmos seeds
-  const DATAS_MOCK = ['08 jan 2025', '10 jan 2025', '13 jan 2025', '15 jan 2025', '20 jan 2025', '22 jan 2025', '28 jan 2025', '03 fev 2025']
-  const d = (offset: number) => DATAS_MOCK[(seedNum + offset) % DATAS_MOCK.length]
-  const h = (offset: number) => HORAS[(seedNum + offset) % HORAS.length]
-
-  const datas: Combination['datas'] = {
-    alocado: respondente ? respondente.alocadaEm : undefined,
-    dadosRecebidos: `${d(1)} · ${h(1)}`,
-  }
-
-  // Verificação falhou: presente em reprovado + em-preenchimento com erros
-  const verifFalhouNoMock = (isReprovado || (status === 'em-preenchimento' && linhasProblema > 0))
-  if (verifFalhouNoMock) {
-    datas.verificacaoFalhou = `${d(2)} · ${h(2)}`
-  }
-
-  // Ciclo com correção: reprovado ou enviado/aprovado após falha
-  const teveCiclo = isReprovado || isReady
-  if (teveCiclo && verifFalhouNoMock) {
-    datas.correcaoReenvio = `${d(3)} · ${h(3)}`
-    datas.verificacaoPassed = `${d(4)} · ${h(4)}`
-  } else if (isReady) {
-    // passou de primeira
-    datas.verificacaoPassed = ultimaVerificacao
-  }
-
-  if (isReady || isReprovado) {
-    datas.enviado = `${d(5)} · ${h(5)}`
-  }
-
-  if (isReprovado) {
-    datas.reprovado = `${d(6)} · ${h(6)}`
-  }
-
-  if (status === 'aprovado') {
-    datas.aprovado = `${d(7)} · ${h(0)}`
-  }
-
-  // Total de linhas no campo datas para uso na timeline
-  datas.totalLinhas = totalLinhas
+  const log = buildLog({
+    seed, catIdx, status, respondente,
+    totalLinhas, linhasProblema, isReprovado, isReady,
+  })
 
   return {
     status,
@@ -357,8 +359,125 @@ function buildCombination(seed: FilialSeed, catIdx: number): Combination {
     atividade: { primeiroDado, ultimaAtualizacao, diasSemAtualizar },
     volume: { totalLinhas, schemas },
     qualidade: { linhasOk, linhasProblema, ultimaVerificacao, resultado },
-    datas,
+    log,
   }
+}
+
+// Linha do tempo base: pares (data, hora) em ordem cronológica crescente,
+// consumidos sequencialmente por buildLog via um cursor. Garante que todo log
+// fique monotônico (cada evento mais novo que o anterior) sem datas embaralhadas.
+const CRONOLOGIA: ReadonlyArray<{ data: string; hora: string }> = [
+  { data: '08 jan 2025', hora: '09h12' },
+  { data: '09 jan 2025', hora: '11h40' },
+  { data: '10 jan 2025', hora: '14h22' },
+  { data: '11 jan 2025', hora: '16h05' },
+  { data: '13 jan 2025', hora: '17h48' },
+  { data: '15 jan 2025', hora: '09h12' },
+  { data: '17 jan 2025', hora: '11h40' },
+  { data: '20 jan 2025', hora: '14h22' },
+  { data: '22 jan 2025', hora: '16h05' },
+  { data: '24 jan 2025', hora: '17h48' },
+  { data: '28 jan 2025', hora: '09h12' },
+  { data: '03 fev 2025', hora: '11h40' },
+]
+
+// Constrói o log cronológico (spec 6.8) p/ uma combinação com responsável e
+// dados. Eventos append-only do mais antigo ao mais recente, com datas sempre
+// crescentes (cursor sobre CRONOLOGIA). Combinações reprovadas/aprovadas recebem
+// histórico rico (troca de responsável, ciclo de correção, reabertura, chat
+// reiniciado) p/ demonstrar todos os tipos da spec 6.8 num fluxo coerente.
+function buildLog(ctx: {
+  seed: FilialSeed
+  catIdx: number
+  status: CombinationStatus
+  respondente?: Respondente
+  totalLinhas: number
+  linhasProblema: number
+  isReprovado: boolean
+  isReady: boolean
+}): LogEvent[] {
+  const { seed, catIdx, status, respondente, totalLinhas, linhasProblema, isReprovado, isReady } = ctx
+  const log: LogEvent[] = []
+  const isFilling = status === 'em-preenchimento'
+  const isApproved = status === 'aprovado'
+  const isAguardando = status === 'aguardando' // alocado, mas nenhum dado ainda
+  // Histórico rico: combinações reprovadas e aprovadas demonstram os ciclos
+  // completos com eventos raros. Determinístico por seed.
+  const rico = (isReprovado || isApproved) && (seed.id.charCodeAt(0) + catIdx) % 2 === 0
+  const verifFalhou = isReprovado || (isFilling && linhasProblema > 0)
+  const linhasIniciais = Math.max(totalLinhas - 20, 12)
+
+  // Cursor cronológico: cada chamada avança a data, mantendo o log monotônico.
+  let cursor = 0
+  const ts = () => CRONOLOGIA[Math.min(cursor++, CRONOLOGIA.length - 1)]
+  const push = (e: Omit<LogEvent, 'data' | 'hora'> & { semHora?: boolean }) => {
+    const { semHora, ...rest } = e
+    const t = ts()
+    log.push(semHora ? { ...rest, data: t.data } : { ...rest, data: t.data, hora: t.hora })
+  }
+
+  // 1. Responsável alocado (+ troca de responsável em casos ricos)
+  if (rico) {
+    const anterior = RESPONDENTES[(catIdx + 3) % RESPONDENTES.length]
+    push({ type: 'responsavel-alocado', respondente: anterior.nome, semHora: true })
+    push({ type: 'sem-dados', semHora: true })
+    // 3. Responsável alterado
+    push({
+      type: 'responsavel-alterado',
+      respondenteAnterior: anterior.nome,
+      respondente: respondente?.nome,
+      semHora: true,
+    })
+  } else {
+    push({ type: 'responsavel-alocado', respondente: respondente?.nome, semHora: true })
+    // 2. Sem dados (entra automaticamente logo após alocação)
+    push({ type: 'sem-dados', semHora: true })
+  }
+
+  // "aguardando" = responsável alocado mas nenhum dado entrou: o log para no
+  // evento #2 (Sem dados). Os demais eventos exigem dados na bronze.
+  if (isAguardando) return log
+
+  // 5. Em preenchimento (primeiro dado na bronze)
+  push({ type: 'em-preenchimento', linhas: linhasIniciais })
+
+  // 6. Verificação — quando falhou, mostra a execução com erros, depois a
+  // correção do respondente e a reverificação que passou.
+  if (verifFalhou) {
+    push({ type: 'verificacao', erros: linhasProblema })
+    // 10. Em preenchimento — respondente corrige os dados apontados.
+    push({ type: 'em-preenchimento-novo' })
+  }
+  // Verificação que passou (0 erros) — combinações que avançaram além do preenchimento.
+  if (isReady || isReprovado) {
+    push({ type: 'verificacao', erros: 0 })
+  }
+
+  // 7. Enviado para revisão
+  if (isReady || isReprovado) {
+    push({ type: 'enviado-revisao', linhas: totalLinhas })
+  }
+
+  // 8/9/11. Resultado da revisão
+  if (isReprovado) {
+    // 8. Recusado pelo gestor → trailing "Aguardando correção e reenvio" (v2-derive).
+    push({ type: 'recusado-gestor', linhas: linhasProblema })
+  } else if (isApproved) {
+    if (rico) {
+      // 9. Reaberto pelo gestor (sem motivo técnico) seguido de novo ciclo de
+      // edição, reverificação e reenvio antes da aprovação final.
+      push({ type: 'reaberto-gestor' })
+      // 12. Chat reiniciado — respondente reinicia a conversa p/ reenviar.
+      push({ type: 'chat-reiniciado' })
+      push({ type: 'em-preenchimento-novo' })
+      push({ type: 'verificacao', erros: 0 })
+      push({ type: 'enviado-revisao', linhas: totalLinhas })
+    }
+    // 11. Aprovado pelo gestor
+    push({ type: 'aprovado-gestor' })
+  }
+
+  return log
 }
 
 export const FILIAIS: Filial[] = FILIAL_SEEDS.map((seed) => ({

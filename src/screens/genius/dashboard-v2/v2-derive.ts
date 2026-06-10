@@ -10,6 +10,8 @@ import {
   type Combination,
   type Filial,
   type AttentionItem,
+  type LogEvent,
+  type LogEventType,
 } from './dashboard-data'
 
 // Ordem canônica dos segmentos da barra: pior → neutro (espelha a union de
@@ -137,160 +139,124 @@ export function getFilialRows(): FilialRow[] {
   })
 }
 
-// ── Timeline do respondente ───────────────────────────────────────────────────
-// Rastreio do ciclo de uma combinação (filial × categoria), derivado do status
-// + datas atuais — sem inventar novos campos no mock. Cada evento tem um estado:
-//   done = já aconteceu · current = etapa atual · pending = ainda não · fail = reprovado.
+// ── Timeline do respondente (log — spec 6.8) ──────────────────────────────────
+// A timeline é o log cronológico de eventos da combinação (comb.log), mapeado
+// 1:1 para itens visuais. Cada tipo de evento tem um tom fixo:
+//   done = ✓ verde (conclusões) · fail = ✗ vermelho (problemas/recusas) ·
+//   neutral = ícone informativo. Um passo "current" sintético (derivado do
+//   status) é anexado ao fim quando a combinação aguarda uma próxima ação.
 
-export type TimelineState = 'done' | 'current' | 'pending' | 'fail'
+export type TimelineState = 'done' | 'pending' | 'fail' | 'neutral'
 
 export type TimelineEvent = {
   key: string
   label: string
   detail?: string  // data · hora
   meta?: string    // contexto secundário (linhas, resultado, etc.)
-  action?: string  // CTA contextual — mini-banner inline
+  action?: string  // CTA / banner contextual inline
   state: TimelineState
 }
 
-export function getCombinationTimeline(comb: Combination): TimelineEvent[] {
-  const { status, respondente, atividade, qualidade, datas } = comb
+// Tom visual por tipo de evento (spec 6.8: ✓ verde / ✗ vermelho / neutro).
+const EVENT_TONE: Record<LogEventType, TimelineState> = {
+  'responsavel-alocado': 'done',
+  'sem-dados': 'neutral',
+  'responsavel-alterado': 'neutral',
+  'responsavel-removido': 'fail',
+  'em-preenchimento': 'done',
+  'verificacao': 'done',          // sobrescrito p/ fail quando erros > 0
+  'enviado-revisao': 'done',
+  'recusado-gestor': 'fail',
+  'reaberto-gestor': 'neutral',
+  'em-preenchimento-novo': 'neutral',
+  'aprovado-gestor': 'done',
+  'chat-reiniciado': 'neutral',
+}
 
-  if (status === 'nao-aplicavel') {
+function dt(ev: LogEvent): string {
+  return ev.hora ? `${ev.data} · ${ev.hora}` : ev.data
+}
+
+// Mapeia um evento do log → item visual da timeline.
+function mapLogEvent(ev: LogEvent, i: number): TimelineEvent {
+  const key = `${ev.type}-${i}`
+  const detail = dt(ev)
+  switch (ev.type) {
+    case 'responsavel-alocado':
+      return { key, label: 'Responsável alocado', detail, meta: ev.respondente, state: 'done' }
+    case 'sem-dados':
+      return { key, label: 'Sem dados', detail, state: 'neutral' }
+    case 'responsavel-alterado':
+      return {
+        key,
+        label: 'Responsável alterado',
+        detail,
+        meta: ev.respondenteAnterior && ev.respondente
+          ? `${ev.respondenteAnterior} → ${ev.respondente}`
+          : ev.respondente,
+        state: 'neutral',
+      }
+    case 'responsavel-removido':
+      return { key, label: 'Responsável removido', detail, state: 'fail' }
+    case 'em-preenchimento':
+      return {
+        key,
+        label: 'Em preenchimento',
+        detail,
+        meta: ev.linhas != null ? `${ev.linhas.toLocaleString('pt-BR')} linhas iniciais` : undefined,
+        state: 'done',
+      }
+    case 'verificacao': {
+      const erros = ev.erros ?? 0
+      return erros > 0
+        ? { key, label: 'Verificação', detail, action: `${erros} erros bloqueantes`, state: 'fail' }
+        : { key, label: 'Verificação', detail, meta: '0 erros — pronto para envio', state: 'done' }
+    }
+    case 'enviado-revisao':
+      return {
+        key,
+        label: 'Enviado para revisão',
+        detail,
+        meta: ev.linhas != null ? `${ev.linhas.toLocaleString('pt-BR')} linhas enviadas` : undefined,
+        state: 'done',
+      }
+    case 'recusado-gestor':
+      return {
+        key,
+        label: 'Recusado pelo gestor',
+        detail,
+        action: ev.linhas != null
+          ? `${ev.linhas} linhas com problema. Solicite ao responsável para corrigir os dados e reenviar.`
+          : undefined,
+        state: 'fail',
+      }
+    case 'reaberto-gestor':
+      return { key, label: 'Reaberto pelo gestor', detail, meta: ev.observacao, state: 'neutral' }
+    case 'em-preenchimento-novo':
+      return { key, label: 'Em preenchimento', detail, state: 'neutral' }
+    case 'aprovado-gestor':
+      return { key, label: 'Aprovado pelo gestor', detail, state: 'done' }
+    case 'chat-reiniciado':
+      return { key, label: 'Chat reiniciado', detail, state: 'neutral' }
+    default: {
+      // Exaustividade: força erro de compilação se um tipo novo não for tratado.
+      const _exhaustive: never = ev.type
+      void _exhaustive
+      void EVENT_TONE
+      return { key, label: String(ev.type), detail, state: 'neutral' }
+    }
+  }
+}
+
+export function getCombinationTimeline(comb: Combination): TimelineEvent[] {
+  if (comb.status === 'nao-aplicavel') {
     return [{ key: 'na', label: 'Não aplicável a esta filial', state: 'pending' }]
   }
 
-  const hasResp = !!respondente
-  const hasData = status !== 'sem-respondente' && status !== 'aguardando'
-  const isFilling = status === 'em-preenchimento'
-  const isSent = status === 'enviado' || status === 'aprovado'
-  const isApproved = status === 'aprovado'
-  const isReproved = status === 'reprovado'
-  const verifRodou = qualidade.resultado !== 'nunca'
-  const verifFalhou = qualidade.resultado === 'falhou' && qualidade.linhasProblema > 0
-  const teveCicloCorreção = verifFalhou && (isSent || isReproved)
-
-  const events: TimelineEvent[] = []
-
-  // 1. Responsável alocado
-  events.push({
-    key: 'alocado',
-    label: hasResp ? 'Responsável alocado' : 'Aguardando alocação de responsável',
-    detail: datas.alocado,
-    action: !hasResp ? 'Acesse o painel de usuários para designar um responsável a esta combinação.' : undefined,
-    state: hasResp ? 'done' : 'current',
-  })
-  if (!hasResp) return events
-
-  // 2. Dados recebidos
-  if (hasData) {
-    events.push({
-      key: 'dados-recebidos',
-      label: 'Dados recebidos',
-      detail: datas.dadosRecebidos,
-      meta: `${comb.volume.totalLinhas.toLocaleString('pt-BR')} linhas`,
-      state: 'done',
-    })
-  } else if (isFilling) {
-    events.push({
-      key: 'dados-recebidos',
-      label: 'Aguardando dados',
-      action: `Responsável alocado mas nenhum dado inserido ainda. Contate ${respondente!.nome} para iniciar o preenchimento.`,
-      state: 'current',
-    })
-    return events
-  } else {
-    events.push({ key: 'dados-recebidos', label: 'Aguardando dados', state: 'pending' })
-    return events
-  }
-
-  // 3. Verificação automática
-  if (verifRodou) {
-    if (teveCicloCorreção) {
-      events.push({
-        key: 'verif-falhou',
-        label: 'Verificação automática',
-        detail: datas.verificacaoFalhou,
-        action: `${qualidade.linhasProblema} linhas com problema`,
-        state: 'fail',
-      })
-      events.push({
-        key: 'correcao',
-        label: 'Correção e reenvio',
-        detail: datas.correcaoReenvio,
-        state: 'done',
-      })
-      events.push({
-        key: 'verif-passou',
-        label: 'Verificação automática',
-        detail: datas.verificacaoPassed,
-        meta: 'passou',
-        state: 'done',
-      })
-    } else if (verifFalhou && isFilling) {
-      events.push({
-        key: 'verif-falhou',
-        label: 'Verificação automática',
-        detail: datas.verificacaoFalhou,
-        action: `${qualidade.linhasProblema} linhas com problema`,
-        state: 'fail',
-      })
-      events.push({
-        key: 'correcao',
-        label: 'Correção pendente',
-        meta: atividade.diasSemAtualizar > 0
-          ? `${atividade.diasSemAtualizar} dia${atividade.diasSemAtualizar !== 1 ? 's' : ''} sem atualização`
-          : undefined,
-        state: 'current',
-      })
-      return events
-    } else {
-      events.push({
-        key: 'verif-passou',
-        label: 'Verificação automática',
-        detail: datas.verificacaoPassed,
-        meta: 'passou',
-        state: isSent || isReproved || isApproved ? 'done' : 'current',
-      })
-    }
-  }
-
-  // 4. Enviado para revisão humana
-  if (isSent || isReproved) {
-    events.push({
-      key: 'enviado',
-      label: 'Enviado para revisão',
-      detail: datas.enviado,
-      state: 'done',
-    })
-  } else if (!verifRodou || (verifRodou && !verifFalhou)) {
-    events.push({ key: 'enviado', label: 'Envio para revisão', state: 'pending' })
-    return events
-  }
-
-  // 5. Resultado da revisão humana
-  if (isApproved) {
-    events.push({
-      key: 'resultado',
-      label: 'Aprovado',
-      detail: datas.aprovado,
-      meta: datas.totalLinhas ? `${datas.totalLinhas.toLocaleString('pt-BR')} linhas` : undefined,
-      state: 'done',
-    })
-  } else if (isReproved) {
-    events.push({
-      key: 'resultado',
-      label: 'Reprovado pelo gestor',
-      detail: datas.reprovado,
-      action: `${qualidade.linhasProblema} linhas a corrigir. Solicite ao responsável para corrigir os dados e reenviar.`,
-      state: 'fail',
-    })
-    events.push({ key: 'aguarda-reenvio', label: 'Aguardando correção e reenvio', state: 'current' })
-  } else {
-    events.push({ key: 'resultado', label: 'Aguardando aprovação', state: 'pending' })
-  }
-
-  return events
+  // A timeline é exatamente o log de eventos (spec 6.8). Sem passos sintéticos
+  // de "aguardando" — esses estados não fazem parte dos eventos rastreados; o
+  // status atual já é exibido no badge do header do drawer.
+  return comb.log.map(mapLogEvent)
 }
 
 // Total de linhas coletadas em todo o inventário (KPI de volume do topo).
