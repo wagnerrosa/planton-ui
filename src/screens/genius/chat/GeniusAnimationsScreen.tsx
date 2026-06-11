@@ -92,6 +92,7 @@ export function GeniusAnimationsScreen() {
                         key={cat.id}
                         onMouseEnter={() => setHoveredCategoryId(cat.id)}
                         onMouseLeave={() => setHoveredCategoryId(null)}
+                        title={cat.label}
                         style={{ animationDelay: `${260 + (offset + i) * 50}ms` }}
                         className="genius-chip flex items-center gap-2 px-3 py-2.5 border border-border bg-background text-sm font-sans text-foreground hover:bg-muted hover:border-planton-accent/40 transition-colors cursor-default"
                       >

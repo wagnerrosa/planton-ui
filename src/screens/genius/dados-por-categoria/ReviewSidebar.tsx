@@ -37,7 +37,7 @@ export function ReviewSidebar({
                   <li key={cat.id}>
                     <button
                       onClick={() => onCategoria(cat.id)}
-                      title={!open ? cat.label : undefined}
+                      title={cat.label}
                       className={`w-full flex items-center py-2 text-xs font-sans transition-colors ${
                         open ? 'gap-2.5 px-3 justify-start' : 'justify-center px-0'
                       } ${

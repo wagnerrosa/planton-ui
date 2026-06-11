@@ -94,6 +94,40 @@ const ALTERACAO_VALOR_POR_SCHEMA: Record<string, string> = {
   litros: 'Consumo; Unidade de medida',
   km: 'Distância; Unidade de medida',
   'origem-destino': 'Endereço de Chegada',
+  solo: 'Área (ha); Uso Posterior',
+  vegetacao: 'Área (ha); Tipo de Vegetação',
+  'aereo-up': 'Peso; Unidade de Medida',
+  'aereo-down': 'Peso; Unidade de Medida',
+  'hidro-up': 'Peso; Tipo de Navio',
+  'hidro-down': 'Peso; Tipo de Navio',
+  'rodo-litros-up': 'Litros Consumidos; Unidade de Medida',
+  'rodo-litros-down': 'Litros Consumidos; Unidade de Medida',
+  'rodo-distancia-up': 'Distância; Peso',
+  'rodo-distancia-down': 'Distância; Peso',
+  'rodo-enderecos-up': 'Endereço de Chegada; Peso',
+  'rodo-enderecos-down': 'Endereço de Chegada; Peso',
+  'rodoviario-litros': 'Litros Consumidos; Unidade de Medida',
+  'rodoviario-distancia': 'Distância; Tipo de Veículo',
+  'rodoviario-enderecos': 'Endereço de Chegada; Tipo de Veículo',
+  aereo: 'Aeroporto de Destino',
+  'coletivo-distancia': 'Nº de Funcionários; Distância',
+  'coletivo-enderecos': 'Nº de Funcionários; Endereço de Chegada',
+  'emissao-fugitiva': 'Quantidade; Gás',
+  'combustao-estacionaria': 'Quantidade; Tipo de Combustível',
+  fertilizantes: 'Quantidade; % Nitrogênio',
+  arroz: 'Área (ha); Manejo da Água',
+  palhada: 'Tipo de Cultura (Palhada); Quantidade',
+  pastagem: 'Categoria da Pastagem; Quantidade',
+  confinamento: 'Quantidade',
+  'func-distancia': 'Distância; Meio de Transporte',
+  'func-endereco': 'CEP do Colaborador; Meio de Transporte',
+  'fretado-litros': 'Consumo; Unidade de Medida',
+  'fretado-distancia': 'Distância; Tipo de Combustível',
+  'fretado-enderecos': 'Endereços da Rota; Quantidade de colaboradores',
+  'fretado-compartilhado': 'CEP do Colaborador; Dias na semana',
+  'residuos-compostagem': 'Quantidade; Unidade de Medida (Resíduo)',
+  'efluentes-pre': 'DBO Inicial — Saída (mg/L); Entrada de Efluente (m³)',
+  'efluentes-pos': 'DBO Final — Saída (mg/L); Saída de Efluente Tratado (m³)',
 }
 
 // Procedência (Origem do dado / Alterações) — universal: toda aba a recebe.
@@ -179,7 +213,12 @@ export function getReviewRows(categoriaId: string): ReviewRow[] {
 // nunca exibimos "vazio" na revisão.
 function fillEmpty(colId: string, seed: number): string {
   if (colId === 'tco2e') return (1 + (seed % 18) + (seed % 100) / 100).toFixed(2).replace('.', ',')
-  if (colId === 'quantidade' || colId === 'consumo' || colId === 'distancia') return (500 + seed * 27).toLocaleString('pt-BR')
+  if (colId === 'quantidade' || colId === 'consumo' || colId === 'distancia' || colId === 'volume') return (500 + seed * 27).toLocaleString('pt-BR')
+  if (colId === 'area') return (5 + seed * 9).toLocaleString('pt-BR')
+  if (colId === 'peso') return (100 + seed * 45).toLocaleString('pt-BR')
+  if (colId === 'funcionarios' || colId === 'colaboradores') return String(1 + (seed % 40))
+  if (colId === 'cep_colaborador') return ['01310-100', '20040-002', '30130-005'][seed % 3]
+  if (colId === 'enderecos_rota') return ['01310-100', '04543-000', '13010-111'][seed % 3]
   if (colId === 'ano_veiculo') return String(2012 + (seed % 13))
   if (colId === 'responsavel') return ['Carlos Mendes', 'Patrícia Souza', 'Ana Beatriz Lima'][seed % 3]
   return '—'

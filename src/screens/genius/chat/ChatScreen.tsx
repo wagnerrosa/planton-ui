@@ -1136,6 +1136,7 @@ export function ChatScreen({ userName = 'Usuário', daysRemaining: daysRemaining
                   onClick={() => handleSelectCategory(cat.id)}
                   onMouseEnter={() => setHoveredCategoryId(cat.id)}
                   onMouseLeave={() => setHoveredCategoryId(null)}
+                  title={cat.label}
                   style={{ animationDelay: `${260 + i * 70}ms` }}
                   className="genius-chip flex items-center gap-2 px-3 py-2.5 border border-white/20 bg-white/10 text-sm font-sans text-white hover:bg-white/20"
                 >
@@ -1245,7 +1246,7 @@ export function ChatScreen({ userName = 'Usuário', daysRemaining: daysRemaining
                               <li key={cat.id}>
                                 <button
                                   onClick={() => handleSelectCategory(cat.id)}
-                                  title={!categoriesOpen ? cat.label : undefined}
+                                  title={cat.label}
                                   className={`w-full flex items-center ${categoriesOpen ? 'gap-2.5 px-3 justify-start' : 'justify-center px-0'} py-2 text-xs font-sans transition-colors ${
                                     isActive
                                       ? 'bg-planton-accent/12 text-foreground font-semibold'

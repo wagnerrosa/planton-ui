@@ -1,4 +1,5 @@
-import type { LucideIcon } from 'lucide-react'
+import type { ComponentType } from 'react'
+import type { LucideProps } from 'lucide-react'
 import { CATEGORIES } from '../chat/mock-data'
 
 // ── Status ────────────────────────────────────────────────────────────────
@@ -161,7 +162,7 @@ export type CategoriaCol = {
   id: string
   label: string
   labelCurto: string
-  icon: LucideIcon
+  icon: ComponentType<LucideProps>
   scope: 1 | 2 | 3
 }
 
@@ -612,7 +613,7 @@ export type CategoriaRollup = {
   id: string
   label: string
   labelCurto: string
-  icon: LucideIcon
+  icon: ComponentType<LucideProps>
   scope: 1 | 2 | 3
   status: CombinationStatus
   unidadesComDados: number
