@@ -1099,7 +1099,7 @@ export function ChatScreen({ userName = 'Usuário', daysRemaining: daysRemaining
           </div>
 
           {/* Glass card */}
-          <div ref={emptyCardRef} className="genius-empty-card relative z-10 flex flex-col items-start gap-5 px-5 py-6 sm:px-8 sm:py-8 max-w-sm w-full overflow-hidden" style={{ viewTransitionName: 'genius-canvas' }}>
+          <div ref={emptyCardRef} className="genius-empty-card relative z-10 flex flex-col items-start gap-5 px-5 py-6 sm:px-8 sm:py-8 max-w-md w-full overflow-hidden" style={{ viewTransitionName: 'genius-canvas' }}>
             {/* Blur base sempre visível */}
             <div
               className="genius-card-blur absolute z-0 bg-cover bg-center"
