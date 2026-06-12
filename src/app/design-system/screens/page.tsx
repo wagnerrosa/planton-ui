@@ -61,6 +61,8 @@ const screens = [
       { href: '/design-system/screens/genius/dados-por-categoria', label: 'Dados por Categoria', description: 'Revisão e edição de dados de emissão por categoria com toolbar de ações' },
       { href: '/design-system/screens/genius/dashboard-v2', label: 'Dashboard V2', description: 'Dashboard gerencial de inventário com visão por matriz e categoria' },
       { href: '/design-system/screens/genius/cadastro-emissoes', label: 'Cadastro de Emissões', description: 'Tela de cadastro e gestão de emissões de inventário' },
+      { href: '/design-system/screens/genius/home-respondente', label: 'Home do Respondente', description: 'Tela inicial do respondente com navbar e menu lateral' },
+      { href: '/design-system/screens/genius/home-respondente-v2', label: 'Home do Respondente V2', description: 'Cockpit: hero da próxima ação, fila priorizada e rail de visão geral' },
     ],
   },
   {

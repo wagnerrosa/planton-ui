@@ -8,7 +8,7 @@ import { GeniusNavbar } from '@/components/navigation/GeniusNavbar'
 import { GeniusNavbarProvider, useGeniusNavbar } from '@/components/navigation/GeniusNavbarContext'
 
 function GeniusLayoutInner({ children }: { children: React.ReactNode }) {
-  const { breadcrumbs } = useGeniusNavbar()
+  const { breadcrumbs, rightContent } = useGeniusNavbar()
   const mainRef = useRef<HTMLElement>(null)
   const pathname = usePathname()
 
@@ -19,7 +19,7 @@ function GeniusLayoutInner({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="fixed inset-0 z-50 flex flex-col bg-background">
-        <GeniusNavbar breadcrumbs={breadcrumbs} />
+        <GeniusNavbar breadcrumbs={breadcrumbs} rightContent={rightContent} />
 
         <div className="flex flex-1 overflow-hidden">
           <GeniusSidebar />

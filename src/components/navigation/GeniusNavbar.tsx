@@ -1,6 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import { Menu } from 'lucide-react'
 import { useSidebar } from '@/components/shadcn/sidebar'
 import type { BreadcrumbItem } from './AcademyNavbar'
@@ -10,11 +12,13 @@ const BASE = '/design-system/screens/genius'
 export interface GeniusNavbarProps {
   breadcrumbs?: BreadcrumbItem[]
   onMenuToggle?: () => void
+  rightContent?: ReactNode
 }
 
 export function GeniusNavbar({
   breadcrumbs = [],
   onMenuToggle,
+  rightContent = null,
 }: GeniusNavbarProps) {
   const { toggleSidebar } = useSidebar()
 
@@ -40,9 +44,11 @@ export function GeniusNavbar({
           {/* Logo + Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="flex items-center gap-0 px-4 md:px-5 min-w-0 overflow-hidden">
             <Link href={`${BASE}/chat`} className="flex items-center shrink-0 mr-3" aria-label="Planton Genius">
-              <img
+              <Image
                 src="/logos_produtos/planton_genius_branco.svg"
                 alt="Planton Genius"
+                width={108}
+                height={20}
                 className="h-5 w-auto"
               />
             </Link>
@@ -74,7 +80,11 @@ export function GeniusNavbar({
           </nav>
         </div>
 
-
+        {rightContent && (
+          <div className="hidden lg:flex items-center px-4 border-l border-sidebar-border shrink-0">
+            {rightContent}
+          </div>
+        )}
 
       </div>
     </nav>
