@@ -585,20 +585,22 @@ function buildMudancaUsoSoloVegetacao(): SchemaRow[] {
 // ── Dados base de Efluentes Líquidos ─────────────────────────────────────────
 // A planilha de origem (template Faber-Castell) é uma matriz parâmetro × mês ×
 // (Ent./Saída) por bloco (filial × tipo de efluente), em 2 seções: Pré e Pós
-// Tratamento. Normalizamos p/ 1 linha = (filial, tipo de efluente, mês) e cada
-// seção vira uma aba; o par Ent./Saída de cada parâmetro vira 2 colunas.
-// `eflBase(i)` é compartilhada pelas 2 abas p/ que a mesma linha i descreva o
-// mesmo ponto de medição nas duas guias.
+// Tratamento. Aqui normalizamos p/ uma forma "longa": 1 linha = 1 ETAPA de
+// medição. Um bloco (filial × mês × tipo × fase) tem N etapas (2–4):
+//   • etapa 01 = entrada da fase;
+//   • última etapa = saída da fase;
+//   • etapas intermediárias = pontos do meio do processo.
+// Assim cada linha carrega UMA medição por parâmetro (DBO/DQO/N₂/Volume) —
+// sem o par Ent./Saída em colunas separadas. A "Fase" (Pré/Pós) é uma coluna,
+// não mais uma aba: tudo numa única tabela.
 const EFL_TIPOS = ['Esgoto doméstico (sanitário)', 'Efluente industrial']
-// MCF (fator de correção de metano) por tratamento — análogo ao MUS_FATOR_HA:
-// rotas anaeróbias emitem muito mais CH₄ que tratamento aeróbio.
 const EFL_TRATAMENTOS = [
-  { nome: 'Biológico (lodos ativados)', mcf: 0.03 },
-  { nome: 'Anaeróbio (reator UASB)', mcf: 0.8 },
-  { nome: 'Lagoa anaeróbia', mcf: 0.8 },
-  { nome: 'Fossa séptica', mcf: 0.5 },
-  { nome: 'Físico-químico', mcf: 0.1 },
-  { nome: 'Sem tratamento (rede pública)', mcf: 0.1 },
+  'Biológico (lodos ativados)',
+  'Anaeróbio (reator UASB)',
+  'Lagoa anaeróbia',
+  'Fossa séptica',
+  'Físico-químico',
+  'Sem tratamento (rede pública)',
 ]
 const EFL_DISPOSICOES = [
   'Rede de coleta da prefeitura, direcionada para ETE do Município',
@@ -606,121 +608,128 @@ const EFL_DISPOSICOES = [
   'Infiltração no solo',
   'Reuso interno (água de processo)',
 ]
-const EFL_B0 = 0.6 // kg CH₄ / kg DBO removida (GHG Protocol)
-const EFL_GWP_CH4 = 28
+const EFL_FASES = ['Pré-tratamento', 'Pós-tratamento']
+
+// Perfil fixo de cada unidade da empresa: responsável sempre o mesmo, tratamento
+// e disposição próprios, e quais fases a unidade monitora. Caso real do template
+// (Faber-Castell): a unidade de Prata só tem Pós-tratamento — nem toda unidade
+// faz pré-tratamento. `fases` define o que cada uma emite.
+type EflUnidade = {
+  filial: string
+  responsavel: string
+  tipo: string
+  tratamento: string
+  disposicao: string
+  fases: string[]
+}
+const EFL_UNIDADES: EflUnidade[] = [
+  // Unidade só Pós-tratamento — caso real (Prata): efluente vai direto ao
+  // tratamento principal, sem etapa de pré declarada.
+  { filial: 'Prata', responsavel: 'Carlos Mendes', tipo: 'Esgoto doméstico (sanitário)', tratamento: 'Biológico (lodos ativados)', disposicao: 'Rede de coleta da prefeitura, direcionada para ETE do Município', fases: ['Pós-tratamento'] },
+  { filial: 'São Carlos', responsavel: 'Patrícia Souza', tipo: 'Efluente industrial', tratamento: 'Físico-químico', disposicao: 'Lançamento em corpo hídrico (rio)', fases: ['Pré-tratamento', 'Pós-tratamento'] },
+  { filial: 'Manaus', responsavel: 'Diego Martins', tipo: 'Efluente industrial', tratamento: 'Anaeróbio (reator UASB)', disposicao: 'Lançamento em corpo hídrico (rio)', fases: ['Pré-tratamento', 'Pós-tratamento'] },
+  // Outra unidade só Pós-tratamento.
+  { filial: 'Filial BH', responsavel: 'Ana Beatriz Lima', tipo: 'Esgoto doméstico (sanitário)', tratamento: 'Fossa séptica', disposicao: 'Infiltração no solo', fases: ['Pós-tratamento'] },
+  { filial: 'Fábrica Campinas', responsavel: 'Roberto Carvalho', tipo: 'Efluente industrial', tratamento: 'Lagoa anaeróbia', disposicao: 'Reuso interno (água de processo)', fases: ['Pré-tratamento', 'Pós-tratamento'] },
+  { filial: 'CD Guarulhos', responsavel: 'Juliana Pereira', tipo: 'Esgoto doméstico (sanitário)', tratamento: 'Sem tratamento (rede pública)', disposicao: 'Rede de coleta da prefeitura, direcionada para ETE do Município', fases: ['Pós-tratamento'] },
+]
 
 const fmtMgL = (n: number) =>
   n.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
 
-function eflBase(i: number) {
-  // Faixas reais da planilha: DBO 111–1010 mg/L, DQO ≈ 2× DBO, volume mensal
-  // 500–850 m³. N₂ é medido ~semestralmente (no template real só Abr/Out têm valor).
-  const tratamento = EFL_TRATAMENTOS[i % EFL_TRATAMENTOS.length]
-  const dboEnt = 120 + ((i * 53) % 900)
-  const dqoEnt = Math.round(dboEnt * (1.9 + (i % 5) * 0.15))
-  return {
-    filial: UNIDADES_EMPRESA[i % UNIDADES_EMPRESA.length],
-    mes_emissao: CM_PERIODOS[i % CM_PERIODOS.length],
-    responsavel: CM_RESPONSAVEIS[i % CM_RESPONSAVEIS.length],
-    tipo: EFL_TIPOS[i % EFL_TIPOS.length],
-    tratamento,
-    disposicao: EFL_DISPOSICOES[i % EFL_DISPOSICOES.length],
-    dboEnt,
-    dqoEnt,
-    volume: 500 + ((i * 97) % 350),
-    n2Medido: i % 6 === 0,
-  }
-}
+const efl2 = (n: number) => String(n).padStart(2, '0')
 
-// Aba Pré-tratamento: caracterização do efluente bruto. Gradeamento/decantação
-// removem pouco (10–25%); a remoção pesada acontece no pós.
-function buildEfluentesPre(): SchemaRow[] {
+// Forma longa: 1 linha = 1 etapa de medição. Itera unidade → mês → fase(s da
+// unidade) → etapas. Cada unidade tem responsável/tratamento/disposição fixos;
+// só as medições (DBO/DQO/N₂/volume) variam por mês/fase/etapa. A remoção total
+// da fase é distribuída ao longo das etapas — a etapa de saída chega ao final.
+function buildEfluentes(): SchemaRow[] {
   const rows: SchemaRow[] = []
-  for (let i = 0; i < 100; i++) {
-    const b = eflBase(i)
-    const remocao = 0.1 + (i % 4) * 0.05
-    const row: SchemaRow = {
-      filial: b.filial,
-      mes_emissao: b.mes_emissao,
-      tipo_efluente: b.tipo,
-      tratamento: b.tratamento.nome,
-      disposicao_final: b.disposicao,
-      dbo_entrada: fmtMgL(b.dboEnt),
-      dbo_saida: fmtMgL(b.dboEnt * (1 - remocao)),
-      dqo_entrada: fmtMgL(b.dqoEnt),
-      dqo_saida: fmtMgL(b.dqoEnt * (1 - remocao)),
-      n2_entrada: b.n2Medido ? fmtMgL(90 + ((i * 7) % 30)) : '—',
-      n2_saida: b.n2Medido ? fmtMgL(70 + ((i * 7) % 28)) : '—',
-      volume: b.volume.toLocaleString('pt-BR'),
-      periodo: b.mes_emissao,
-      tco2e: '', // emissão é contabilizada no pós-tratamento (evita dupla contagem)
-      responsavel: b.responsavel,
+  let seq = 0 // contador global p/ sprinkle determinístico de erros/avisos
+  // Itera mês por fora, unidade por dentro: assim todas as 6 unidades aparecem
+  // já nos primeiros meses (em vez de esgotar o teto de 100 numa só unidade).
+  for (let m = 0; m < CM_PERIODOS.length && rows.length < 100; m++) {
+    const mes = CM_PERIODOS[m]
+    for (let u = 0; u < EFL_UNIDADES.length && rows.length < 100; u++) {
+      const unidade = EFL_UNIDADES[u]
+      // Carga bruta do mês — varia por unidade (u) e mês (m), estável. Essas
+      // variáveis acompanham o efluente ao longo das fases: a saída de uma fase
+      // é a entrada da próxima (o mesmo efluente flui Pré → Pós, não recomeça).
+      let cargaDbo = 120 + (((u * 7 + m) * 53) % 900)
+      let cargaDqo = Math.round(cargaDbo * (1.9 + ((u + m) % 5) * 0.15))
+      let cargaVol = 500 + (((u * 5 + m) * 97) % 350)
+      const n2Medido = (u + m) % 6 === 0
+
+      for (const fase of unidade.fases) {
+        if (rows.length >= 100) break
+        const isPos = fase === 'Pós-tratamento'
+        // Pré: 2 etapas (entrada → saída). Pós: 2–4 (entrada, meio(s), saída).
+        const nEtapas = isPos ? 2 + (m % 3) : 2
+        const remocaoTotal = isPos ? 0.85 + (m % 5) * 0.025 : 0.1 + (m % 4) * 0.05
+        // "< 2" = abaixo do limite de detecção do laboratório (template real),
+        // só na saída do pós-tratamento.
+        const abaixoDeteccao = isPos && (u + m) % 11 === 8
+        // Carga no início desta fase (= saída da fase anterior, se houver).
+        const dboFaseEnt = cargaDbo
+        const dqoFaseEnt = cargaDqo
+        const volFaseEnt = cargaVol
+
+        for (let e = 0; e < nEtapas && rows.length < 100; e++) {
+          const i = seq++
+          const isSaida = e === nEtapas - 1
+          // Fração da remoção desta fase já aplicada (0 na entrada → 1 na saída).
+          const frac = e / (nEtapas - 1)
+          const dboNum = isSaida && abaixoDeteccao ? 2 : dboFaseEnt * (1 - remocaoTotal * frac)
+          const dqoNum = dqoFaseEnt * (1 - remocaoTotal * frac)
+          const volNum = volFaseEnt - Math.round(frac * (volFaseEnt * 0.03))
+          const etapaLabel =
+            e === 0 ? 'Entrada' : isSaida ? 'Saída' : `Etapa ${efl2(e + 1)}`
+
+          // Ao sair da fase, a carga corrente passa a ser a desta etapa de saída,
+          // que vira a entrada da próxima fase.
+          if (isSaida) {
+            cargaDbo = dboNum
+            cargaDqo = dqoNum
+            cargaVol = volNum
+          }
+
+          const row: SchemaRow = {
+            filial: unidade.filial,
+            mes_emissao: mes,
+            tipo_efluente: unidade.tipo,
+            fase,
+            etapa: `${efl2(e + 1)} · ${etapaLabel}`,
+            tratamento: unidade.tratamento,
+            disposicao_final: unidade.disposicao,
+            dbo: isSaida && abaixoDeteccao ? '< 2' : fmtMgL(dboNum),
+            dbo_unidade: 'mg/L',
+            dqo: fmtMgL(dqoNum),
+            dqo_unidade: 'mg/L',
+            n2: n2Medido ? fmtMgL(90 - frac * 55 + ((i * 7) % 20)) : '—',
+            n2_unidade: n2Medido ? 'kgN/m³' : '—',
+            volume: volNum.toLocaleString('pt-BR'),
+            volume_unidade: 'm³',
+            periodo: mes,
+            responsavel: unidade.responsavel,
+          }
+
+          if (i % 17 === 3) {
+            row.volume = ''
+            row._cellStatus = { volume: 'error' }
+          } else if (i % 23 === 7) {
+            // DBO sobe em vez de cair na fase — eficiência negativa, inconsistente.
+            row.dbo = fmtMgL(dboFaseEnt * 1.05)
+            row._cellStatus = { dbo: 'warning' }
+          } else if (i % 31 === 5) {
+            row._cellStatus = { n2: 'warning' }
+          } else if (i % 29 === 11) {
+            row._cellStatus = { tratamento: 'warning' }
+          }
+
+          rows.push(row)
+        }
+      }
     }
-
-    if (i % 17 === 3) {
-      row.volume = ''
-      row._cellStatus = { volume: 'error' }
-    } else if (i % 23 === 7) {
-      // Saída maior que entrada — eficiência negativa, dado inconsistente.
-      row.dbo_saida = fmtMgL(b.dboEnt * 1.15)
-      row._cellStatus = { dbo_saida: 'warning' }
-    } else if (i % 31 === 5) {
-      row._cellStatus = { n2_entrada: 'warning' }
-    } else if (i % 29 === 11) {
-      row._cellStatus = { tratamento: 'warning' }
-    }
-
-    rows.push(row)
-  }
-  return rows
-}
-
-// Aba Pós-tratamento: remoção alta (85–95%) e cálculo da emissão —
-// CH₄ = volume × DBO removida × B₀ × MCF do tratamento; tCO₂e = CH₄ × GWP 28.
-function buildEfluentesPos(): SchemaRow[] {
-  const rows: SchemaRow[] = []
-  for (let i = 0; i < 100; i++) {
-    const b = eflBase(i)
-    const remocao = 0.85 + (i % 5) * 0.025
-    // "< 2" = abaixo do limite de detecção do laboratório (aparece no template real).
-    const abaixoDeteccao = i % 11 === 8
-    const dboSaiNum = abaixoDeteccao ? 2 : b.dboEnt * (1 - remocao)
-    const kgDboRemovida = (b.volume * (b.dboEnt - dboSaiNum)) / 1000
-    const tco2eNum = (kgDboRemovida * EFL_B0 * b.tratamento.mcf * EFL_GWP_CH4) / 1000
-
-    const row: SchemaRow = {
-      filial: b.filial,
-      mes_emissao: b.mes_emissao,
-      tipo_efluente: b.tipo,
-      tratamento: b.tratamento.nome,
-      disposicao_final: b.disposicao,
-      dbo_entrada: fmtMgL(b.dboEnt),
-      dbo_saida: abaixoDeteccao ? '< 2' : fmtMgL(dboSaiNum),
-      dqo_entrada: fmtMgL(b.dqoEnt),
-      dqo_saida: fmtMgL(b.dqoEnt * (1 - remocao)),
-      n2_entrada: b.n2Medido ? fmtMgL(90 + ((i * 7) % 30)) : '—',
-      n2_saida: b.n2Medido ? fmtMgL(30 + ((i * 7) % 15)) : '—',
-      volume: b.volume.toLocaleString('pt-BR'),
-      periodo: b.mes_emissao,
-      fator: `MCF ${b.tratamento.mcf.toLocaleString('pt-BR')} · B₀ 0,6 kg CH₄/kg DBO`,
-      tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
-      responsavel: b.responsavel,
-    }
-
-    if (i % 17 === 3) {
-      row.volume = ''
-      row.tco2e = ''
-      row._cellStatus = { volume: 'error' }
-    } else if (i % 23 === 7) {
-      row.dbo_saida = fmtMgL(b.dboEnt * 1.1)
-      row._cellStatus = { dbo_saida: 'warning' }
-    } else if (i % 31 === 5) {
-      row._cellStatus = { n2_saida: 'warning' }
-    } else if (i % 29 === 11) {
-      row._cellStatus = { disposicao_final: 'warning' }
-    }
-
-    rows.push(row)
   }
   return rows
 }
@@ -1705,6 +1714,96 @@ function buildResiduosCompostagem(): SchemaRow[] {
   return rows
 }
 
+// ── Resíduos (escopo 3) — tratados externamente ─────────────────────────────
+// Resíduos gerados nas operações e destinados a tratamento externo. 1 linha =
+// (filial × mês × categoria do resíduo). Cada categoria tem uma participação
+// (%) no total de resíduos da filial — as % de uma filial somam ~100%. Metano/
+// biogás e destino são opcionais (só fazem sentido p/ orgânico em aterro/compost.).
+// Categoria do resíduo (A–M) + participação fixa (%) no mix da filial. Cada
+// categoria vira uma coluna de porcentagem; a letra (A, B, C...) prefixa o
+// título. "Outros (inertes)" é calculado automaticamente = 100 − soma das demais.
+// `proc`/`fator` definem destinação e fator de emissão (mock, tCO₂e/ton).
+const RES_MIX = [
+  { letra: 'A', categoria: 'Papéis/Papelão', pct: 10, proc: 'Reciclagem', fator: 0.02 },
+  { letra: 'B', categoria: 'Têxteis', pct: 4, proc: 'Aterro sanitário', fator: 0.25 },
+  { letra: 'C', categoria: 'Alimentares', pct: 18, proc: 'Compostagem', fator: 0.12 },
+  { letra: 'D', categoria: 'Madeira', pct: 6, proc: 'Reciclagem', fator: 0.05 },
+  { letra: 'E', categoria: 'Jardim/Parque', pct: 8, proc: 'Compostagem', fator: 0.10 },
+  { letra: 'F', categoria: 'Fraldas', pct: 5, proc: 'Aterro sanitário', fator: 0.30 },
+  { letra: 'G', categoria: 'Borracha/Couro', pct: 3, proc: 'Incineração', fator: 0.40 },
+  { letra: 'H', categoria: 'Lodo doméstico/de esgoto', pct: 7, proc: 'Aterro sanitário', fator: 0.35 },
+  { letra: 'I', categoria: 'Lodo industrial', pct: 6, proc: 'Incineração', fator: 0.45 },
+  { letra: 'J', categoria: 'Plásticos', pct: 20, proc: 'Reciclagem', fator: 0.03 },
+  { letra: 'K', categoria: 'Resíduos de serviços de saúde', pct: 2, proc: 'Incineração', fator: 1.2 },
+  { letra: 'L', categoria: 'Resíduos fósseis líquidos', pct: 3, proc: 'Incineração', fator: 0.9 },
+  // M = inertes, calculado automaticamente (100 − soma das demais).
+  { letra: 'M', categoria: 'Outros (inertes — calculado automaticamente)', pct: 100 - (10 + 4 + 18 + 6 + 8 + 5 + 3 + 7 + 6 + 20 + 2 + 3), proc: 'Aterro sanitário', fator: 0.0 },
+]
+const RES_PROCESSAMENTOS = ['Aterro sanitário', 'Incineração', 'Compostagem', 'Reciclagem']
+// Cada categoria do mix vira uma COLUNA de porcentagem. O id é estável
+// (`pct_0`, `pct_1`, ...) e o título mostra "Letra · Categoria".
+const RES_PCT_COLS = RES_MIX.map((m, idx) => ({
+  id: `pct_${idx}`,
+  titulo: `${m.letra} · ${m.categoria}`,
+  pct: m.pct,
+}))
+
+function buildResiduos(): SchemaRow[] {
+  const rows: SchemaRow[] = []
+  let seq = 0
+  for (let m = 0; m < CM_PERIODOS.length && rows.length < 100; m++) {
+    const mes = CM_PERIODOS[m]
+    for (let u = 0; u < UNIDADES_EMPRESA.length && rows.length < 100; u++) {
+      // Total mensal de resíduos da filial (ton) — varia por filial/mês, estável.
+      const totalTon = 8 + (((u * 5 + m) * 13) % 60)
+      for (const mix of RES_MIX) {
+        if (rows.length >= 100) break
+        const i = seq++
+        const qtdNum = (totalTon * mix.pct) / 100
+        // Metano só p/ orgânico em compostagem/aterro (recuperação de biogás).
+        const temBiogas = mix.proc === 'Compostagem' || mix.proc === 'Aterro sanitário'
+        const metanoNum = temBiogas ? (qtdNum * (8 + (i % 12))) / 100 : 0
+        const tco2eNum = qtdNum * mix.fator
+
+        const row: SchemaRow = {
+          filial: UNIDADES_EMPRESA[u],
+          mes_emissao: mes,
+          quantidade: qtdNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+          unidade: 'ton',
+          processamento: mix.proc,
+          metano: temBiogas ? dctOpt(metanoNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }), i) : '—',
+          unidade_metano: temBiogas ? dctOpt(i % 3 === 0 ? 'kg' : 'm³', i) : '—',
+          destino_biogas: temBiogas ? dctOpt(RC_DESTINOS_BIOGAS[i % RC_DESTINOS_BIOGAS.length], i) : '—',
+          periodo: mes,
+          fator: `${mix.fator.toLocaleString('pt-BR')} tCO₂e/ton`,
+          tco2e: tco2eNum.toLocaleString('pt-BR', { maximumFractionDigits: 2 }),
+          responsavel: CM_RESPONSAVEIS[u % CM_RESPONSAVEIS.length],
+        }
+        // Uma coluna de % por categoria — o mix completo da filial, repetido em
+        // toda linha (cada categoria é uma coluna fixa A, B, C...).
+        for (const col of RES_PCT_COLS) {
+          row[col.id] = `${col.pct}%`
+        }
+
+        if (i % 17 === 3) {
+          row.quantidade = ''
+          row.tco2e = ''
+          row._cellStatus = { quantidade: 'error' }
+        } else if (i % 23 === 7) {
+          row._cellStatus = { pct_1: 'warning' }
+        } else if (i % 31 === 5) {
+          row._cellStatus = { processamento: 'warning' }
+        } else if (i % 29 === 11) {
+          row._cellStatus = { pct_0: 'warning' }
+        }
+
+        rows.push(row)
+      }
+    }
+  }
+  return rows
+}
+
 export const CATEGORIES: EmissionCategory[] = [
   {
     id: 'agricola-manejo-solo',
@@ -2031,42 +2130,26 @@ export const CATEGORIES: EmissionCategory[] = [
     ],
     schemas: [
       {
-        id: 'efluentes-pre',
-        label: 'Pré-tratamento',
+        id: 'efluentes',
+        label: 'Efluentes',
         columns: [
           { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
           { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
           { id: 'tipo_efluente', title: 'Tipo de Efluente', width: 230, type: 'bubble', options: EFL_TIPOS, description: 'Tipo de efluente gerado (esgoto doméstico/sanitário ou efluente industrial).' },
-          { id: 'tratamento', title: 'Tratamento Utilizado', width: 230, type: 'bubble', options: EFL_TRATAMENTOS.map((t) => t.nome), description: 'Tipo de tratamento aplicado ao efluente — define o fator de correção de metano (MCF).' },
+          { id: 'fase', title: 'Fase', width: 170, type: 'bubble', options: EFL_FASES, description: 'Fase do tratamento desta medição: pré-tratamento ou pós-tratamento.' },
+          { id: 'etapa', title: 'Etapa', width: 110, description: 'Nº da etapa de medição dentro da fase (01 = entrada; a última etapa é a saída; as do meio são pontos intermediários). Cada etapa é uma linha.' },
+          { id: 'tratamento', title: 'Tratamento Utilizado', width: 230, type: 'bubble', options: EFL_TRATAMENTOS, description: 'Tipo de tratamento aplicado ao efluente.' },
           { id: 'disposicao_final', title: 'Disposição Final', width: 300, description: 'Destino do efluente após tratamento (rede pública/ETE, corpo hídrico, solo, reuso).' },
-          { id: 'dbo_entrada', title: 'DBO Inicial — Ent. (mg/L)', width: 190, description: 'Demanda Bioquímica de Oxigênio medida na entrada do pré-tratamento.' },
-          { id: 'dbo_saida', title: 'DBO Inicial — Saída (mg/L)', width: 200, description: 'Demanda Bioquímica de Oxigênio medida na saída do pré-tratamento.' },
-          { id: 'dqo_entrada', title: 'DQO Inicial — Ent. (mg/L)', width: 190, description: 'Demanda Química de Oxigênio medida na entrada do pré-tratamento.' },
-          { id: 'dqo_saida', title: 'DQO Inicial — Saída (mg/L)', width: 200, description: 'Demanda Química de Oxigênio medida na saída do pré-tratamento.' },
-          { id: 'n2_entrada', title: 'Teor de N₂ Inicial — Ent. (kgN/m³)', width: 230, description: 'Teor de nitrogênio na entrada do pré-tratamento (medição periódica; "—" quando não medido no mês).' },
-          { id: 'n2_saida', title: 'Teor de N₂ Inicial — Saída (kgN/m³)', width: 240, description: 'Teor de nitrogênio na saída do pré-tratamento (medição periódica; "—" quando não medido no mês).' },
-          { id: 'volume', title: 'Entrada de Efluente (m³)', width: 190, description: 'Volume mensal de efluente que entra no tratamento.' },
+          { id: 'dbo', title: 'DBO', width: 120, description: 'Demanda Bioquímica de Oxigênio medida nesta etapa ("< 2" = abaixo do limite de detecção).' },
+          { id: 'dbo_unidade', title: 'Unidade de medida (DBO)', width: 200, type: 'bubble', options: ['mg/L', 'kg/m³'], description: 'Unidade de medida da DBO (mg/L ou kg/m³).' },
+          { id: 'dqo', title: 'DQO', width: 120, description: 'Demanda Química de Oxigênio medida nesta etapa.' },
+          { id: 'dqo_unidade', title: 'Unidade de medida (DQO)', width: 200, type: 'bubble', options: ['mg/L', 'kg/m³'], description: 'Unidade de medida da DQO (mg/L ou kg/m³).' },
+          { id: 'n2', title: 'Teor de N₂', width: 130, description: 'Teor de nitrogênio medido nesta etapa (medição periódica; "—" quando não medido no mês).' },
+          { id: 'n2_unidade', title: 'Unidade de medida (N₂)', width: 200, type: 'bubble', options: ['kgN/m³', 'mg/L'], description: 'Unidade de medida do teor de nitrogênio (kgN/m³ ou mg/L).' },
+          { id: 'volume', title: 'Volume de Efluente', width: 170, description: 'Volume mensal de efluente nesta etapa.' },
+          { id: 'volume_unidade', title: 'Unidade de medida (Volume)', width: 210, type: 'bubble', options: ['m³', 'L'], description: 'Unidade de medida do volume (m³ ou litros).' },
         ],
-        rows: buildEfluentesPre(),
-      },
-      {
-        id: 'efluentes-pos',
-        label: 'Pós-tratamento',
-        columns: [
-          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
-          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
-          { id: 'tipo_efluente', title: 'Tipo de Efluente', width: 230, type: 'bubble', options: EFL_TIPOS, description: 'Tipo de efluente gerado (esgoto doméstico/sanitário ou efluente industrial).' },
-          { id: 'tratamento', title: 'Tratamento Utilizado', width: 230, type: 'bubble', options: EFL_TRATAMENTOS.map((t) => t.nome), description: 'Tipo de tratamento aplicado ao efluente — define o fator de correção de metano (MCF).' },
-          { id: 'disposicao_final', title: 'Disposição Final', width: 300, description: 'Destino do efluente após tratamento (rede pública/ETE, corpo hídrico, solo, reuso).' },
-          { id: 'dbo_entrada', title: 'DBO Final — Ent. (mg/L)', width: 190, description: 'Demanda Bioquímica de Oxigênio medida na entrada do tratamento principal.' },
-          { id: 'dbo_saida', title: 'DBO Final — Saída (mg/L)', width: 200, description: 'Demanda Bioquímica de Oxigênio do efluente tratado ("< 2" = abaixo do limite de detecção).' },
-          { id: 'dqo_entrada', title: 'DQO Final — Ent. (mg/L)', width: 190, description: 'Demanda Química de Oxigênio medida na entrada do tratamento principal.' },
-          { id: 'dqo_saida', title: 'DQO Final — Saída (mg/L)', width: 200, description: 'Demanda Química de Oxigênio do efluente tratado.' },
-          { id: 'n2_entrada', title: 'Teor de N₂ Final — Ent. (kgN/m³)', width: 230, description: 'Teor de nitrogênio na entrada do tratamento principal (medição periódica; "—" quando não medido no mês).' },
-          { id: 'n2_saida', title: 'Teor de N₂ Final — Saída (kgN/m³)', width: 240, description: 'Teor de nitrogênio do efluente tratado (medição periódica; "—" quando não medido no mês).' },
-          { id: 'volume', title: 'Saída de Efluente Tratado (m³)', width: 220, description: 'Volume mensal de efluente tratado que sai do tratamento.' },
-        ],
-        rows: buildEfluentesPos(),
+        rows: buildEfluentes(),
       },
     ],
   },
@@ -2495,36 +2578,40 @@ export const CATEGORIES: EmissionCategory[] = [
   },
   {
     id: 'residuos',
-    label: 'Resíduos',
+    label: 'Resíduos Tratados Externamente',
     icon: Trash2,
     scope: 3,
-    hint: 'Envie volumes por tipo (orgânico, reciclável, perigoso) e destinação final.',
+    hint: 'Envie a quantidade de resíduos tratados externamente por categoria, o tipo de processamento/destinação e, opcionalmente, o metano/biogás recuperado.',
     initialChat: [
       {
         id: 'rs-1',
         role: 'assistant',
-        content: 'Categoria de Resíduos ativa. Envie dados por tipo (orgânico, reciclável, perigoso) e destinação.',
+        content: 'Categoria de Resíduos (Escopo 3) ativa. Envie a quantidade de resíduos por categoria (papel, plástico, orgânico...), o tipo de processamento/destinação e o biogás recuperado, se houver.',
         timestamp: t(10),
       },
     ],
     schemas: [
       {
-        id: 'por-tipo',
-        label: 'Por tipo',
+        id: 'residuos-tratados-externamente',
+        label: 'Tratados externamente',
         columns: [
-          { id: 'unidade_empresa', title: 'Unidade', width: 180, type: 'bubble' },
-          { id: 'tipo', title: 'Tipo de resíduo', width: 200, type: 'bubble' },
-          { id: 'destinacao', title: 'Destinação', width: 180, type: 'bubble' },
-          { id: 'quantidade', title: 'Quantidade', width: 130 },
-          { id: 'unidade', title: 'Unidade', width: 100, type: 'bubble', options: ['ton', 'kg', 'm³'] },
-          { id: 'periodo', title: 'Período', width: 130, type: 'bubble' },
-          { id: 'tco2e', title: 'tCO₂e', width: 100 },
+          { id: 'filial', title: 'Filial', width: 180, type: 'bubble' },
+          { id: 'mes_emissao', title: 'Mês de Emissão', width: 140, type: 'bubble', description: 'Mês de referência da emissão (nome, número 1–12 ou extraído de data DD/MM/YYYY).' },
+          { id: 'quantidade', title: 'Quantidade de Resíduos', width: 180, description: 'Quantidade de resíduos destinados a tratamento externo.' },
+          { id: 'unidade', title: 'Unidade de Medida (Resíduo)', width: 230, type: 'bubble', options: ['ton', 'kg', 'm³'], description: 'Unidade de medida da quantidade de resíduos (toneladas, kg, etc.).' },
+          { id: 'processamento', title: 'Tipo de processamento / Destinação', width: 270, type: 'bubble', options: RES_PROCESSAMENTOS, description: 'Tipo de processamento/destinação (aterro, incineração, compostagem, reciclagem).' },
+          { id: 'metano', title: 'Quantidade de Metano/Biogás', width: 230, description: 'Quantidade de metano/biogás recuperado (opcional).' },
+          { id: 'unidade_metano', title: 'Unidade de Medida (Metano)', width: 220, type: 'bubble', options: ['m³', 'kg', 'ton'], description: 'Unidade de medida do metano/biogás (toneladas, kg, etc.) (opcional).' },
+          { id: 'destino_biogas', title: 'Destino do Biogás', width: 220, type: 'bubble', options: RC_DESTINOS_BIOGAS, description: 'Destino do biogás (queima em flare, geração de energia ou venda) (opcional).' },
+          // Uma coluna de porcentagem por categoria do resíduo (A · …, B · …).
+          ...RES_PCT_COLS.map((col) => ({
+            id: col.id,
+            title: col.titulo,
+            width: 230,
+            description: `Participação de "${col.titulo}" no total de resíduos gerados pela filial no mês.`,
+          })),
         ],
-        rows: [
-          { unidade_empresa: 'CD Guarulhos', tipo: 'Orgânico', destinacao: 'Aterro sanitário', quantidade: '4,2', unidade: 'ton', periodo: 'Jan/2026', tco2e: '1,96' },
-          { unidade_empresa: 'Filial BH', tipo: 'Reciclável misto', destinacao: 'Cooperativa', quantidade: '3,8', unidade: 'ton', periodo: 'Jan/2026', tco2e: '0,42' },
-          { unidade_empresa: 'Loja Rio de Janeiro', tipo: 'Perigoso', destinacao: 'Incineração', quantidade: '0,5', unidade: 'ton', periodo: 'Jan/2026', tco2e: '1,59' },
-        ],
+        rows: buildResiduos(),
       },
     ],
   },

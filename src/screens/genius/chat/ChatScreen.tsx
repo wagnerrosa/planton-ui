@@ -109,7 +109,7 @@ const SUBMIT_STATS: Record<string, SubmitStats> = {
   'emissoes-fugitivas':       { registros: 28,  filiais: 5 },
   'combustao-estacionaria':   { registros: 47,  filiais: 7 },
   'viagens-negocios':         { registros: 73,  filiais: 6 },
-  'residuos':                 { registros: 39,  filiais: 8 },
+  'residuos':                 { registros: 100, filiais: 9 },
 }
 const DEFAULT_SUBMIT_STATS: SubmitStats = { registros: 50, filiais: 6 }
 

@@ -126,8 +126,8 @@ const ALTERACAO_VALOR_POR_SCHEMA: Record<string, string> = {
   'fretado-enderecos': 'Endereços da Rota; Quantidade de colaboradores',
   'fretado-compartilhado': 'CEP do Colaborador; Dias na semana',
   'residuos-compostagem': 'Quantidade; Unidade de Medida (Resíduo)',
-  'efluentes-pre': 'DBO Inicial — Saída (mg/L); Entrada de Efluente (m³)',
-  'efluentes-pos': 'DBO Final — Saída (mg/L); Saída de Efluente Tratado (m³)',
+  'residuos-tratados-externamente': 'Quantidade de Resíduos; J · Plásticos',
+  efluentes: 'DBO (mg/L); Volume de Efluente (m³)',
 }
 
 // Procedência (Origem do dado / Alterações) — universal: toda aba a recebe.

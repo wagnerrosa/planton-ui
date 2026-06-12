@@ -51,7 +51,7 @@ export const EMISSION_CATEGORIES: CategoryDef[] = [
 
   // ── Escopo 3 ──────────────────────────────────────────────
   { id: 'emissoes-casa-trabalho',        label: 'Deslocamento Casa-Trabalho',                   scope: 3, icon: House,        anim: 'genius-icon-home-hop' },
-  { id: 'residuos',                      label: 'Resíduos Gerados nas Operações',               scope: 3, icon: Trash2,       anim: 'genius-icon-trash' },
+  { id: 'residuos',                      label: 'Resíduos Tratados Externamente',               scope: 3, icon: Trash2,       anim: 'genius-icon-trash' },
   { id: 'transporte-aereo-downstream',   label: 'Transporte Aéreo Downstream',                  scope: 3, icon: PlaneLanding,  anim: 'genius-icon-air-down',  direction: 'down' },
   { id: 'transporte-aereo-upstream',     label: 'Transporte Aéreo Upstream',                    scope: 3, icon: PlaneTakeoff, anim: 'genius-icon-air-up',    direction: 'up' },
   { id: 'transporte-hidro-downstream',   label: 'Transporte Hidroviário Downstream',            scope: 3, icon: Ship,         anim: 'genius-icon-ship-down', direction: 'down' },
