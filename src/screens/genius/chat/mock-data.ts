@@ -1719,32 +1719,33 @@ function buildResiduosCompostagem(): SchemaRow[] {
 // (filial × mês × categoria do resíduo). Cada categoria tem uma participação
 // (%) no total de resíduos da filial — as % de uma filial somam ~100%. Metano/
 // biogás e destino são opcionais (só fazem sentido p/ orgânico em aterro/compost.).
-// Categoria do resíduo (A–M) + participação fixa (%) no mix da filial. Cada
+// Categoria do resíduo (A–L) + participação fixa (%) no mix da filial. Cada
 // categoria vira uma coluna de porcentagem; a letra (A, B, C...) prefixa o
-// título. "Outros (inertes)" é calculado automaticamente = 100 − soma das demais.
+// título. `exemplos` vai no tooltip da coluna. "Materiais inertes" (L) é
+// calculado automaticamente = 100 − soma das demais.
 // `proc`/`fator` definem destinação e fator de emissão (mock, tCO₂e/ton).
 const RES_MIX = [
-  { letra: 'A', categoria: 'Papéis/Papelão', pct: 10, proc: 'Reciclagem', fator: 0.02 },
-  { letra: 'B', categoria: 'Têxteis', pct: 4, proc: 'Aterro sanitário', fator: 0.25 },
-  { letra: 'C', categoria: 'Alimentares', pct: 18, proc: 'Compostagem', fator: 0.12 },
-  { letra: 'D', categoria: 'Madeira', pct: 6, proc: 'Reciclagem', fator: 0.05 },
-  { letra: 'E', categoria: 'Jardim/Parque', pct: 8, proc: 'Compostagem', fator: 0.10 },
-  { letra: 'F', categoria: 'Fraldas', pct: 5, proc: 'Aterro sanitário', fator: 0.30 },
-  { letra: 'G', categoria: 'Borracha/Couro', pct: 3, proc: 'Incineração', fator: 0.40 },
-  { letra: 'H', categoria: 'Lodo doméstico/de esgoto', pct: 7, proc: 'Aterro sanitário', fator: 0.35 },
-  { letra: 'I', categoria: 'Lodo industrial', pct: 6, proc: 'Incineração', fator: 0.45 },
-  { letra: 'J', categoria: 'Plásticos', pct: 20, proc: 'Reciclagem', fator: 0.03 },
-  { letra: 'K', categoria: 'Resíduos de serviços de saúde', pct: 2, proc: 'Incineração', fator: 1.2 },
-  { letra: 'L', categoria: 'Resíduos fósseis líquidos', pct: 3, proc: 'Incineração', fator: 0.9 },
-  // M = inertes, calculado automaticamente (100 − soma das demais).
-  { letra: 'M', categoria: 'Outros (inertes — calculado automaticamente)', pct: 100 - (10 + 4 + 18 + 6 + 8 + 5 + 3 + 7 + 6 + 20 + 2 + 3), proc: 'Aterro sanitário', fator: 0.0 },
+  { letra: 'A', categoria: 'Papéis / Papelão', exemplos: 'papel de escritório, caixas, embalagens de papel', pct: 10, proc: 'Reciclagem', fator: 0.02 },
+  { letra: 'B', categoria: 'Resíduos têxteis', exemplos: 'tecidos, roupas, fios', pct: 4, proc: 'Aterro sanitário', fator: 0.25 },
+  { letra: 'C', categoria: 'Resíduos alimentares', exemplos: 'restos de comida, orgânicos de cozinha', pct: 18, proc: 'Compostagem', fator: 0.12 },
+  { letra: 'D', categoria: 'Madeira', exemplos: 'aparas de madeira, paletes, resíduos de marcenaria', pct: 6, proc: 'Reciclagem', fator: 0.05 },
+  { letra: 'E', categoria: 'Resíduos de jardim e parque', exemplos: 'grama, galhos, folhas', pct: 8, proc: 'Compostagem', fator: 0.10 },
+  { letra: 'F', categoria: 'Fraldas', exemplos: 'fraldas descartáveis, absorventes', pct: 5, proc: 'Aterro sanitário', fator: 0.30 },
+  { letra: 'G', categoria: 'Borracha e couro', exemplos: 'pneus, solas, cintos', pct: 3, proc: 'Incineração', fator: 0.40 },
+  { letra: 'H', categoria: 'Lodo de esgoto doméstico', exemplos: 'lodo gerado no tratamento de esgoto sanitário', pct: 7, proc: 'Aterro sanitário', fator: 0.35 },
+  { letra: 'I', categoria: 'Lodo industrial', exemplos: 'lodo gerado no tratamento de efluentes industriais', pct: 6, proc: 'Incineração', fator: 0.45 },
+  { letra: 'J', categoria: 'Plástico', exemplos: 'embalagens, sacolas, PET, PVC', pct: 20, proc: 'Reciclagem', fator: 0.03 },
+  { letra: 'K', categoria: 'Resíduos de serviços de saúde', exemplos: 'seringas, curativos, panos cirúrgicos, bandagens', pct: 2, proc: 'Incineração', fator: 1.2 },
+  // L = materiais inertes, calculado automaticamente (100 − soma das demais).
+  { letra: 'L', categoria: 'Materiais inertes', exemplos: 'metal, vidro, cinzas, eletrônicos, sujeira', pct: 100 - (10 + 4 + 18 + 6 + 8 + 5 + 3 + 7 + 6 + 20 + 2), proc: 'Aterro sanitário', fator: 0.0 },
 ]
 const RES_PROCESSAMENTOS = ['Aterro sanitário', 'Incineração', 'Compostagem', 'Reciclagem']
 // Cada categoria do mix vira uma COLUNA de porcentagem. O id é estável
 // (`pct_0`, `pct_1`, ...) e o título mostra "Letra · Categoria".
 const RES_PCT_COLS = RES_MIX.map((m, idx) => ({
   id: `pct_${idx}`,
-  titulo: `${m.letra} · ${m.categoria}`,
+  titulo: `% · ${m.categoria}`,
+  exemplos: m.exemplos,
   pct: m.pct,
 }))
 
@@ -2608,7 +2609,7 @@ export const CATEGORIES: EmissionCategory[] = [
             id: col.id,
             title: col.titulo,
             width: 230,
-            description: `Participação de "${col.titulo}" no total de resíduos gerados pela filial no mês.`,
+            description: `Exemplos: ${col.exemplos}.`,
           })),
         ],
         rows: buildResiduos(),
